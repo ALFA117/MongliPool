@@ -106,28 +106,34 @@ export default function Deposit() {
   const stepIndex = ["connect", "amount", "generating", "confirm", "done"].indexOf(step);
 
   return (
-    <div className="max-w-lg mx-auto px-4 py-16 animate-fade-in">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold mb-2">{t("deposit", "title")}</h1>
-        <p className="text-pool-text-dim">{t("deposit", "subtitle")}</p>
+    <div className="max-w-xl mx-auto px-5 py-20 animate-fade-in">
+      <div className="mb-10">
+        <h1 className="text-4xl font-bold mb-3 tracking-tight">{t("deposit", "title")}</h1>
+        <p className="text-pool-text-dim text-[15px] leading-relaxed">{t("deposit", "subtitle")}</p>
       </div>
 
-      {/* Progress */}
-      <div className="flex items-center gap-2 mb-8">
+      {/* Progress stepper */}
+      <div className="flex items-center gap-1 mb-10">
         {[0, 1, 2, 3, 4].map((i) => (
-          <div key={i} className="flex items-center gap-2 flex-1">
+          <div key={i} className="flex items-center gap-1 flex-1">
             <div
-              className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold transition-all duration-300 ${
+              className={`w-9 h-9 rounded-full flex items-center justify-center text-xs font-bold transition-all duration-300 flex-shrink-0 ${
                 stepIndex === i
-                  ? "bg-pool-violet text-white shadow-violet-sm"
+                  ? "bg-gradient-to-br from-pool-violet to-purple-600 text-white shadow-violet animate-glow"
                   : stepIndex > i
-                  ? "bg-pool-green text-white"
-                  : "bg-white/5 text-pool-muted border border-white/10"
+                  ? "bg-pool-green text-white shadow-green"
+                  : "bg-white/[0.04] text-pool-muted border border-white/[0.08]"
               }`}
             >
               {stepIndex > i ? <CheckCircle size={14} /> : i + 1}
             </div>
-            {i < 4 && <div className={`flex-1 h-0.5 rounded transition-colors ${stepIndex > i ? "bg-pool-green" : "bg-white/10"}`} />}
+            {i < 4 && (
+              <div className={`flex-1 h-[2px] rounded-full transition-all duration-500 ${
+                stepIndex > i
+                  ? "bg-gradient-to-r from-pool-green to-pool-green-light"
+                  : "bg-white/[0.06]"
+              }`} />
+            )}
           </div>
         ))}
       </div>

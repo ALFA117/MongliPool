@@ -1,21 +1,22 @@
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
+import { EffectComposer } from "three/examples/jsm/postprocessing/EffectComposer.js";
+import { RenderPass } from "three/examples/jsm/postprocessing/RenderPass.js";
+import { UnrealBloomPass } from "three/examples/jsm/postprocessing/UnrealBloomPass.js";
 
 function StaticFallback({ fullscreen }: { fullscreen?: boolean }) {
   return (
     <div
       className={`relative overflow-hidden flex items-center justify-center ${
-        fullscreen
-          ? "absolute inset-0"
-          : "w-full h-64 rounded-2xl bg-pool-bg border border-pool-violet/20"
+        fullscreen ? "absolute inset-0" : "w-full h-full rounded-2xl"
       }`}
+      style={{ background: "radial-gradient(ellipse at center, rgba(124,58,237,0.08) 0%, #080816 70%)" }}
       role="img"
       aria-label="Privacy visualization"
     >
-      <div className="absolute w-52 h-52 rounded-full border border-pool-violet/10" />
+      <div className="absolute w-52 h-52 rounded-full border border-pool-violet/10 animate-pulse" />
       <div className="absolute w-36 h-36 rounded-full border border-pool-violet/20" />
       <div className="absolute w-20 h-20 rounded-full border border-pool-violet/40 shadow-violet" />
-      <div className="absolute w-52 h-52 rounded-full bg-pool-violet/5" />
       <div className="relative z-10 w-14 h-14 rounded-full bg-gradient-to-br from-pool-violet to-pool-violet-dim shadow-violet flex items-center justify-center">
         <svg className="w-7 h-7 text-white opacity-90" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5}
@@ -24,26 +25,16 @@ function StaticFallback({ fullscreen }: { fullscreen?: boolean }) {
       </div>
       {Array.from({ length: 8 }, (_, i) => {
         const angle = (i / 8) * Math.PI * 2;
-        const rx = 90, ry = 60;
         return (
-          <div
-            key={i}
-            className="absolute w-2 h-2 rounded-full bg-pool-green opacity-70"
-            style={{
-              left: `calc(50% + ${Math.cos(angle) * rx}px - 4px)`,
-              top: `calc(50% + ${Math.sin(angle) * ry}px - 4px)`,
-            }}
-          />
+          <div key={i} className="absolute w-1.5 h-1.5 rounded-full bg-pool-green/60"
+            style={{ left: `calc(50% + ${Math.cos(angle)*90}px)`, top: `calc(50% + ${Math.sin(angle)*60}px)` }} />
         );
       })}
     </div>
   );
 }
 
-interface Props {
-  className?: string;
-  fullscreen?: boolean;
-}
+interface Props { className?: string; fullscreen?: boolean; }
 
 export default function PrivacyVisualizer3D({ className = "", fullscreen = false }: Props) {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -61,131 +52,196 @@ export default function PrivacyVisualizer3D({ className = "", fullscreen = false
     const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
     renderer.setSize(W, H);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    renderer.toneMappingExposure = 1.2;
     container.appendChild(renderer.domElement);
 
     const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(55, W / H, 0.1, 100);
-    camera.position.set(0, 0, fullscreen ? 9 : 7);
+    const camera = new THREE.PerspectiveCamera(50, W / H, 0.1, 100);
+    camera.position.set(0, 0, fullscreen ? 10 : 7.5);
 
-    const ambient = new THREE.AmbientLight(0x0d0d2a, 2);
-    scene.add(ambient);
-    const violetPt = new THREE.PointLight(0x7c3aed, 6, 14);
-    violetPt.position.set(3, 3, 3);
-    scene.add(violetPt);
-    const greenPt = new THREE.PointLight(0x10b981, 3, 10);
-    greenPt.position.set(-3, -2, -4);
-    scene.add(greenPt);
+    // Lighting — multi-source for depth
+    scene.add(new THREE.AmbientLight(0x0a0a2e, 1.5));
+    const violetKey = new THREE.PointLight(0x7c3aed, 8, 20);
+    violetKey.position.set(4, 4, 4);
+    scene.add(violetKey);
+    const greenFill = new THREE.PointLight(0x10b981, 4, 15);
+    greenFill.position.set(-4, -3, -5);
+    scene.add(greenFill);
+    const blueRim = new THREE.PointLight(0x3b82f6, 3, 12);
+    blueRim.position.set(-2, 5, -3);
+    scene.add(blueRim);
 
-    const sphereGeo = new THREE.SphereGeometry(fullscreen ? 2 : 1.5, 48, 48);
-    const sphereMat = new THREE.MeshPhongMaterial({
-      color: 0x3b1078,
+    // Central sphere — MeshPhysicalMaterial for realism
+    const sphereR = fullscreen ? 2.2 : 1.6;
+    const sphereGeo = new THREE.SphereGeometry(sphereR, 64, 64);
+    const sphereMat = new THREE.MeshPhysicalMaterial({
+      color: 0x2d1065,
       emissive: 0x7c3aed,
-      emissiveIntensity: 0.3,
-      shininess: 140,
+      emissiveIntensity: 0.35,
+      roughness: 0.15,
+      metalness: 0.8,
+      clearcoat: 1.0,
+      clearcoatRoughness: 0.1,
+      envMapIntensity: 0.5,
     });
     const sphere = new THREE.Mesh(sphereGeo, sphereMat);
     scene.add(sphere);
 
-    const ringGeo = new THREE.TorusGeometry(fullscreen ? 3 : 2.2, 0.055, 16, 100);
-    const ringMat = new THREE.MeshPhongMaterial({
+    // Inner glow sphere
+    const glowGeo = new THREE.SphereGeometry(sphereR * 1.05, 32, 32);
+    const glowMat = new THREE.MeshBasicMaterial({
+      color: 0x7c3aed,
+      transparent: true,
+      opacity: 0.08,
+      side: THREE.BackSide,
+    });
+    scene.add(new THREE.Mesh(glowGeo, glowMat));
+
+    // ZK shield ring
+    const ring1R = fullscreen ? 3.2 : 2.4;
+    const ringGeo = new THREE.TorusGeometry(ring1R, 0.04, 20, 120);
+    const ringMat = new THREE.MeshPhysicalMaterial({
       color: 0xa855f7,
-      emissive: 0x6d28d9,
-      emissiveIntensity: 0.6,
-      shininess: 80,
+      emissive: 0x8b5cf6,
+      emissiveIntensity: 0.8,
+      roughness: 0.2,
+      metalness: 0.9,
     });
     const ring = new THREE.Mesh(ringGeo, ringMat);
     ring.rotation.x = Math.PI / 3;
     scene.add(ring);
 
-    const ring2Geo = new THREE.TorusGeometry(fullscreen ? 3.5 : 2.6, 0.03, 12, 100);
-    const ring2Mat = new THREE.MeshPhongMaterial({
+    // ASP ring
+    const ring2R = fullscreen ? 3.8 : 2.8;
+    const ring2Geo = new THREE.TorusGeometry(ring2R, 0.025, 16, 120);
+    const ring2Mat = new THREE.MeshPhysicalMaterial({
       color: 0x10b981,
       emissive: 0x10b981,
-      emissiveIntensity: 0.4,
+      emissiveIntensity: 0.6,
+      roughness: 0.3,
+      metalness: 0.7,
     });
     const ring2 = new THREE.Mesh(ring2Geo, ring2Mat);
     ring2.rotation.z = Math.PI / 5;
     scene.add(ring2);
 
-    const PARTICLE_COUNT = fullscreen ? 350 : 200;
-    const pos = new Float32Array(PARTICLE_COUNT * 3);
-    const vel = new Float32Array(PARTICLE_COUNT * 3);
+    // Third decorative ring
+    const ring3Geo = new THREE.TorusGeometry(ring1R * 0.85, 0.015, 12, 100);
+    const ring3Mat = new THREE.MeshBasicMaterial({ color: 0x3b82f6, transparent: true, opacity: 0.4 });
+    const ring3 = new THREE.Mesh(ring3Geo, ring3Mat);
+    ring3.rotation.x = -Math.PI / 4;
+    ring3.rotation.y = Math.PI / 6;
+    scene.add(ring3);
+
+    // Particles
+    const PC = fullscreen ? 500 : 280;
+    const pos = new Float32Array(PC * 3);
+    const vel = new Float32Array(PC * 3);
+    const colors = new Float32Array(PC * 3);
 
     const resetParticle = (i: number) => {
-      const r = (fullscreen ? 5 : 4) + Math.random() * 3;
+      const r = (fullscreen ? 5.5 : 4.2) + Math.random() * 3;
       const theta = Math.random() * Math.PI * 2;
       const phi = Math.acos(2 * Math.random() - 1);
-      pos[i * 3 + 0] = r * Math.sin(phi) * Math.cos(theta);
-      pos[i * 3 + 1] = r * Math.sin(phi) * Math.sin(theta);
-      pos[i * 3 + 2] = r * Math.cos(phi);
-      vel[i * 3 + 0] = (Math.random() - 0.5) * 0.008;
-      vel[i * 3 + 1] = (Math.random() - 0.5) * 0.008;
-      vel[i * 3 + 2] = (Math.random() - 0.5) * 0.008;
+      pos[i*3] = r * Math.sin(phi) * Math.cos(theta);
+      pos[i*3+1] = r * Math.sin(phi) * Math.sin(theta);
+      pos[i*3+2] = r * Math.cos(phi);
+      vel[i*3] = (Math.random() - 0.5) * 0.006;
+      vel[i*3+1] = (Math.random() - 0.5) * 0.006;
+      vel[i*3+2] = (Math.random() - 0.5) * 0.006;
+      // Color: mix of green and violet
+      const t = Math.random();
+      colors[i*3] = 0.06 + t * 0.42;    // R
+      colors[i*3+1] = 0.72 - t * 0.45;  // G
+      colors[i*3+2] = 0.5 + t * 0.43;   // B
     };
 
-    for (let i = 0; i < PARTICLE_COUNT; i++) {
+    for (let i = 0; i < PC; i++) {
       resetParticle(i);
-      const scale = 0.5 + Math.random() * 0.5;
-      pos[i * 3 + 0] *= scale;
-      pos[i * 3 + 1] *= scale;
-      pos[i * 3 + 2] *= scale;
+      const s = 0.3 + Math.random() * 0.7;
+      pos[i*3] *= s; pos[i*3+1] *= s; pos[i*3+2] *= s;
     }
 
-    const particleGeo = new THREE.BufferGeometry();
-    particleGeo.setAttribute("position", new THREE.BufferAttribute(pos, 3));
-    const particleMat = new THREE.PointsMaterial({
-      color: 0x34d399,
-      size: fullscreen ? 0.08 : 0.065,
+    const pGeo = new THREE.BufferGeometry();
+    pGeo.setAttribute("position", new THREE.BufferAttribute(pos, 3));
+    pGeo.setAttribute("color", new THREE.BufferAttribute(colors, 3));
+    const pMat = new THREE.PointsMaterial({
+      size: fullscreen ? 0.07 : 0.055,
       transparent: true,
-      opacity: 0.85,
+      opacity: 0.9,
       sizeAttenuation: true,
+      vertexColors: true,
     });
-    const particles = new THREE.Points(particleGeo, particleMat);
-    scene.add(particles);
+    scene.add(new THREE.Points(pGeo, pMat));
 
+    // Post-processing: bloom
+    const composer = new EffectComposer(renderer);
+    composer.addPass(new RenderPass(scene, camera));
+    const bloom = new UnrealBloomPass(
+      new THREE.Vector2(W, H),
+      fullscreen ? 0.6 : 0.5,  // strength
+      0.4,                       // radius
+      0.85                       // threshold
+    );
+    composer.addPass(bloom);
+
+    // Resize
     const onResize = () => {
       const w = container.clientWidth;
       const h = container.clientHeight;
       camera.aspect = w / h;
       camera.updateProjectionMatrix();
       renderer.setSize(w, h);
+      composer.setSize(w, h);
     };
     window.addEventListener("resize", onResize);
 
+    // Animation
     let frameId: number;
     let t = 0;
+    let camAngle = 0;
 
     const animate = () => {
       frameId = requestAnimationFrame(animate);
       t += 0.016;
 
-      sphere.rotation.y += 0.004;
-      sphere.rotation.x += 0.0008;
-      sphereMat.emissiveIntensity = 0.18 + Math.sin(t * 0.9) * 0.14;
+      // Subtle camera orbit
+      camAngle += 0.0008;
+      camera.position.x = Math.sin(camAngle) * (fullscreen ? 1.5 : 1);
+      camera.position.y = Math.cos(camAngle * 0.7) * 0.5;
+      camera.lookAt(0, 0, 0);
 
-      ring.rotation.y += 0.007;
-      ring2.rotation.x += 0.005;
-      ring2Mat.emissiveIntensity = 0.3 + Math.sin(t * 1.3 + 1) * 0.15;
+      // Sphere pulse
+      sphere.rotation.y += 0.003;
+      sphere.rotation.x += 0.0006;
+      sphereMat.emissiveIntensity = 0.25 + Math.sin(t * 0.8) * 0.15;
 
-      const pa = particleGeo.attributes.position.array as Float32Array;
-      const absorbR = fullscreen ? 2.1 : 1.55;
-      for (let i = 0; i < PARTICLE_COUNT; i++) {
-        const ix = i * 3, iy = ix + 1, iz = ix + 2;
-        const x = pa[ix], y = pa[iy], z = pa[iz];
-        const r = Math.sqrt(x * x + y * y + z * z);
+      // Rings orbit
+      ring.rotation.y += 0.006;
+      ring2.rotation.x += 0.004;
+      ring3.rotation.y -= 0.003;
+      ring3.rotation.z += 0.002;
 
+      // Particles spiral inward
+      const pa = pGeo.attributes.position.array as Float32Array;
+      const absorbR = sphereR + 0.1;
+      for (let i = 0; i < PC; i++) {
+        const ix = i*3, iy = ix+1, iz = ix+2;
+        const r = Math.sqrt(pa[ix]**2 + pa[iy]**2 + pa[iz]**2);
         if (r < absorbR) {
           resetParticle(i);
         } else {
           const inv = 1 / r;
-          pa[ix] -= x * inv * 0.013 - vel[ix];
-          pa[iy] -= y * inv * 0.013 - vel[iy];
-          pa[iz] -= z * inv * 0.013 - vel[iz];
+          const speed = 0.012 + (1 / (r + 1)) * 0.005;
+          pa[ix] -= pa[ix] * inv * speed - vel[ix];
+          pa[iy] -= pa[iy] * inv * speed - vel[iy];
+          pa[iz] -= pa[iz] * inv * speed - vel[iz];
         }
       }
-      particleGeo.attributes.position.needsUpdate = true;
+      pGeo.attributes.position.needsUpdate = true;
 
-      renderer.render(scene, camera);
+      composer.render();
     };
     animate();
 
@@ -193,13 +249,14 @@ export default function PrivacyVisualizer3D({ className = "", fullscreen = false
       cancelAnimationFrame(frameId);
       window.removeEventListener("resize", onResize);
       sphereGeo.dispose(); sphereMat.dispose();
+      glowGeo.dispose(); glowMat.dispose();
       ringGeo.dispose(); ringMat.dispose();
       ring2Geo.dispose(); ring2Mat.dispose();
-      particleGeo.dispose(); particleMat.dispose();
+      ring3Geo.dispose(); ring3Mat.dispose();
+      pGeo.dispose(); pMat.dispose();
+      bloom.dispose(); composer.dispose();
       renderer.dispose();
-      if (container.contains(renderer.domElement)) {
-        container.removeChild(renderer.domElement);
-      }
+      if (container.contains(renderer.domElement)) container.removeChild(renderer.domElement);
     };
   }, [isMobile, fullscreen]);
 
@@ -208,7 +265,7 @@ export default function PrivacyVisualizer3D({ className = "", fullscreen = false
   return (
     <div
       ref={containerRef}
-      className={`${fullscreen ? "absolute inset-0" : "relative w-full h-64 rounded-2xl"} overflow-hidden ${className}`}
+      className={`${fullscreen ? "absolute inset-0" : "relative w-full h-full rounded-2xl"} overflow-hidden ${className}`}
       role="img"
       aria-label="Privacy visualization: transactions disappear into a cryptographic sphere"
     />

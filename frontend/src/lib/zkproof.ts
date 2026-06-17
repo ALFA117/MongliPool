@@ -1,4 +1,5 @@
 import * as snarkjs from "snarkjs";
+import { StrKey } from "@stellar/stellar-sdk";
 import { computeNullifierHash } from "./crypto";
 
 export interface WithdrawInput {
@@ -126,13 +127,15 @@ function serializeProof(proof: snarkjs.Groth16Proof): Uint8Array {
   return result;
 }
 
-/** Encode a Stellar address to a field element for the circuit */
+/** Encode a Stellar address to a BN254 field element for the circuit.
+ *  Decodes the StrKey G-address to its raw 32-byte ed25519 public key,
+ *  then interprets those bytes as a big-endian integer reduced mod BN254 prime. */
 export function addressToField(address: string): bigint {
-  const bytes = new TextEncoder().encode(address);
-  let val = 0n;
+  const rawKey = StrKey.decodeEd25519PublicKey(address);
   const BN254_PRIME =
     21888242871839275222246405745257275088548364400416034343698204186575808495617n;
-  for (const b of bytes.slice(0, 31)) {
+  let val = 0n;
+  for (const b of rawKey) {
     val = (val * 256n + BigInt(b)) % BN254_PRIME;
   }
   return val;
