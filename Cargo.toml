@@ -1,0 +1,20 @@
+[workspace]
+members = [
+    "contracts/groth16-verifier",
+    "contracts/privacy-pool",
+    "contracts/asp-registry",
+]
+resolver = "2"
+
+[workspace.dependencies]
+soroban-sdk = { version = "25", features = ["alloc"] }
+
+[profile.release]
+opt-level = "z"
+overflow-checks = true
+debug = 0
+strip = "symbols"
+debug-assertions = false
+panic = "abort"
+codegen-units = 1
+lto = true
