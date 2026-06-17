@@ -35,7 +35,7 @@ function uint8ArrayToHex(bytes: Uint8Array): string {
 }
 
 function toScBytes(data: Uint8Array): xdr.ScVal {
-  return xdr.ScVal.scvBytes(Buffer.from(data));
+  return nativeToScVal(data, { type: "bytes" });
 }
 
 function toScAddress(address: string): xdr.ScVal {
