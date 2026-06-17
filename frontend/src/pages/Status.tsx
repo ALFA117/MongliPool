@@ -1,4 +1,6 @@
 import { useState, useEffect } from "react";
+import { ExternalLink, CheckCircle } from "lucide-react";
+import { useI18n } from "../i18n/context";
 
 interface Task {
   name: string;
@@ -9,7 +11,7 @@ interface Phase {
   id: number;
   name: string;
   description: string;
-  status: "completed" | "in_progress" | "pending";
+  status: "done" | "in_progress" | "pending";
   progress: number;
   tasks: Task[];
 }
@@ -47,19 +49,8 @@ function useCountdown(deadline: string) {
   return { d, h, m, s, done: remaining === 0 };
 }
 
-const statusColor: Record<Phase["status"], string> = {
-  completed: "text-pool-green border-pool-green/30 bg-pool-green/5",
-  in_progress: "text-pool-violet-light border-pool-violet/30 bg-pool-violet/5",
-  pending: "text-pool-muted border-pool-border bg-pool-surface/30",
-};
-
-const statusLabel: Record<Phase["status"], string> = {
-  completed: "Completado",
-  in_progress: "En progreso",
-  pending: "Pendiente",
-};
-
 export default function Status() {
+  const { t } = useI18n();
   const [data, setData] = useState<Progress | null>(null);
   const [error, setError] = useState<string | null>(null);
   const countdown = useCountdown(data?.deadline ?? new Date(Date.now() + 1).toISOString());
@@ -68,8 +59,8 @@ export default function Status() {
     fetch("/progress.json")
       .then((r) => r.json())
       .then(setData)
-      .catch(() => setError("No se pudo cargar progress.json"));
-  }, []);
+      .catch(() => setError(t("status", "loadError")));
+  }, [t]);
 
   if (error) {
     return <div className="text-center py-20 text-red-400">{error}</div>;
@@ -83,31 +74,44 @@ export default function Status() {
     );
   }
 
+  const statusColor: Record<string, string> = {
+    done: "text-pool-green border-pool-green/20 bg-pool-green/5",
+    in_progress: "text-pool-violet-light border-pool-violet/20 bg-pool-violet/5",
+    pending: "text-pool-muted border-white/[0.06] bg-white/[0.02]",
+  };
+
+  const statusLabel = (s: string) => {
+    if (s === "done") return t("status", "completed");
+    if (s === "in_progress") return t("status", "inProgress");
+    return t("status", "pending");
+  };
+
   return (
     <div className="max-w-4xl mx-auto px-4 py-16 animate-fade-in">
-      {/* Header */}
       <div className="mb-10 text-center">
-        <div className="badge-pending mb-4 mx-auto w-fit">{data.hackathon}</div>
+        <div className="inline-flex items-center gap-1.5 bg-pool-violet/10 text-pool-violet-light border border-pool-violet/20 px-3 py-1 rounded-full text-xs font-medium mb-4">
+          {data.hackathon}
+        </div>
         <h1 className="text-4xl font-bold mb-2">{data.project}</h1>
         <p className="text-pool-text-dim">{data.current_phase}</p>
       </div>
 
-      {/* Countdown + overall progress */}
+      {/* Countdown + progress */}
       <div className="grid md:grid-cols-2 gap-6 mb-10">
-        <div className="card text-center">
-          <p className="text-pool-text-dim text-sm mb-3">Tiempo restante al deadline</p>
+        <div className="bg-white/[0.03] border border-white/[0.06] rounded-2xl p-6 text-center">
+          <p className="text-pool-text-dim text-sm mb-3">{t("status", "timeLeft")}</p>
           {countdown.done ? (
-            <p className="text-red-400 font-bold text-xl">¡Deadline pasado!</p>
+            <p className="text-red-400 font-bold text-xl">{t("status", "deadlinePassed")}</p>
           ) : (
             <div className="flex justify-center gap-3">
               {[
-                { val: countdown.d, label: "días" },
+                { val: countdown.d, label: t("status", "days") },
                 { val: countdown.h, label: "h" },
                 { val: countdown.m, label: "min" },
                 { val: countdown.s, label: "seg" },
               ].map(({ val, label }) => (
-                <div key={label} className="bg-pool-surface rounded-lg px-3 py-2 min-w-12">
-                  <div className="font-mono font-bold text-2xl text-pool-violet-light">
+                <div key={label} className="bg-white/[0.04] rounded-lg px-3 py-2 min-w-12">
+                  <div className="font-mono font-bold text-2xl text-pool-violet-light tabular-nums">
                     {String(val).padStart(2, "0")}
                   </div>
                   <div className="text-xs text-pool-text-dim">{label}</div>
@@ -117,16 +121,16 @@ export default function Status() {
           )}
         </div>
 
-        <div className="card">
-          <p className="text-pool-text-dim text-sm mb-3">Progreso general</p>
+        <div className="bg-white/[0.03] border border-white/[0.06] rounded-2xl p-6">
+          <p className="text-pool-text-dim text-sm mb-3">{t("status", "overall")}</p>
           <div className="flex items-center gap-3">
-            <div className="flex-1 bg-pool-surface rounded-full h-3 overflow-hidden">
+            <div className="flex-1 bg-white/[0.04] rounded-full h-3 overflow-hidden">
               <div
                 className="h-full bg-gradient-to-r from-pool-violet to-pool-violet-light rounded-full transition-all duration-500"
                 style={{ width: `${data.overall_progress}%` }}
               />
             </div>
-            <span className="font-mono font-bold text-pool-violet-light min-w-10 text-right">
+            <span className="font-mono font-bold text-pool-violet-light min-w-10 text-right tabular-nums">
               {data.overall_progress}%
             </span>
           </div>
@@ -135,28 +139,27 @@ export default function Status() {
 
       {/* Phases */}
       <div className="space-y-4 mb-10">
-        <h2 className="text-xl font-semibold mb-4">Fases</h2>
+        <h2 className="text-xl font-semibold mb-4">{t("status", "phases")}</h2>
         {data.phases.map((phase) => (
-          <div key={phase.id} className={`border rounded-2xl p-5 ${statusColor[phase.status]}`}>
+          <div key={phase.id} className={`border rounded-2xl p-5 ${statusColor[phase.status] ?? statusColor.pending}`}>
             <div className="flex items-start justify-between mb-3">
               <div>
                 <div className="flex items-center gap-2 mb-1">
-                  <span className="font-mono text-xs opacity-60">Fase {phase.id}</span>
-                  <span className={`text-xs px-2 py-0.5 rounded-full border ${statusColor[phase.status]}`}>
-                    {statusLabel[phase.status]}
+                  <span className="font-mono text-xs opacity-60">{t("status", "phase")} {phase.id}</span>
+                  <span className={`text-xs px-2 py-0.5 rounded-full border ${statusColor[phase.status] ?? statusColor.pending}`}>
+                    {statusLabel(phase.status)}
                   </span>
                 </div>
                 <h3 className="font-semibold text-pool-text">{phase.name}</h3>
                 <p className="text-pool-text-dim text-xs mt-0.5">{phase.description}</p>
               </div>
-              <span className="font-mono font-bold text-lg ml-4">{phase.progress}%</span>
+              <span className="font-mono font-bold text-lg ml-4 tabular-nums">{phase.progress}%</span>
             </div>
 
-            {/* Progress bar */}
             <div className="bg-black/20 rounded-full h-1.5 mb-3 overflow-hidden">
               <div
                 className={`h-full rounded-full transition-all duration-500 ${
-                  phase.status === "completed"
+                  phase.status === "done"
                     ? "bg-pool-green"
                     : phase.status === "in_progress"
                     ? "bg-pool-violet"
@@ -166,21 +169,14 @@ export default function Status() {
               />
             </div>
 
-            {/* Tasks */}
             <div className="grid sm:grid-cols-2 gap-1">
               {phase.tasks.map((task) => (
                 <div key={task.name} className="flex items-center gap-2 text-xs">
-                  <div
-                    className={`w-4 h-4 rounded flex items-center justify-center flex-shrink-0 ${
-                      task.done ? "bg-pool-green" : "border border-pool-border bg-pool-surface/50"
-                    }`}
-                  >
-                    {task.done && (
-                      <svg className="w-2.5 h-2.5 text-white" fill="currentColor" viewBox="0 0 20 20">
-                        <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                      </svg>
-                    )}
-                  </div>
+                  {task.done ? (
+                    <CheckCircle size={14} className="text-pool-green flex-shrink-0" />
+                  ) : (
+                    <div className="w-3.5 h-3.5 rounded border border-white/20 flex-shrink-0" />
+                  )}
                   <span className={task.done ? "text-pool-text line-through opacity-60" : "text-pool-text-dim"}>
                     {task.name}
                   </span>
@@ -192,8 +188,8 @@ export default function Status() {
       </div>
 
       {/* Contract addresses */}
-      <div className="card mb-8">
-        <h2 className="text-lg font-semibold mb-4">Contratos en Testnet</h2>
+      <div className="bg-white/[0.03] border border-white/[0.06] rounded-2xl p-6 mb-8">
+        <h2 className="text-lg font-semibold mb-4">{t("status", "contracts")}</h2>
         <div className="space-y-3">
           {Object.entries(data.contracts.testnet).map(([name, addr]) => (
             <div key={name} className="flex items-center justify-between gap-4">
@@ -201,11 +197,11 @@ export default function Status() {
                 {name.replace(/_/g, " ")}
               </span>
               {addr ? (
-                <span className="font-mono text-xs text-pool-green bg-pool-green/10 px-2 py-1 rounded">
+                <span className="font-mono text-xs text-pool-green bg-pool-green/10 px-2 py-1 rounded truncate max-w-[280px]">
                   {addr}
                 </span>
               ) : (
-                <span className="text-xs text-pool-muted italic">Pendiente de deploy</span>
+                <span className="text-xs text-pool-muted italic">{t("status", "pendingDeploy")}</span>
               )}
             </div>
           ))}
@@ -213,8 +209,8 @@ export default function Status() {
       </div>
 
       {/* Links */}
-      <div className="card">
-        <h2 className="text-lg font-semibold mb-4">Links</h2>
+      <div className="bg-white/[0.03] border border-white/[0.06] rounded-2xl p-6">
+        <h2 className="text-lg font-semibold mb-4">{t("status", "links")}</h2>
         <div className="flex flex-wrap gap-3">
           {Object.entries(data.links).map(([key, url]) =>
             url ? (
@@ -223,13 +219,14 @@ export default function Status() {
                 href={url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="btn-secondary text-sm py-2 px-4"
+                className="btn-secondary text-sm py-2 px-4 inline-flex items-center gap-2"
               >
                 {key.replace(/_/g, " ")}
+                <ExternalLink size={12} />
               </a>
             ) : (
-              <span key={key} className="text-pool-muted text-sm px-4 py-2 border border-pool-border rounded-xl opacity-50">
-                {key.replace(/_/g, " ")} (pendiente)
+              <span key={key} className="text-pool-muted text-sm px-4 py-2 border border-white/[0.06] rounded-xl opacity-50">
+                {key.replace(/_/g, " ")}
               </span>
             )
           )}

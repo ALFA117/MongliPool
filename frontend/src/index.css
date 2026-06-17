@@ -33,40 +33,47 @@
 
 @layer components {
   .btn-primary {
-    @apply bg-pool-violet hover:bg-pool-violet-light text-white font-semibold
+    @apply bg-gradient-to-r from-pool-violet to-purple-600
+           hover:from-pool-violet-light hover:to-purple-500
+           text-white font-semibold
            px-6 py-3 rounded-xl transition-all duration-200
-           shadow-violet hover:shadow-violet active:scale-95;
+           shadow-violet hover:shadow-[0_0_40px_rgba(124,58,237,0.4)]
+           active:scale-[0.97] cursor-pointer
+           disabled:opacity-40 disabled:cursor-not-allowed disabled:active:scale-100;
   }
 
   .btn-secondary {
-    @apply bg-pool-card border border-pool-border hover:border-pool-violet
+    @apply bg-white/[0.04] border border-white/[0.08]
+           hover:border-pool-violet/40 hover:bg-white/[0.06]
            text-pool-text font-medium px-6 py-3 rounded-xl
-           transition-all duration-200 active:scale-95;
+           transition-all duration-200 active:scale-[0.97] cursor-pointer
+           backdrop-blur-sm;
   }
 
   .btn-ghost {
     @apply text-pool-text-dim hover:text-pool-text font-medium px-4 py-2
-           rounded-lg transition-colors duration-200;
+           rounded-lg transition-colors duration-200 cursor-pointer;
   }
 
   .card {
-    @apply bg-pool-card border border-pool-border rounded-2xl p-6;
+    @apply bg-white/[0.03] backdrop-blur-sm border border-white/[0.06] rounded-2xl p-6;
   }
 
   .input-field {
-    @apply bg-pool-surface border border-pool-border rounded-xl px-4 py-3
+    @apply bg-white/[0.04] border border-white/[0.08] rounded-xl px-4 py-3
            text-pool-text placeholder-pool-muted
-           focus:outline-none focus:border-pool-violet focus:ring-1 focus:ring-pool-violet
-           transition-colors duration-200 w-full font-mono text-sm;
+           focus:outline-none focus:border-pool-violet/60 focus:ring-1 focus:ring-pool-violet/40
+           transition-all duration-200 w-full font-mono text-sm
+           backdrop-blur-sm;
   }
 
   .badge-verified {
-    @apply inline-flex items-center gap-1 bg-pool-green/10 text-pool-green
+    @apply inline-flex items-center gap-1.5 bg-pool-green/10 text-pool-green
            border border-pool-green/20 px-3 py-1 rounded-full text-xs font-medium;
   }
 
   .badge-pending {
-    @apply inline-flex items-center gap-1 bg-pool-violet/10 text-pool-violet-light
+    @apply inline-flex items-center gap-1.5 bg-pool-violet/10 text-pool-violet-light
            border border-pool-violet/20 px-3 py-1 rounded-full text-xs font-medium;
   }
 }

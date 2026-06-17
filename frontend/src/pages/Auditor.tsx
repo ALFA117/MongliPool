@@ -1,6 +1,16 @@
 import { useState } from "react";
+import { Eye, Download, AlertTriangle, Shield, Loader2, CheckCircle, XCircle } from "lucide-react";
 import { fromBase64, decryptNote, decodeNote } from "../lib/crypto";
 import { getDepositEvents } from "../lib/stellar";
+import { useI18n } from "../i18n/context";
+
+function hexToBytes(hex: string): Uint8Array {
+  const bytes = new Uint8Array(hex.length / 2);
+  for (let i = 0; i < hex.length; i += 2) {
+    bytes[i / 2] = parseInt(hex.substring(i, i + 2), 16);
+  }
+  return bytes;
+}
 
 interface AuditRecord {
   commitment: string;
@@ -10,6 +20,7 @@ interface AuditRecord {
 }
 
 export default function Auditor() {
+  const { t } = useI18n();
   const [viewKeyInput, setViewKeyInput] = useState("");
   const [records, setRecords] = useState<AuditRecord[]>([]);
   const [loading, setLoading] = useState(false);
@@ -22,19 +33,17 @@ export default function Auditor() {
     setDone(false);
 
     try {
-      // Decode view key from hex or base64
       let viewKey: Uint8Array;
       const trimmed = viewKeyInput.trim();
       if (/^[0-9a-fA-F]{64}$/.test(trimmed)) {
-        viewKey = Uint8Array.from(Buffer.from(trimmed, "hex"));
+        viewKey = hexToBytes(trimmed);
       } else {
         viewKey = fromBase64(trimmed);
       }
       if (viewKey.length !== 32) {
-        throw new Error("La llave de vista debe tener 32 bytes (64 hex chars o base64)");
+        throw new Error(t("auditor", "errorKeyLength"));
       }
 
-      // Fetch deposit events from on-chain
       const events = await getDepositEvents();
 
       const results: AuditRecord[] = events.map((event) => {
@@ -51,7 +60,7 @@ export default function Auditor() {
           const { amount } = decodeNote(plaintext);
           return {
             commitment: event.commitment,
-            amount: (Number(amount) / 1e7).toFixed(2) + " USDC",
+            amount: (Number(amount) / 1e7).toFixed(2) + " XLM",
             timestamp: event.timestamp,
             status: "valid" as const,
           };
@@ -68,7 +77,7 @@ export default function Auditor() {
       setRecords(results);
       setDone(true);
     } catch (e: unknown) {
-      setError(e instanceof Error ? e.message : "Error desconocido");
+      setError(e instanceof Error ? e.message : "Unknown error");
     } finally {
       setLoading(false);
     }
@@ -93,37 +102,44 @@ export default function Auditor() {
   return (
     <div className="max-w-4xl mx-auto px-4 py-16 animate-fade-in">
       <div className="mb-8">
-        <div className="badge-verified mb-4 w-fit">Solo Auditor Autorizado</div>
-        <h1 className="text-3xl font-bold mb-2">Panel de Auditoría</h1>
-        <p className="text-pool-text-dim">
-          Con la llave de vista de Mongli DAO puedes reconstruir el historial
-          completo de transacciones del pool para cumplimiento regulatorio.
-        </p>
+        <div className="inline-flex items-center gap-1.5 bg-pool-violet/10 text-pool-violet-light border border-pool-violet/20 px-3 py-1 rounded-full text-xs font-medium mb-4">
+          <Shield size={12} />
+          {t("auditor", "badge")}
+        </div>
+        <h1 className="text-3xl font-bold mb-2">{t("auditor", "title")}</h1>
+        <p className="text-pool-text-dim">{t("auditor", "subtitle")}</p>
       </div>
 
-      <div className="card mb-8">
-        <h2 className="text-lg font-semibold mb-4">Llave de vista</h2>
-        <div className="bg-amber-500/10 border border-amber-500/20 rounded-xl p-3 mb-4">
-          <p className="text-amber-300 text-xs">
-            ⚠ Solo el auditor autorizado de Mongli DAO tiene esta llave. Mantenla
-            confidencial. Esta página no la transmite a ningún servidor.
-          </p>
+      <div className="bg-white/[0.03] backdrop-blur-sm border border-white/[0.06] rounded-2xl p-7 mb-8">
+        <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
+          <Eye size={20} className="text-pool-violet-light" />
+          {t("auditor", "viewKeyTitle")}
+        </h2>
+        <div className="bg-amber-500/10 border border-amber-500/20 rounded-xl p-3 mb-4 flex items-start gap-3">
+          <AlertTriangle size={14} className="text-amber-400 flex-shrink-0 mt-0.5" />
+          <p className="text-amber-300 text-xs">{t("auditor", "viewKeyWarning")}</p>
         </div>
         <input
           type="password"
           value={viewKeyInput}
           onChange={(e) => setViewKeyInput(e.target.value)}
-          placeholder="Llave de vista (hex 64 chars o base64)"
+          placeholder={t("auditor", "viewKeyPlaceholder")}
           className="input-field mb-4"
         />
-        <button onClick={handleDecrypt} disabled={loading || !viewKeyInput.trim()} className="btn-primary">
-          {loading ? "Descifrando…" : "Descifrar transacciones"}
+        <button
+          onClick={handleDecrypt}
+          disabled={loading || !viewKeyInput.trim()}
+          className="btn-primary inline-flex items-center gap-2"
+        >
+          {loading ? <Loader2 size={16} className="animate-spin" /> : <Eye size={16} />}
+          {loading ? t("auditor", "decrypting") : t("auditor", "decryptBtn")}
         </button>
       </div>
 
       {error && (
-        <div className="mb-6 p-4 bg-red-500/10 border border-red-500/20 rounded-xl text-red-400 text-sm">
-          {error}
+        <div className="mb-6 p-4 bg-red-500/10 border border-red-500/20 rounded-xl text-red-400 text-sm flex items-start gap-3">
+          <AlertTriangle size={18} className="flex-shrink-0 mt-0.5" />
+          <span>{error}</span>
         </div>
       )}
 
@@ -131,43 +147,52 @@ export default function Auditor() {
         <div className="animate-slide-up">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-lg font-semibold">
-              {records.length} transacciones encontradas
+              {records.length} {t("auditor", "found")}
             </h2>
-            <button onClick={exportCSV} className="btn-secondary text-sm py-2">
-              Exportar CSV
-            </button>
+            {records.length > 0 && (
+              <button onClick={exportCSV} className="btn-secondary text-sm py-2 inline-flex items-center gap-2">
+                <Download size={14} />
+                {t("auditor", "exportCsv")}
+              </button>
+            )}
           </div>
 
           {records.length === 0 ? (
-            <div className="card text-center py-8 text-pool-text-dim">
-              No hay transacciones en el pool todavía.
+            <div className="bg-white/[0.03] border border-white/[0.06] rounded-2xl text-center py-8 text-pool-text-dim">
+              {t("auditor", "noTx")}
             </div>
           ) : (
-            <div className="card overflow-x-auto">
+            <div className="bg-white/[0.03] border border-white/[0.06] rounded-2xl overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
-                  <tr className="text-pool-text-dim border-b border-pool-border">
-                    <th className="text-left py-3 pr-4 font-medium">Commitment</th>
-                    <th className="text-left py-3 pr-4 font-medium">Monto</th>
-                    <th className="text-left py-3 pr-4 font-medium">Fecha</th>
-                    <th className="text-left py-3 font-medium">Estado</th>
+                  <tr className="text-pool-text-dim border-b border-white/[0.06]">
+                    <th className="text-left py-3 px-4 font-medium">{t("auditor", "colCommitment")}</th>
+                    <th className="text-left py-3 px-4 font-medium">{t("auditor", "colAmount")}</th>
+                    <th className="text-left py-3 px-4 font-medium">{t("auditor", "colDate")}</th>
+                    <th className="text-left py-3 px-4 font-medium">{t("auditor", "colStatus")}</th>
                   </tr>
                 </thead>
                 <tbody>
                   {records.map((r, i) => (
-                    <tr key={i} className="border-b border-pool-border/50 hover:bg-pool-surface/50">
-                      <td className="py-3 pr-4 font-mono text-xs text-pool-text-dim">
-                        {r.commitment.slice(0, 8)}…{r.commitment.slice(-6)}
+                    <tr key={i} className="border-b border-white/[0.03] hover:bg-white/[0.02] transition-colors">
+                      <td className="py-3 px-4 font-mono text-xs text-pool-text-dim">
+                        {r.commitment.slice(0, 8)}...{r.commitment.slice(-6)}
                       </td>
-                      <td className="py-3 pr-4 font-mono text-pool-text">{r.amount}</td>
-                      <td className="py-3 pr-4 text-pool-text-dim">
-                        {new Date(r.timestamp * 1000).toLocaleString("es-ES")}
+                      <td className="py-3 px-4 font-mono text-pool-text">{r.amount}</td>
+                      <td className="py-3 px-4 text-pool-text-dim">
+                        {new Date(r.timestamp * 1000).toLocaleString()}
                       </td>
-                      <td className="py-3">
+                      <td className="py-3 px-4">
                         {r.status === "valid" ? (
-                          <span className="badge-verified">Válido</span>
+                          <span className="inline-flex items-center gap-1 text-pool-green text-xs">
+                            <CheckCircle size={12} />
+                            {t("auditor", "valid")}
+                          </span>
                         ) : (
-                          <span className="badge-pending">Error descifrado</span>
+                          <span className="inline-flex items-center gap-1 text-red-400 text-xs">
+                            <XCircle size={12} />
+                            {t("auditor", "errorDecrypt")}
+                          </span>
                         )}
                       </td>
                     </tr>
