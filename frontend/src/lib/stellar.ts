@@ -77,14 +77,20 @@ async function invokeContract(
     throw new Error(`Transaction error: ${result.errorResult}`);
   }
 
+  const POLL_TIMEOUT = 60_000;
+  const POLL_INTERVAL = 2_000;
   let getResult = await server.getTransaction(result.hash);
   const start = Date.now();
   while (
     getResult.status === rpc.Api.GetTransactionStatus.NOT_FOUND &&
-    Date.now() - start < 30_000
+    Date.now() - start < POLL_TIMEOUT
   ) {
-    await new Promise((r) => setTimeout(r, 1_000));
+    await new Promise((r) => setTimeout(r, POLL_INTERVAL));
     getResult = await server.getTransaction(result.hash);
+  }
+
+  if (getResult.status === rpc.Api.GetTransactionStatus.NOT_FOUND) {
+    throw new Error("Transaction not confirmed after 60s. It may still be processing — check Stellar Expert.");
   }
 
   if (getResult.status !== rpc.Api.GetTransactionStatus.SUCCESS) {

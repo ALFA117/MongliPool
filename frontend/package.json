@@ -12,8 +12,6 @@
   "dependencies": {
     "@creit.tech/stellar-wallets-kit": "^1.6.2",
     "@stellar/freighter-api": "^3.0.1",
-    "@stellar/js-xdr": "^4.0.0",
-    "@stellar/stellar-base": "^15.0.0",
     "@stellar/stellar-sdk": "^16.0.0",
     "buffer": "^6.0.3",
     "lucide-react": "^1.20.0",
@@ -25,6 +23,9 @@
     "snarkjs": "^0.7.4",
     "three": "^0.165.0",
     "tweetnacl": "^1.0.3"
+  },
+  "overrides": {
+    "@stellar/js-xdr": "4.0.0"
   },
   "devDependencies": {
     "@types/react": "^18.3.0",
