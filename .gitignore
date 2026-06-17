@@ -9,6 +9,14 @@ node_modules/
 # Circuit build artifacts (large files)
 circuits/build/
 circuits/node_modules/
+circuits/witness.wtns
+circuits/input*.json
+circuits/proof*.json
+circuits/public*.json
+
+# Internal docs
+PROGRESS.md
+VIDEO_SCRIPT.md
 
 # Frontend build
 frontend/dist/
