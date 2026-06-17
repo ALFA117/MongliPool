@@ -4,13 +4,14 @@ import { fromBase64, hex32ToBigint, bigintToHex32 } from "../lib/crypto";
 import { generateWithdrawProof, addressToField } from "../lib/zkproof";
 import { PoseidonMerkleTree } from "../lib/merkle";
 import { getCommitments, withdraw as contractWithdraw } from "../lib/stellar";
-import { getAddress } from "../lib/wallet";
 import { useI18n } from "../i18n/context";
+import { useWallet } from "../lib/walletContext";
 
 type Step = "paste" | "prove" | "submit" | "done";
 
 export default function Withdraw() {
   const { t } = useI18n();
+  const { address: walletAddress, connect } = useWallet();
   const [step, setStep] = useState<Step>("paste");
   const [receiptText, setReceiptText] = useState("");
   const [recipientAddress, setRecipientAddress] = useState("");
@@ -76,7 +77,10 @@ export default function Withdraw() {
 
       setStep("submit");
       onProgress("Submitting to contract…", 95);
-      const senderAddress = await getAddress();
+      if (!walletAddress) {
+        await connect();
+      }
+      const senderAddress = walletAddress;
       if (!senderAddress) throw new Error(t("withdraw", "errorNoWallet"));
 
       // Pass the SAME roots that the proof was generated with.

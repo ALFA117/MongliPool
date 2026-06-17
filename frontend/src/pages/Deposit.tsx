@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { ArrowDownToLine, Download, Copy, AlertTriangle, CheckCircle, Loader2, Wallet } from "lucide-react";
 import {
   randomFieldElement,
@@ -12,6 +12,7 @@ import {
 import { deposit, updatePoolRoot, updateAspRoot, getCommitments } from "../lib/stellar";
 import { PoseidonMerkleTree } from "../lib/merkle";
 import { useI18n } from "../i18n/context";
+import { useWallet } from "../lib/walletContext";
 
 const ADMIN_ADDRESS = import.meta.env.VITE_ADMIN_ADDRESS ?? "";
 
@@ -19,29 +20,26 @@ type Step = "connect" | "amount" | "generating" | "confirm" | "done";
 
 const FIXED_AMOUNT = 10_000_000n; // 10 XLM (7 decimals)
 
-// MVP: Hardcoded symmetric view key. See README "Real vs MVP" section.
 const DAO_VIEW_KEY = new Uint8Array(32).fill(1);
 
 export default function Deposit() {
   const { t } = useI18n();
+  const { address, loading: walletLoading, connect } = useWallet();
   const [step, setStep] = useState<Step>("connect");
-  const [address, setAddress] = useState<string | null>(null);
   const [receipt, setReceipt] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
+  useEffect(() => {
+    if (address && step === "connect") setStep("amount");
+  }, [address, step]);
+
   async function handleConnect() {
-    setLoading(true);
     setError(null);
     try {
-      const { connectWallet } = await import("../lib/wallet");
-      const addr = await connectWallet();
-      setAddress(addr);
-      setStep("amount");
+      await connect();
     } catch (e: unknown) {
       setError(e instanceof Error ? e.message : t("deposit", "errorConnect"));
-    } finally {
-      setLoading(false);
     }
   }
 
