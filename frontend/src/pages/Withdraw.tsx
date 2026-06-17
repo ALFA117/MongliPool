@@ -3,7 +3,7 @@ import { ClipboardPaste, AlertTriangle, CheckCircle, Sparkles, Info } from "luci
 import { fromBase64, hex32ToBigint, bigintToHex32 } from "../lib/crypto";
 import { generateWithdrawProof, addressToField } from "../lib/zkproof";
 import { PoseidonMerkleTree } from "../lib/merkle";
-import { getCommitments, getAspRoot, withdraw as contractWithdraw } from "../lib/stellar";
+import { getCommitments, withdraw as contractWithdraw } from "../lib/stellar";
 import { getAddress } from "../lib/wallet";
 import { useI18n } from "../i18n/context";
 
@@ -50,10 +50,10 @@ export default function Withdraw() {
 
       const poolProof = poolTree.generateProof(leafIndex);
 
-      onProgress("Fetching ASP root…", 25);
-      const aspRootHex = await getAspRoot();
-      if (!aspRootHex) throw new Error(t("withdraw", "errorNoAsp"));
-
+      // MVP: ASP tree = pool tree (same commitments, same root).
+      // The proof binds to aspProof.root, and we pass that same root to the contract.
+      // The contract checks it against the ASP registry history before ZK verification.
+      onProgress("Building ASP proof…", 25);
       const aspProof = poolTree.generateProof(leafIndex);
 
       const recipientField = addressToField(recipientAddress);
@@ -79,11 +79,13 @@ export default function Withdraw() {
       const senderAddress = await getAddress();
       if (!senderAddress) throw new Error(t("withdraw", "errorNoWallet"));
 
+      // Pass the SAME roots that the proof was generated with.
+      // The contract validates both are in their respective on-chain histories.
       await contractWithdraw(
         senderAddress,
         proofBytes,
         bigintToHex32(poolProof.root),
-        aspRootHex,
+        bigintToHex32(aspProof.root),
         bigintToHex32(nullifierHash),
         recipientAddress,
         bigintToHex32(recipientField),

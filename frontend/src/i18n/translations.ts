@@ -9,6 +9,7 @@ export const translations = {
     status: { es: "Estado", en: "Status" },
     connectWallet: { es: "Conectar Wallet", en: "Connect Wallet" },
     connecting: { es: "Conectando…", en: "Connecting…" },
+    disconnect: { es: "Desconectar", en: "Disconnect" },
   },
 
   // ─── Home ────────────────────────────────────────────────
