@@ -17,49 +17,50 @@ export default function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
 
   return (
-    <nav className="border-b border-white/5 bg-pool-bg/60 backdrop-blur-xl sticky top-0 z-50">
-      <div className="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
+    <nav className="border-b border-white/[0.04] bg-pool-bg/70 backdrop-blur-2xl sticky top-0 z-50">
+      <div className="max-w-6xl mx-auto px-5 h-16 flex items-center justify-between">
         {/* Logo */}
         <Link to="/" className="flex items-center gap-2.5 group" onClick={() => setMobileOpen(false)}>
-          <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-pool-violet to-purple-600 flex items-center justify-center shadow-violet-sm group-hover:shadow-violet transition-shadow">
-            <span className="text-white font-bold text-base">M</span>
+          <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-pool-violet to-purple-600 flex items-center justify-center shadow-violet-sm group-hover:shadow-violet transition-all duration-300">
+            <span className="text-white font-bold text-base tracking-tight">M</span>
           </div>
-          <span className="font-semibold text-pool-text text-lg tracking-tight">MongliPool</span>
+          <span className="font-semibold text-pool-text text-[17px] tracking-tight">
+            Mongli<span className="text-pool-violet-light">Pool</span>
+          </span>
         </Link>
 
         {/* Desktop nav */}
-        <div className="hidden md:flex items-center gap-1">
+        <div className="hidden md:flex items-center gap-0.5">
           {navItems.map(({ to, labelKey, Icon }) => (
             <Link
               key={to}
               to={to}
-              className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
+              className={`flex items-center gap-2 px-4 py-2 rounded-lg text-[13px] font-medium transition-all duration-200 ${
                 pathname === to
-                  ? "bg-pool-violet/15 text-pool-violet-light"
-                  : "text-pool-text-dim hover:text-pool-text hover:bg-white/5"
+                  ? "bg-pool-violet/12 text-pool-violet-light shadow-inner-glow"
+                  : "text-pool-text-dim hover:text-pool-text hover:bg-white/[0.04]"
               }`}
             >
-              <Icon size={16} />
+              <Icon size={15} />
               {t("nav", labelKey)}
             </Link>
           ))}
         </div>
 
         {/* Right side */}
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1.5">
           <button
             onClick={toggleLang}
-            className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium text-pool-text-dim hover:text-pool-text hover:bg-white/5 transition-all"
+            className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-[11px] font-semibold text-pool-text-dim hover:text-pool-text hover:bg-white/[0.04] transition-all tracking-wider uppercase"
             aria-label="Toggle language"
           >
-            <Globe size={14} />
-            {lang.toUpperCase()}
+            <Globe size={13} />
+            {lang}
           </button>
           <WalletButton />
-          {/* Mobile toggle */}
           <button
             onClick={() => setMobileOpen(!mobileOpen)}
-            className="md:hidden p-2 rounded-lg text-pool-text-dim hover:text-pool-text hover:bg-white/5 transition-colors"
+            className="md:hidden p-2.5 rounded-lg text-pool-text-dim hover:text-pool-text hover:bg-white/[0.04] transition-colors"
             aria-label="Menu"
           >
             {mobileOpen ? <X size={20} /> : <Menu size={20} />}
@@ -69,17 +70,17 @@ export default function Navbar() {
 
       {/* Mobile menu */}
       {mobileOpen && (
-        <div className="md:hidden border-t border-white/5 bg-pool-bg/95 backdrop-blur-xl animate-slide-up">
+        <div className="md:hidden border-t border-white/[0.04] bg-pool-bg/95 backdrop-blur-2xl animate-slide-up">
           <div className="px-4 py-3 space-y-1">
             {navItems.map(({ to, labelKey, Icon }) => (
               <Link
                 key={to}
                 to={to}
                 onClick={() => setMobileOpen(false)}
-                className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all ${
+                className={`flex items-center gap-3 px-4 py-3.5 rounded-xl text-sm font-medium transition-all ${
                   pathname === to
-                    ? "bg-pool-violet/15 text-pool-violet-light"
-                    : "text-pool-text-dim hover:text-pool-text hover:bg-white/5"
+                    ? "bg-pool-violet/12 text-pool-violet-light"
+                    : "text-pool-text-dim hover:text-pool-text hover:bg-white/[0.04]"
                 }`}
               >
                 <Icon size={18} />

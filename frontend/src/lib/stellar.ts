@@ -5,6 +5,7 @@ import {
   BASE_FEE,
   xdr,
   Contract,
+  Address,
   nativeToScVal,
   scValToNative,
 } from "@stellar/stellar-sdk";
@@ -14,11 +15,36 @@ const RPC_URL = import.meta.env.VITE_STELLAR_RPC_URL ?? "https://soroban-testnet
 const NETWORK = import.meta.env.VITE_STELLAR_NETWORK ?? Networks.TESTNET;
 const POOL_CONTRACT_ID = import.meta.env.VITE_POOL_CONTRACT_ID ?? "";
 const ASP_CONTRACT_ID = import.meta.env.VITE_ASP_CONTRACT_ID ?? "";
-// Used as source account for read-only simulateTransaction calls (no signing needed).
-// Must be a funded testnet account so getAccount() succeeds. Set via VITE_ADMIN_ADDRESS.
 const SIM_ACCOUNT = import.meta.env.VITE_ADMIN_ADDRESS ?? "";
 
 export const rpc = new SorobanRpc.Server(RPC_URL);
+
+function hexToUint8Array(hex: string): Uint8Array {
+  const clean = hex.startsWith("0x") ? hex.slice(2) : hex;
+  const bytes = new Uint8Array(clean.length / 2);
+  for (let i = 0; i < clean.length; i += 2) {
+    bytes[i / 2] = parseInt(clean.substring(i, i + 2), 16);
+  }
+  return bytes;
+}
+
+function uint8ArrayToHex(bytes: Uint8Array): string {
+  return Array.from(bytes)
+    .map((b) => b.toString(16).padStart(2, "0"))
+    .join("");
+}
+
+function toScBytes(data: Uint8Array): xdr.ScVal {
+  return xdr.ScVal.scvBytes(Buffer.from(data));
+}
+
+function toScAddress(address: string): xdr.ScVal {
+  return new Address(address).toScVal();
+}
+
+function toScI128(value: bigint): xdr.ScVal {
+  return nativeToScVal(value, { type: "i128" });
+}
 
 async function invokeContract(
   contractId: string,
@@ -51,7 +77,6 @@ async function invokeContract(
     throw new Error(`Transaction error: ${result.errorResult}`);
   }
 
-  // Poll for completion
   let getResult = await rpc.getTransaction(result.hash);
   const start = Date.now();
   while (
@@ -69,33 +94,19 @@ async function invokeContract(
   return getResult.returnValue ?? xdr.ScVal.scvVoid();
 }
 
-/** Deposit into the privacy pool */
-export async function deposit(
-  senderAddress: string,
-  commitmentHex: string, // 32-byte hex
-  encryptedNote: Uint8Array
-): Promise<void> {
-  const commitmentBytes = Buffer.from(commitmentHex, "hex");
-  const args = [
-    nativeToScVal(senderAddress, { type: "address" }),
-    xdr.ScVal.scvBytes(commitmentBytes),
-    xdr.ScVal.scvBytes(Buffer.from(encryptedNote)),
-  ];
-  await invokeContract(POOL_CONTRACT_ID, "deposit", args, senderAddress);
-}
-
-/** Fetch all commitments from the pool (for Merkle tree reconstruction) */
-export async function getCommitments(): Promise<string[]> {
-  const contract = new Contract(POOL_CONTRACT_ID);
-  const account = await rpc.getAccount(
-    SIM_ACCOUNT // dummy read-only account
-  );
+async function simulateReadOnly(
+  contractId: string,
+  method: string,
+  args: xdr.ScVal[] = []
+): Promise<xdr.ScVal> {
+  const account = await rpc.getAccount(SIM_ACCOUNT);
+  const contract = new Contract(contractId);
 
   const tx = new TransactionBuilder(account, {
     fee: BASE_FEE,
     networkPassphrase: NETWORK,
   })
-    .addOperation(contract.call("get_commitments"))
+    .addOperation(contract.call(method, ...args))
     .setTimeout(30)
     .build();
 
@@ -104,15 +115,32 @@ export async function getCommitments(): Promise<string[]> {
     throw new Error(`Sim error: ${sim.error}`);
   }
 
-  const result = scValToNative(sim.result!.retval) as Buffer[];
-  return result.map((b) => Buffer.from(b).toString("hex"));
+  return sim.result!.retval;
 }
 
-/** Fetch pool deposit events to get encrypted notes */
+export async function deposit(
+  senderAddress: string,
+  commitmentHex: string,
+  encryptedNote: Uint8Array
+): Promise<void> {
+  const args = [
+    toScAddress(senderAddress),
+    toScBytes(hexToUint8Array(commitmentHex)),
+    toScBytes(encryptedNote),
+  ];
+  await invokeContract(POOL_CONTRACT_ID, "deposit", args, senderAddress);
+}
+
+export async function getCommitments(): Promise<string[]> {
+  const retval = await simulateReadOnly(POOL_CONTRACT_ID, "get_commitments");
+  const result = scValToNative(retval);
+  if (!Array.isArray(result)) return [];
+  return (result as Uint8Array[]).map((b) => uint8ArrayToHex(new Uint8Array(b)));
+}
+
 export async function getDepositEvents(): Promise<
   Array<{ commitment: string; encryptedNote: Uint8Array; timestamp: number }>
 > {
-  // Use Soroban RPC getEvents
   const events = await rpc.getEvents({
     startLedger: 1,
     filters: [
@@ -125,55 +153,38 @@ export async function getDepositEvents(): Promise<
     limit: 100,
   });
 
-  return events.events.map((e) => ({
-    commitment: Buffer.from(
-      (e.topic[1] as xdr.ScVal).bytes()
-    ).toString("hex"),
-    encryptedNote: new Uint8Array((e.value as xdr.ScVal).bytes()),
-    timestamp: new Date(e.ledgerClosedAt).getTime(),
-  }));
+  return events.events.map((e) => {
+    const topicScVal = e.topic[1] as xdr.ScVal;
+    const valueScVal = e.value as xdr.ScVal;
+    return {
+      commitment: uint8ArrayToHex(new Uint8Array(topicScVal.bytes())),
+      encryptedNote: new Uint8Array(valueScVal.bytes()),
+      timestamp: new Date(e.ledgerClosedAt).getTime(),
+    };
+  });
 }
 
-/** Get ASP root from registry */
 export async function getAspRoot(): Promise<string | null> {
   try {
-    const contract = new Contract(ASP_CONTRACT_ID);
-    const account = await rpc.getAccount(
-      SIM_ACCOUNT
-    );
-
-    const tx = new TransactionBuilder(account, {
-      fee: BASE_FEE,
-      networkPassphrase: NETWORK,
-    })
-      .addOperation(contract.call("get_asp_root"))
-      .setTimeout(30)
-      .build();
-
-    const sim = await rpc.simulateTransaction(tx);
-    if (SorobanRpc.Api.isSimulationError(sim)) return null;
-
-    const result = scValToNative(sim.result!.retval);
+    const retval = await simulateReadOnly(ASP_CONTRACT_ID, "get_asp_root");
+    const result = scValToNative(retval);
     if (!result) return null;
-    return Buffer.from(result as Buffer).toString("hex");
+    return uint8ArrayToHex(new Uint8Array(result as Uint8Array));
   } catch {
     return null;
   }
 }
 
-/** Admin: update the on-chain pool Merkle root after a deposit (off-chain indexer pattern) */
 export async function updatePoolRoot(adminAddress: string, rootHex: string): Promise<void> {
-  const args = [xdr.ScVal.scvBytes(Buffer.from(rootHex, "hex"))];
+  const args = [toScBytes(hexToUint8Array(rootHex))];
   await invokeContract(POOL_CONTRACT_ID, "update_root", args, adminAddress);
 }
 
-/** Admin: update the ASP Merkle root (MVP: same value as pool root) */
 export async function updateAspRoot(adminAddress: string, rootHex: string): Promise<void> {
-  const args = [xdr.ScVal.scvBytes(Buffer.from(rootHex, "hex"))];
+  const args = [toScBytes(hexToUint8Array(rootHex))];
   await invokeContract(ASP_CONTRACT_ID, "update_asp_root", args, adminAddress);
 }
 
-/** Submit a withdrawal proof */
 export async function withdraw(
   senderAddress: string,
   proofBytes: Uint8Array,
@@ -181,17 +192,17 @@ export async function withdraw(
   aspRootHex: string,
   nullifierHashHex: string,
   recipientAddress: string,
-  recipientFieldHex: string, // BN254 field encoding of recipientAddress, bound to proof
+  recipientFieldHex: string,
   amount: bigint
 ): Promise<void> {
   const args = [
-    xdr.ScVal.scvBytes(Buffer.from(proofBytes)),
-    xdr.ScVal.scvBytes(Buffer.from(merkleRootHex, "hex")),
-    xdr.ScVal.scvBytes(Buffer.from(aspRootHex, "hex")),
-    xdr.ScVal.scvBytes(Buffer.from(nullifierHashHex, "hex")),
-    nativeToScVal(recipientAddress, { type: "address" }),
-    xdr.ScVal.scvBytes(Buffer.from(recipientFieldHex, "hex")),
-    xdr.ScVal.scvI128(new xdr.Int128Parts({ hi: xdr.Int64.fromString("0"), lo: xdr.Uint64.fromString(amount.toString()) })),
+    toScBytes(proofBytes),
+    toScBytes(hexToUint8Array(merkleRootHex)),
+    toScBytes(hexToUint8Array(aspRootHex)),
+    toScBytes(hexToUint8Array(nullifierHashHex)),
+    toScAddress(recipientAddress),
+    toScBytes(hexToUint8Array(recipientFieldHex)),
+    toScI128(amount),
   ];
   await invokeContract(POOL_CONTRACT_ID, "withdraw", args, senderAddress);
 }
