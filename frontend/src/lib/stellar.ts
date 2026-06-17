@@ -1,5 +1,5 @@
 import {
-  SorobanRpc,
+  rpc,
   TransactionBuilder,
   Networks,
   BASE_FEE,
@@ -17,7 +17,7 @@ const POOL_CONTRACT_ID = import.meta.env.VITE_POOL_CONTRACT_ID ?? "";
 const ASP_CONTRACT_ID = import.meta.env.VITE_ASP_CONTRACT_ID ?? "";
 const SIM_ACCOUNT = import.meta.env.VITE_ADMIN_ADDRESS ?? "";
 
-export const rpc = new SorobanRpc.Server(RPC_URL);
+const server = new rpc.Server(RPC_URL);
 
 function hexToUint8Array(hex: string): Uint8Array {
   const clean = hex.startsWith("0x") ? hex.slice(2) : hex;
@@ -52,7 +52,7 @@ async function invokeContract(
   args: xdr.ScVal[],
   senderAddress: string
 ): Promise<xdr.ScVal> {
-  const account = await rpc.getAccount(senderAddress);
+  const account = await server.getAccount(senderAddress);
   const contract = new Contract(contractId);
 
   const tx = new TransactionBuilder(account, {
@@ -63,31 +63,31 @@ async function invokeContract(
     .setTimeout(30)
     .build();
 
-  const sim = await rpc.simulateTransaction(tx);
-  if (SorobanRpc.Api.isSimulationError(sim)) {
+  const sim = await server.simulateTransaction(tx);
+  if (rpc.Api.isSimulationError(sim)) {
     throw new Error(`Simulation error: ${sim.error}`);
   }
 
-  const assembled = SorobanRpc.assembleTransaction(tx, sim).build();
+  const assembled = rpc.assembleTransaction(tx, sim).build();
   const signedXdr = await signTransaction(assembled.toXDR(), NETWORK);
   const signedTx = TransactionBuilder.fromXDR(signedXdr, NETWORK);
 
-  const result = await rpc.sendTransaction(signedTx);
+  const result = await server.sendTransaction(signedTx);
   if (result.status === "ERROR") {
     throw new Error(`Transaction error: ${result.errorResult}`);
   }
 
-  let getResult = await rpc.getTransaction(result.hash);
+  let getResult = await server.getTransaction(result.hash);
   const start = Date.now();
   while (
-    getResult.status === SorobanRpc.Api.GetTransactionStatus.NOT_FOUND &&
+    getResult.status === rpc.Api.GetTransactionStatus.NOT_FOUND &&
     Date.now() - start < 30_000
   ) {
     await new Promise((r) => setTimeout(r, 1_000));
-    getResult = await rpc.getTransaction(result.hash);
+    getResult = await server.getTransaction(result.hash);
   }
 
-  if (getResult.status !== SorobanRpc.Api.GetTransactionStatus.SUCCESS) {
+  if (getResult.status !== rpc.Api.GetTransactionStatus.SUCCESS) {
     throw new Error(`Transaction failed: ${getResult.status}`);
   }
 
@@ -99,7 +99,7 @@ async function simulateReadOnly(
   method: string,
   args: xdr.ScVal[] = []
 ): Promise<xdr.ScVal> {
-  const account = await rpc.getAccount(SIM_ACCOUNT);
+  const account = await server.getAccount(SIM_ACCOUNT);
   const contract = new Contract(contractId);
 
   const tx = new TransactionBuilder(account, {
@@ -110,8 +110,8 @@ async function simulateReadOnly(
     .setTimeout(30)
     .build();
 
-  const sim = await rpc.simulateTransaction(tx);
-  if (SorobanRpc.Api.isSimulationError(sim)) {
+  const sim = await server.simulateTransaction(tx);
+  if (rpc.Api.isSimulationError(sim)) {
     throw new Error(`Sim error: ${sim.error}`);
   }
 
@@ -141,7 +141,7 @@ export async function getCommitments(): Promise<string[]> {
 export async function getDepositEvents(): Promise<
   Array<{ commitment: string; encryptedNote: Uint8Array; timestamp: number }>
 > {
-  const events = await rpc.getEvents({
+  const events = await server.getEvents({
     startLedger: 1,
     filters: [
       {
@@ -153,12 +153,10 @@ export async function getDepositEvents(): Promise<
     limit: 100,
   });
 
-  return events.events.map((e) => {
-    const topicScVal = e.topic[1] as xdr.ScVal;
-    const valueScVal = e.value as xdr.ScVal;
+  return events.events.map((e: { topic: xdr.ScVal[]; value: xdr.ScVal; ledgerClosedAt: string }) => {
     return {
-      commitment: uint8ArrayToHex(new Uint8Array(topicScVal.bytes())),
-      encryptedNote: new Uint8Array(valueScVal.bytes()),
+      commitment: uint8ArrayToHex(new Uint8Array(e.topic[1].bytes())),
+      encryptedNote: new Uint8Array(e.value.bytes()),
       timestamp: new Date(e.ledgerClosedAt).getTime(),
     };
   });
