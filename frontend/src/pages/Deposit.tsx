@@ -16,7 +16,7 @@ import { useWallet } from "../lib/walletContext";
 
 type Step = "connect" | "amount" | "generating" | "confirm" | "done";
 
-const FIXED_AMOUNT = 10_000_000n; // 10 XLM (7 decimals)
+const FIXED_AMOUNT = 10_000_000n; // 1 XLM (7 decimals, 10^7 stroops)
 
 const DAO_VIEW_KEY = new Uint8Array(32).fill(1);
 
@@ -168,7 +168,7 @@ export default function Deposit() {
           <div className="bg-white/[0.03] rounded-xl p-5 mb-6 border border-white/[0.06]">
             <div className="flex justify-between items-center mb-3">
               <span className="text-pool-text-dim text-sm">{t("deposit", "fixedAmount")}</span>
-              <span className="font-mono font-bold text-2xl text-pool-text">10 XLM</span>
+              <span className="font-mono font-bold text-2xl text-pool-text">1 XLM</span>
             </div>
             <div className="flex justify-between items-center">
               <span className="text-pool-text-dim text-sm">{t("deposit", "from")}</span>

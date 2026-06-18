@@ -53,7 +53,7 @@ export default function PrivacyVisualizer3D({ className = "", fullscreen = false
     renderer.setSize(W, H);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 1.2;
+    renderer.toneMappingExposure = 1.8;
     container.appendChild(renderer.domElement);
 
     const scene = new THREE.Scene();
@@ -62,13 +62,13 @@ export default function PrivacyVisualizer3D({ className = "", fullscreen = false
 
     // Lighting — multi-source for depth
     scene.add(new THREE.AmbientLight(0x0a0a2e, 1.5));
-    const violetKey = new THREE.PointLight(0x7c3aed, 8, 20);
+    const violetKey = new THREE.PointLight(0x7c3aed, 15, 25);
     violetKey.position.set(4, 4, 4);
     scene.add(violetKey);
-    const greenFill = new THREE.PointLight(0x10b981, 4, 15);
+    const greenFill = new THREE.PointLight(0x10b981, 8, 20);
     greenFill.position.set(-4, -3, -5);
     scene.add(greenFill);
-    const blueRim = new THREE.PointLight(0x3b82f6, 3, 12);
+    const blueRim = new THREE.PointLight(0x3b82f6, 6, 15);
     blueRim.position.set(-2, 5, -3);
     scene.add(blueRim);
 
@@ -78,22 +78,22 @@ export default function PrivacyVisualizer3D({ className = "", fullscreen = false
     const sphereMat = new THREE.MeshPhysicalMaterial({
       color: 0x2d1065,
       emissive: 0x7c3aed,
-      emissiveIntensity: 0.35,
-      roughness: 0.15,
-      metalness: 0.8,
+      emissiveIntensity: 0.7,
+      roughness: 0.1,
+      metalness: 0.9,
       clearcoat: 1.0,
-      clearcoatRoughness: 0.1,
+      clearcoatRoughness: 0.05,
       envMapIntensity: 0.5,
     });
     const sphere = new THREE.Mesh(sphereGeo, sphereMat);
     scene.add(sphere);
 
     // Inner glow sphere
-    const glowGeo = new THREE.SphereGeometry(sphereR * 1.05, 32, 32);
+    const glowGeo = new THREE.SphereGeometry(sphereR * 1.15, 32, 32);
     const glowMat = new THREE.MeshBasicMaterial({
       color: 0x7c3aed,
       transparent: true,
-      opacity: 0.08,
+      opacity: 0.2,
       side: THREE.BackSide,
     });
     scene.add(new THREE.Mesh(glowGeo, glowMat));
@@ -104,7 +104,7 @@ export default function PrivacyVisualizer3D({ className = "", fullscreen = false
     const ringMat = new THREE.MeshPhysicalMaterial({
       color: 0xa855f7,
       emissive: 0x8b5cf6,
-      emissiveIntensity: 0.8,
+      emissiveIntensity: 1.5,
       roughness: 0.2,
       metalness: 0.9,
     });
@@ -118,7 +118,7 @@ export default function PrivacyVisualizer3D({ className = "", fullscreen = false
     const ring2Mat = new THREE.MeshPhysicalMaterial({
       color: 0x10b981,
       emissive: 0x10b981,
-      emissiveIntensity: 0.6,
+      emissiveIntensity: 1.2,
       roughness: 0.3,
       metalness: 0.7,
     });
@@ -180,9 +180,9 @@ export default function PrivacyVisualizer3D({ className = "", fullscreen = false
     composer.addPass(new RenderPass(scene, camera));
     const bloom = new UnrealBloomPass(
       new THREE.Vector2(W, H),
-      fullscreen ? 0.6 : 0.5,  // strength
-      0.4,                       // radius
-      0.85                       // threshold
+      fullscreen ? 1.8 : 1.4,  // strength — very aggressive
+      0.6,                       // radius — wide glow
+      0.2                        // threshold — catch more emissive surfaces
     );
     composer.addPass(bloom);
 
@@ -197,6 +197,11 @@ export default function PrivacyVisualizer3D({ className = "", fullscreen = false
     };
     window.addEventListener("resize", onResize);
 
+    // Scroll reactivity (fullscreen hero only)
+    let scrollY = 0;
+    const onScroll = () => { scrollY = window.scrollY; };
+    if (fullscreen) window.addEventListener("scroll", onScroll, { passive: true });
+
     // Animation
     let frameId: number;
     let t = 0;
@@ -206,16 +211,20 @@ export default function PrivacyVisualizer3D({ className = "", fullscreen = false
       frameId = requestAnimationFrame(animate);
       t += 0.016;
 
-      // Subtle camera orbit
-      camAngle += 0.0008;
-      camera.position.x = Math.sin(camAngle) * (fullscreen ? 1.5 : 1);
-      camera.position.y = Math.cos(camAngle * 0.7) * 0.5;
+      // Camera orbit + scroll parallax
+      camAngle += 0.001;
+      const scrollFactor = fullscreen ? scrollY * 0.002 : 0;
+      camera.position.x = Math.sin(camAngle) * (fullscreen ? 2 : 1);
+      camera.position.y = Math.cos(camAngle * 0.7) * 0.8 - scrollFactor;
+      camera.position.z = (fullscreen ? 10 : 7.5) + scrollFactor * 0.5;
       camera.lookAt(0, 0, 0);
 
-      // Sphere pulse
+      // Sphere pulse + breathing scale
       sphere.rotation.y += 0.003;
       sphere.rotation.x += 0.0006;
-      sphereMat.emissiveIntensity = 0.25 + Math.sin(t * 0.8) * 0.15;
+      const breathe = 1 + Math.sin(t * 0.6) * 0.03;
+      sphere.scale.setScalar(breathe);
+      sphereMat.emissiveIntensity = 0.5 + Math.sin(t * 0.8) * 0.3;
 
       // Rings orbit
       ring.rotation.y += 0.006;
@@ -248,6 +257,7 @@ export default function PrivacyVisualizer3D({ className = "", fullscreen = false
     return () => {
       cancelAnimationFrame(frameId);
       window.removeEventListener("resize", onResize);
+      if (fullscreen) window.removeEventListener("scroll", onScroll);
       sphereGeo.dispose(); sphereMat.dispose();
       glowGeo.dispose(); glowMat.dispose();
       ringGeo.dispose(); ringMat.dispose();

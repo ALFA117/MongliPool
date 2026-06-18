@@ -148,7 +148,6 @@ export async function getDepositEvents(): Promise<
   Array<{ commitment: string; encryptedNote: Uint8Array; timestamp: number }>
 > {
   const latestLedger = (await server.getLatestLedger()).sequence;
-  // RPC only retains events for ~17280 ledgers (~24h). Use recent window.
   const startLedger = Math.max(1, latestLedger - 17280);
 
   const events = await server.getEvents({
@@ -157,29 +156,32 @@ export async function getDepositEvents(): Promise<
       {
         type: "contract",
         contractIds: [POOL_CONTRACT_ID],
-        topics: [["AAAADwAAAAdkZXBvc2l0AA=="]],
       },
     ],
     limit: 100,
   });
 
-  return events.events.map((e) => {
-    // Event value is a DepositEvent struct {commitment, encrypted_note, leaf_index}
-    const eventData = scValToNative(e.value as xdr.ScVal) as {
-      commitment: Uint8Array;
-      encrypted_note: Uint8Array;
-      leaf_index: number;
-    };
-    const commitmentHex = e.topic.length > 1
-      ? uint8ArrayToHex(new Uint8Array((e.topic[1] as xdr.ScVal).bytes()))
-      : uint8ArrayToHex(new Uint8Array(eventData.commitment));
-
-    return {
-      commitment: commitmentHex,
-      encryptedNote: new Uint8Array(eventData.encrypted_note),
-      timestamp: new Date(e.ledgerClosedAt).getTime(),
-    };
-  });
+  // Filter for deposit events client-side and parse the DepositEvent struct
+  return events.events
+    .filter((e) => {
+      try {
+        return scValToNative(e.topic[0] as xdr.ScVal) === "deposit";
+      } catch {
+        return false;
+      }
+    })
+    .map((e) => {
+      const eventData = scValToNative(e.value as xdr.ScVal) as {
+        commitment: Uint8Array;
+        encrypted_note: Uint8Array;
+        leaf_index: number;
+      };
+      return {
+        commitment: uint8ArrayToHex(new Uint8Array(eventData.commitment)),
+        encryptedNote: new Uint8Array(eventData.encrypted_note),
+        timestamp: new Date(e.ledgerClosedAt).getTime(),
+      };
+    });
 }
 
 export async function getAspRoot(): Promise<string | null> {

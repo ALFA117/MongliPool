@@ -82,7 +82,7 @@ export const translations = {
       es: "Se generará un recibo privado. Es la única forma de retirar tus fondos. Guárdalo en un lugar seguro.",
       en: "A private receipt will be generated. It's the only way to withdraw your funds. Keep it somewhere safe.",
     },
-    depositBtn: { es: "Depositar 10 XLM", en: "Deposit 10 XLM" },
+    depositBtn: { es: "Depositar 1 XLM", en: "Deposit 1 XLM" },
     generating: { es: "Preparando tu depósito", en: "Preparing your deposit" },
     generatingDesc: {
       es: "Generando tu recibo privado y enviando la transacción a Stellar…",
