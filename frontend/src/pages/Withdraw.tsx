@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { ClipboardPaste, AlertTriangle, CheckCircle, Sparkles, Info } from "lucide-react";
+import { ClipboardPaste, AlertTriangle, CheckCircle, Sparkles, Info, ExternalLink } from "lucide-react";
 import { fromBase64, hex32ToBigint, bigintToHex32 } from "../lib/crypto";
 import { generateWithdrawProof, addressToField } from "../lib/zkproof";
 import { PoseidonMerkleTree } from "../lib/merkle";
@@ -10,7 +10,7 @@ import { useWallet } from "../lib/walletContext";
 type Step = "paste" | "prove" | "submit" | "done";
 
 export default function Withdraw() {
-  const { t } = useI18n();
+  const { t, lang } = useI18n();
   const { address: walletAddress, connect } = useWallet();
   const [step, setStep] = useState<Step>("paste");
   const [receiptText, setReceiptText] = useState("");
@@ -18,6 +18,7 @@ export default function Withdraw() {
   const [progressMsg, setProgressMsg] = useState("");
   const [progressPct, setProgressPct] = useState(0);
   const [error, setError] = useState<string | null>(null);
+  const [txHash, setTxHash] = useState<string | null>(null);
 
   function onProgress(msg: string, pct: number) {
     setProgressMsg(msg);
@@ -25,6 +26,14 @@ export default function Withdraw() {
   }
 
   async function handleWithdraw() {
+    // Validate address before starting the 30s proof generation
+    const addr = recipientAddress.trim();
+    if (!addr.startsWith("G") || addr.length !== 56) {
+      setError(lang === "es"
+        ? "La dirección debe empezar con G y tener 56 caracteres."
+        : "Address must start with G and be 56 characters.");
+      return;
+    }
     setError(null);
     setStep("prove");
     onProgress("Parsing receipt…", 5);
@@ -85,7 +94,7 @@ export default function Withdraw() {
 
       // Pass the SAME roots that the proof was generated with.
       // The contract validates both are in their respective on-chain histories.
-      await contractWithdraw(
+      const hash = await contractWithdraw(
         senderAddress,
         proofBytes,
         bigintToHex32(poolProof.root),
@@ -95,7 +104,7 @@ export default function Withdraw() {
         bigintToHex32(recipientField),
         amountBI
       );
-
+      setTxHash(hash);
       setStep("done");
     } catch (e: unknown) {
       setError(e instanceof Error ? e.message : "Unknown error");
@@ -205,19 +214,32 @@ export default function Withdraw() {
 
       {/* Done */}
       {step === "done" && (
-        <div className="bg-pool-green/5 border border-pool-green/20 rounded-2xl text-center py-8 px-6 animate-slide-up">
-          <div className="w-14 h-14 rounded-full bg-pool-green/20 flex items-center justify-center mx-auto mb-4">
-            <CheckCircle size={28} className="text-pool-green" />
+        <div className="animate-slide-up space-y-4">
+          <div className="bg-pool-green/5 border border-pool-green/20 rounded-2xl text-center py-8 px-6">
+            <div className="w-14 h-14 rounded-full bg-pool-green/20 flex items-center justify-center mx-auto mb-4">
+              <CheckCircle size={28} className="text-pool-green" />
+            </div>
+            <h2 className="text-xl font-semibold text-pool-green mb-3">{t("withdraw", "successTitle")}</h2>
+            <p className="text-pool-text-dim text-sm mb-4">{t("withdraw", "successDesc")}</p>
+            <p className="text-xs text-pool-text-dim">
+              {t("withdraw", "fundsTo")}{" "}
+              <span className="font-mono text-pool-text">
+                {recipientAddress.slice(0, 6)}...{recipientAddress.slice(-4)}
+              </span>{" "}
+              {t("withdraw", "fundsToSuffix")}
+            </p>
           </div>
-          <h2 className="text-xl font-semibold text-pool-green mb-3">{t("withdraw", "successTitle")}</h2>
-          <p className="text-pool-text-dim text-sm mb-6">{t("withdraw", "successDesc")}</p>
-          <p className="text-xs text-pool-text-dim">
-            {t("withdraw", "fundsTo")}{" "}
-            <span className="font-mono text-pool-text">
-              {recipientAddress.slice(0, 6)}...{recipientAddress.slice(-4)}
-            </span>{" "}
-            {t("withdraw", "fundsToSuffix")}
-          </p>
+          {txHash && (
+            <a
+              href={`https://stellar.expert/explorer/testnet/tx/${txHash}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="btn-secondary w-full text-sm py-2.5 inline-flex items-center justify-center gap-2"
+            >
+              <ExternalLink size={14} />
+              {lang === "es" ? "Ver transacción en Stellar Expert" : "View transaction on Stellar Expert"}
+            </a>
+          )}
         </div>
       )}
     </div>

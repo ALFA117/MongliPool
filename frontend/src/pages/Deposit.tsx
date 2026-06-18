@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { ArrowDownToLine, Download, Copy, AlertTriangle, CheckCircle, Loader2, Wallet } from "lucide-react";
+import { ArrowDownToLine, Download, Copy, AlertTriangle, CheckCircle, Loader2, Wallet, ExternalLink, Info } from "lucide-react";
 import {
   randomFieldElement,
   computeCommitment,
@@ -28,6 +28,7 @@ export default function Deposit() {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [depositPhase, setDepositPhase] = useState("");
+  const [txHash, setTxHash] = useState<string | null>(null);
 
   useEffect(() => {
     if (address && step === "connect") setStep("amount");
@@ -70,7 +71,11 @@ export default function Deposit() {
       setReceipt(receiptB64);
 
       setDepositPhase("1/3");
-      await deposit(address, commitmentHex, encryptedNote);
+      const hash = await deposit(address, commitmentHex, encryptedNote);
+      setTxHash(hash);
+
+      // Save receipt to localStorage as backup
+      try { localStorage.setItem("monglipool-last-receipt", receiptB64); } catch { /* quota */ }
 
       setDepositPhase("2/3");
       const rawCommitments = await getCommitments();
@@ -177,10 +182,18 @@ export default function Deposit() {
               </span>
             </div>
           </div>
-          <div className="bg-pool-violet/5 border border-pool-violet/20 rounded-xl p-4 mb-6">
+          <div className="bg-pool-violet/5 border border-pool-violet/20 rounded-xl p-4 mb-4">
             <p className="text-sm text-pool-text-dim">
               <strong className="text-pool-violet-light">{t("deposit", "important")}</strong>{" "}
               {t("deposit", "importantDesc")}
+            </p>
+          </div>
+          <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-4 mb-6 flex items-start gap-3">
+            <Info size={16} className="text-pool-violet-light flex-shrink-0 mt-0.5" />
+            <p className="text-xs text-pool-text-dim leading-relaxed">
+              {lang === "es"
+                ? "Verás 3 confirmaciones en tu wallet — esto es normal: 1) depositar tus fondos, 2) sincronizar el árbol de privacidad, 3) registrar en la lista de cumplimiento. No cierres esta ventana."
+                : "You'll see 3 wallet confirmations — this is normal: 1) deposit your funds, 2) sync the privacy tree, 3) register in the compliance list. Don't close this window."}
             </p>
           </div>
           <button onClick={handleDeposit} disabled={loading} className="btn-primary w-full inline-flex items-center justify-center gap-2">
@@ -236,6 +249,27 @@ export default function Deposit() {
                 {t("deposit", "copy")}
               </button>
             </div>
+          </div>
+
+          {txHash && (
+            <a
+              href={`https://stellar.expert/explorer/testnet/tx/${txHash}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="btn-secondary w-full text-sm py-2.5 inline-flex items-center justify-center gap-2"
+            >
+              <ExternalLink size={14} />
+              {lang === "es" ? "Ver transacción en Stellar Expert" : "View transaction on Stellar Expert"}
+            </a>
+          )}
+
+          <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-3 flex items-start gap-2.5">
+            <Info size={14} className="text-pool-text-dim flex-shrink-0 mt-0.5" />
+            <p className="text-[11px] text-pool-text-dim">
+              {lang === "es"
+                ? "Tu recibo también se guardó temporalmente en este navegador. Pero descárgalo o cópialo — el almacenamiento del navegador no es permanente."
+                : "Your receipt was also saved temporarily in this browser. But download or copy it — browser storage is not permanent."}
+            </p>
           </div>
 
           <div className="bg-amber-500/10 border border-amber-500/20 rounded-xl p-4 flex items-start gap-3">

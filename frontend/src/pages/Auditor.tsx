@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Eye, Download, AlertTriangle, Shield, Loader2, CheckCircle, XCircle } from "lucide-react";
+import { Eye, Download, AlertTriangle, Shield, Loader2, CheckCircle, XCircle, Clock } from "lucide-react";
 import { fromBase64, decryptNote, decodeNote } from "../lib/crypto";
 import { getDepositEvents } from "../lib/stellar";
 import { useI18n } from "../i18n/context";
@@ -20,7 +20,7 @@ interface AuditRecord {
 }
 
 export default function Auditor() {
-  const { t } = useI18n();
+  const { t, lang } = useI18n();
   const [viewKeyInput, setViewKeyInput] = useState("");
   const [records, setRecords] = useState<AuditRecord[]>([]);
   const [loading, setLoading] = useState(false);
@@ -158,8 +158,16 @@ export default function Auditor() {
           </div>
 
           {records.length === 0 ? (
-            <div className="bg-white/[0.03] border border-white/[0.06] rounded-2xl text-center py-8 text-pool-text-dim">
-              {t("auditor", "noTx")}
+            <div className="bg-white/[0.03] border border-white/[0.06] rounded-2xl py-8 px-6">
+              <div className="flex flex-col items-center text-center gap-3">
+                <Clock size={24} className="text-pool-muted" />
+                <p className="text-pool-text-dim text-sm">{t("auditor", "noTx")}</p>
+                <p className="text-pool-muted text-xs max-w-md leading-relaxed">
+                  {lang === "es"
+                    ? "El historial de auditoría cubre aproximadamente las últimas 24 horas (limitación de la infraestructura RPC de Stellar testnet). Si tu depósito es más antiguo, no aparecerá aquí — esto es esperado, no un error."
+                    : "The audit history covers approximately the last 24 hours (Stellar testnet RPC infrastructure limitation). If your deposit is older, it won't appear here — this is expected, not an error."}
+                </p>
+              </div>
             </div>
           ) : (
             <div className="bg-white/[0.03] border border-white/[0.06] rounded-2xl overflow-x-auto">

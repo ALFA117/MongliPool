@@ -46,12 +46,17 @@ function toScI128(value: bigint): xdr.ScVal {
   return nativeToScVal(value, { type: "i128" });
 }
 
+export interface TxResult {
+  returnValue: xdr.ScVal;
+  hash: string;
+}
+
 async function invokeContract(
   contractId: string,
   method: string,
   args: xdr.ScVal[],
   senderAddress: string
-): Promise<xdr.ScVal> {
+): Promise<TxResult> {
   const account = await server.getAccount(senderAddress);
   const contract = new Contract(contractId);
 
@@ -97,7 +102,10 @@ async function invokeContract(
     throw new Error(`Transaction failed: ${getResult.status}`);
   }
 
-  return getResult.returnValue ?? xdr.ScVal.scvVoid();
+  return {
+    returnValue: getResult.returnValue ?? xdr.ScVal.scvVoid(),
+    hash: result.hash,
+  };
 }
 
 async function simulateReadOnly(
@@ -128,13 +136,14 @@ export async function deposit(
   senderAddress: string,
   commitmentHex: string,
   encryptedNote: Uint8Array
-): Promise<void> {
+): Promise<string> {
   const args = [
     toScAddress(senderAddress),
     toScBytes(hexToUint8Array(commitmentHex)),
     toScBytes(encryptedNote),
   ];
-  await invokeContract(POOL_CONTRACT_ID, "deposit", args, senderAddress);
+  const { hash } = await invokeContract(POOL_CONTRACT_ID, "deposit", args, senderAddress);
+  return hash;
 }
 
 export async function getCommitments(): Promise<string[]> {
@@ -214,7 +223,7 @@ export async function withdraw(
   recipientAddress: string,
   recipientFieldHex: string,
   amount: bigint
-): Promise<void> {
+): Promise<string> {
   const args = [
     toScBytes(proofBytes),
     toScBytes(hexToUint8Array(merkleRootHex)),
@@ -224,5 +233,6 @@ export async function withdraw(
     toScBytes(hexToUint8Array(recipientFieldHex)),
     toScI128(amount),
   ];
-  await invokeContract(POOL_CONTRACT_ID, "withdraw", args, senderAddress);
+  const { hash } = await invokeContract(POOL_CONTRACT_ID, "withdraw", args, senderAddress);
+  return hash;
 }
