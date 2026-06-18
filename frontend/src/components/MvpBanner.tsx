@@ -4,22 +4,20 @@ import { useI18n } from "../i18n/context";
 
 const limitations = {
   es: [
-    "Trusted setup local — no hubo ceremonia MPC pública",
-    "View key simétrica hardcoded — cualquiera con el código puede descifrar notas",
-    "ASP tree = Pool tree — producción los separaría",
-    "Root updates permisionless — producción usaría relayer de confianza",
-    "Monto variable entre 1–1000 XLM por depósito (testnet)",
-    "Circuito sin auditoría externa de seguridad",
-    "Prueba ZK ~30s single-thread (sin COEP por compatibilidad con Freighter)",
+    "Trusted setup local — las claves criptográficas se generaron en una sola máquina. En producción, múltiples participantes independientes garantizarían que nadie puede comprometerlas solo.",
+    "View key compartida — la llave del auditor es la misma para todos en esta demo. En producción, sería una llave repartida entre varios miembros del DAO (multisig).",
+    "ASP tree = Pool tree — en esta demo comparten el mismo árbol. En producción, el ASP gestionaría su propia lista de direcciones autorizadas por separado.",
+    "Root updates abiertos — cualquier usuario puede sincronizar el árbol. En producción, solo un relayer de confianza o el propio contrato lo haría automáticamente.",
+    "Circuito sin auditoría externa — el código ZK no ha sido revisado por terceros. Necesario antes de usar con fondos reales.",
+    "Prueba ZK ~30s — se genera en un solo hilo del navegador por compatibilidad con Freighter. Con optimización bajaría a ~5s.",
   ],
   en: [
-    "Local trusted setup — no public MPC ceremony",
-    "Hardcoded symmetric view key — anyone with the code can decrypt notes",
-    "ASP tree = Pool tree — production would separate them",
-    "Permissionless root updates — production would use trusted relayer",
-    "Variable amounts 1–1000 XLM per deposit (testnet)",
-    "Circuit not externally audited",
-    "ZK proof ~30s single-thread (no COEP for Freighter compatibility)",
+    "Local trusted setup — cryptographic keys were generated on a single machine. In production, multiple independent participants would ensure no one can compromise them alone.",
+    "Shared view key — the auditor key is the same for everyone in this demo. In production, it would be split among multiple DAO members (multisig).",
+    "ASP tree = Pool tree — in this demo they share the same tree. In production, the ASP would manage its own authorized address list separately.",
+    "Open root updates — any user can sync the tree. In production, only a trusted relayer or the contract itself would do this automatically.",
+    "Circuit not externally audited — the ZK code hasn't been reviewed by third parties. Required before using with real funds.",
+    "ZK proof ~30s — generated in a single browser thread for Freighter compatibility. With optimization it would drop to ~5s.",
   ],
 };
 

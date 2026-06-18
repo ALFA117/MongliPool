@@ -32,13 +32,13 @@ export default function Footer() {
               <p className="text-pool-text font-medium">- A L F A -</p>
               <p className="text-pool-text-dim text-xs">Mongli DAO</p>
               <a
-                href="https://instagram.com/ALFA_EDG"
+                href="https://instagram.com/ALFA_EDG_"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-1.5 text-xs text-pool-violet-light hover:text-pool-violet transition-colors"
               >
                 <ExternalLink size={10} />
-                @ALFA_EDG
+                @ALFA_EDG_
               </a>
             </div>
           </div>
@@ -54,6 +54,7 @@ export default function Footer() {
                 { to: "/withdraw", label: lang === "es" ? "Retirar" : "Withdraw" },
                 { to: "/auditor", label: "Auditor" },
                 { to: "/stats", label: lang === "es" ? "Métricas" : "Metrics" },
+                { to: "/business", label: lang === "es" ? "Modelo" : "Business" },
                 { to: "/status", label: "Status" },
               ].map(({ to, label }) => (
                 <Link key={to} to={to} className="block text-sm text-pool-text-dim hover:text-pool-text transition-colors">

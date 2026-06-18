@@ -110,6 +110,18 @@ export default function Auditor() {
         <p className="text-pool-text-dim">{t("auditor", "subtitle")}</p>
       </div>
 
+      {/* Purpose explanation */}
+      <div className="bg-pool-violet/5 border border-pool-violet/15 rounded-2xl p-5 mb-6">
+        <h3 className="font-semibold text-pool-violet-light text-sm mb-2">
+          {lang === "es" ? "¿Por qué existe esta página?" : "Why does this page exist?"}
+        </h3>
+        <p className="text-pool-text-dim text-sm leading-relaxed">
+          {lang === "es"
+            ? "MongliPool no es un sistema de privacidad total sin control — eso facilitaría lavado de dinero. Por eso existe un Authorized Set Provider (ASP) que aprueba qué depósitos son legítimos, y esta página de Auditor permite que alguien autorizado por Mongli DAO (con la llave correcta) revise el historial cuando sea necesario por cumplimiento regulatorio — sin que el público en general pueda verlo."
+            : "MongliPool is not a total privacy system without oversight — that would facilitate money laundering. That's why an Authorized Set Provider (ASP) approves which deposits are legitimate, and this Auditor page lets someone authorized by Mongli DAO (with the correct key) review the history when needed for regulatory compliance — without the general public being able to see it."}
+        </p>
+      </div>
+
       <div className="bg-white/[0.03] backdrop-blur-sm border border-white/[0.06] rounded-2xl p-7 mb-8">
         <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
           <Eye size={20} className="text-pool-violet-light" />

@@ -70,7 +70,8 @@ async function invokeContract(
 
   const sim = await server.simulateTransaction(tx);
   if (rpc.Api.isSimulationError(sim)) {
-    throw new Error(`Simulation error: ${sim.error}`);
+    const msg = typeof sim.error === "string" ? sim.error : JSON.stringify(sim.error);
+    throw new Error(`Simulation failed: ${msg.substring(0, 300)}`);
   }
 
   const assembled = rpc.assembleTransaction(tx, sim).build();
@@ -79,7 +80,10 @@ async function invokeContract(
 
   const result = await server.sendTransaction(signedTx);
   if (result.status === "ERROR") {
-    throw new Error(`Transaction error: ${result.errorResult}`);
+    const detail = result.errorResult
+      ? (typeof result.errorResult === "string" ? result.errorResult : JSON.stringify(result.errorResult))
+      : "unknown error";
+    throw new Error(`Transaction rejected: ${detail.substring(0, 300)}`);
   }
 
   const POLL_TIMEOUT = 60_000;

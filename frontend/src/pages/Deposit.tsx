@@ -1,5 +1,5 @@
-import { useState, useEffect } from "react";
-import { ArrowDownToLine, Download, Copy, AlertTriangle, CheckCircle, Loader2, Wallet, ExternalLink, Info } from "lucide-react";
+import { useState } from "react";
+import { ArrowDownToLine, Download, Copy, AlertTriangle, CheckCircle, ExternalLink, Info } from "lucide-react";
 import {
   randomFieldElement,
   computeCommitment,
@@ -14,38 +14,24 @@ import { PoseidonMerkleTree } from "../lib/merkle";
 import { useI18n } from "../i18n/context";
 import { useWallet } from "../lib/walletContext";
 
-type Step = "connect" | "amount" | "generating" | "confirm" | "done";
+type Step = "amount" | "generating" | "done";
 
 const MIN_XLM = 1;
 const MAX_XLM = 1000;
-const STROOPS = 10_000_000n;
 const SUGGESTED = [10, 50, 100];
 
 const DAO_VIEW_KEY = new Uint8Array(32).fill(1);
 
 export default function Deposit() {
   const { t, lang } = useI18n();
-  const { address, connect } = useWallet();
-  const [step, setStep] = useState<Step>("connect");
+  const { address } = useWallet();
+  const [step, setStep] = useState<Step>("amount");
   const [amountXLM, setAmountXLM] = useState("10");
   const [receipt, setReceipt] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [depositPhase, setDepositPhase] = useState("");
   const [txHash, setTxHash] = useState<string | null>(null);
-
-  useEffect(() => {
-    if (address && step === "connect") setStep("amount");
-  }, [address, step]);
-
-  async function handleConnect() {
-    setError(null);
-    try {
-      await connect();
-    } catch (e: unknown) {
-      setError(e instanceof Error ? e.message : t("deposit", "errorConnect"));
-    }
-  }
 
   async function handleDeposit() {
     if (!address) return;
@@ -157,23 +143,6 @@ export default function Deposit() {
         <div className="mb-6 p-4 bg-red-500/10 border border-red-500/20 rounded-xl text-red-400 text-sm flex items-start gap-3">
           <AlertTriangle size={18} className="flex-shrink-0 mt-0.5" />
           <span>{error}</span>
-        </div>
-      )}
-
-      {/* Connect */}
-      {step === "connect" && (
-        <div className="bg-white/[0.03] backdrop-blur-sm border border-white/[0.06] rounded-2xl p-8 animate-slide-up">
-          <div className="text-center py-4">
-            <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-pool-violet to-purple-600 flex items-center justify-center mx-auto mb-5 shadow-violet">
-              <Wallet size={28} className="text-white" />
-            </div>
-            <h2 className="text-xl font-semibold mb-2">{t("deposit", "connectTitle")}</h2>
-            <p className="text-pool-text-dim text-sm mb-6 max-w-xs mx-auto">{t("deposit", "connectDesc")}</p>
-            <button onClick={handleConnect} disabled={loading} className="btn-primary w-full inline-flex items-center justify-center gap-2">
-              {loading ? <Loader2 size={18} className="animate-spin" /> : <Wallet size={18} />}
-              {loading ? t("nav", "connecting") : t("deposit", "connectBtn")}
-            </button>
-          </div>
         </div>
       )}
 
