@@ -76,7 +76,7 @@ export const translations = {
     },
     connectBtn: { es: "Conectar Freighter", en: "Connect Freighter" },
     confirmTitle: { es: "Confirmar depósito", en: "Confirm deposit" },
-    fixedAmount: { es: "Monto fijo", en: "Fixed amount" },
+    fixedAmount: { es: "Monto", en: "Amount" },
     from: { es: "Desde", en: "From" },
     important: { es: "Importante:", en: "Important:" },
     importantDesc: {
