@@ -86,7 +86,7 @@
     "testnet": {
       "groth16_verifier": "CAXRVY3IUC2WEKOCHWVJBYMARKHCULKY77WL3E3UJIAGY3G6SHNFU5LZ",
       "asp_registry": "CCVH3IBNL7TJHWTG4DC2F6ZPLHK4J2UZGUT3VCJRQGKCZTWXHTMOQIHX",
-      "privacy_pool": "CAP3KLDDTSIARNICKYZK4PJYA4WI5PPQUUSZOJVBGJAXVZLHNQG5ENFB",
+      "privacy_pool": "CAPKM3CCICBB3FMTUWX6KQFG5NF3D4XOF2MAV7PKTRI4HMQSJ2H4YFI7",
       "token_xlm_sac": "CDLZFC3SYJYDZT7K67VZ75HPJVIEUVNIXF47ZG2FB2RMQQVU2HHGCYSC",
       "deployer_admin": "GALJ6O2J66XUEBXXJBWCB2KXNFOCMBLIUF4NBXQZRYC3IWBJK7C6O2V3"
     }
@@ -96,6 +96,6 @@
     "frontend": "https://mongli-pool.vercel.app",
     "demo_video": null,
     "hackathon_submission": "https://dorahacks.io/hackathon/stellar-hacks-zk",
-    "stellar_expert_pool": "https://stellar.expert/explorer/testnet/contract/CAP3KLDDTSIARNICKYZK4PJYA4WI5PPQUUSZOJVBGJAXVZLHNQG5ENFB"
+    "stellar_expert_pool": "https://stellar.expert/explorer/testnet/contract/CAPKM3CCICBB3FMTUWX6KQFG5NF3D4XOF2MAV7PKTRI4HMQSJ2H4YFI7"
   }
 }

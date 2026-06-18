@@ -6,7 +6,8 @@ use soroban_sdk::{
 };
 
 const MAX_ROOTS_HISTORY: u32 = 100;
-const DEPOSIT_AMOUNT: i128 = 10_000_000; // 10 USDC (7 decimals)
+const MIN_DEPOSIT: i128 = 10_000_000;      // 1 XLM (7 decimals)
+const MAX_DEPOSIT: i128 = 10_000_000_000;  // 1000 XLM
 
 #[contracttype]
 pub enum DataKey {
@@ -60,13 +61,19 @@ impl PrivacyPool {
 
     /// Deposit tokens into the pool with a commitment.
     /// The commitment = Poseidon(secret, nullifierSecret, amount) computed client-side.
-    pub fn deposit(env: Env, depositor: Address, commitment: BytesN<32>, encrypted_note: Bytes) {
+    pub fn deposit(env: Env, depositor: Address, commitment: BytesN<32>, encrypted_note: Bytes, amount: i128) {
         depositor.require_auth();
 
-        // Transfer fixed amount from depositor to contract
+        if amount < MIN_DEPOSIT {
+            panic!("amount below minimum (1 XLM)");
+        }
+        if amount > MAX_DEPOSIT {
+            panic!("amount above maximum (1000 XLM)");
+        }
+
         let token_id: Address = env.storage().instance().get(&DataKey::TokenId).unwrap();
         let token_client = token::Client::new(&env, &token_id);
-        token_client.transfer(&depositor, &env.current_contract_address(), &DEPOSIT_AMOUNT);
+        token_client.transfer(&depositor, &env.current_contract_address(), &amount);
 
         // Store commitment
         let mut commitments: Vec<BytesN<32>> = env
@@ -109,9 +116,11 @@ impl PrivacyPool {
         recipient_field: BytesN<32>,
         amount: i128,
     ) {
-        // Validate amount matches fixed deposit amount
-        if amount != DEPOSIT_AMOUNT {
-            panic!("invalid amount");
+        if amount < MIN_DEPOSIT {
+            panic!("amount below minimum");
+        }
+        if amount > MAX_DEPOSIT {
+            panic!("amount above maximum");
         }
 
         // Check merkle_root is in history
@@ -216,7 +225,7 @@ impl PrivacyPool {
         // Transfer tokens to recipient
         let token_id: Address = env.storage().instance().get(&DataKey::TokenId).unwrap();
         let token_client = token::Client::new(&env, &token_id);
-        token_client.transfer(&env.current_contract_address(), &recipient, &DEPOSIT_AMOUNT);
+        token_client.transfer(&env.current_contract_address(), &recipient, &amount);
 
         // Emit withdrawal event
         env.events().publish(
@@ -371,6 +380,8 @@ mod test {
         0xc5, 0xe9, 0x0d, 0x6c,
     ];
 
+    const TEST_AMOUNT: i128 = 10_000_000; // amount used when generating the test proof
+
     // Public inputs from public.json — [poolMerkleRoot, aspMerkleRoot, nullifierHash, recipient, amountPub]
     const PUB_INPUT_0: [u8; 32] = [  // poolMerkleRoot
         0x1e, 0x9a, 0x6d, 0xc3, 0x0c, 0xb4, 0x74, 0x05, 0x98, 0x15, 0xbe, 0xdc, 0xd2, 0xb9, 0xb7, 0x59,
@@ -436,7 +447,7 @@ mod test {
     //   3. Pool Merkle root added to history (simulates indexer update after deposit)
     //   4. withdraw() called with the real snarkjs proof + 5 public inputs
     //
-    // Expected: recipient's token balance increases by DEPOSIT_AMOUNT (10_000_000)
+    // Expected: recipient's token balance increases by amount (10_000_000)
     // -----------------------------------------------------------------------
 
     #[test]
@@ -472,7 +483,7 @@ mod test {
         pool_client.initialize(&sac_addr, &verifier_id, &asp_id, &pool_admin);
 
         // Simulate deposit: mint tokens directly to pool (bypasses deposit() for simplicity)
-        token_admin_client.mint(&pool_id, &DEPOSIT_AMOUNT);
+        token_admin_client.mint(&pool_id, &TEST_AMOUNT);
 
         // Admin updates Merkle root (simulates indexer running after a real deposit)
         let pool_root = BytesN::<32>::from_array(&env, &PUB_INPUT_0);
@@ -486,12 +497,12 @@ mod test {
             &BytesN::<32>::from_array(&env, &PUB_INPUT_2),         // nullifier_hash
             &recipient,                                              // on-chain recipient address
             &BytesN::<32>::from_array(&env, &PUB_INPUT_3),         // recipient_field (BN254 encoding)
-            &DEPOSIT_AMOUNT,
+            &TEST_AMOUNT,
         );
 
         // Confirm recipient received the tokens
         let balance = token::Client::new(&env, &sac_addr).balance(&recipient);
-        assert_eq!(balance, DEPOSIT_AMOUNT, "recipient must receive DEPOSIT_AMOUNT");
+        assert_eq!(balance, TEST_AMOUNT, "recipient must receive amount");
     }
 
     // -----------------------------------------------------------------------
@@ -532,7 +543,7 @@ mod test {
 
         // Fund pool with 2x so the first withdraw succeeds;
         // the second attempt must fail at the nullifier check, not the token balance.
-        token_admin_client.mint(&pool_id, &(DEPOSIT_AMOUNT * 2));
+        token_admin_client.mint(&pool_id, &(TEST_AMOUNT * 2));
 
         let pool_root = BytesN::<32>::from_array(&env, &PUB_INPUT_0);
         pool_client.update_root(&pool_root);
@@ -543,10 +554,10 @@ mod test {
         let recipient_field = BytesN::<32>::from_array(&env, &PUB_INPUT_3);
 
         // First withdraw — succeeds
-        pool_client.withdraw(&proof, &pool_root, &asp_root, &nullifier, &recipient, &recipient_field, &DEPOSIT_AMOUNT);
+        pool_client.withdraw(&proof, &pool_root, &asp_root, &nullifier, &recipient, &recipient_field, &TEST_AMOUNT);
 
         // Second withdraw with same nullifier — must panic "nullifier already spent"
-        pool_client.withdraw(&proof, &pool_root, &asp_root, &nullifier, &recipient, &recipient_field, &DEPOSIT_AMOUNT);
+        pool_client.withdraw(&proof, &pool_root, &asp_root, &nullifier, &recipient, &recipient_field, &TEST_AMOUNT);
     }
 
     // -----------------------------------------------------------------------
@@ -587,7 +598,7 @@ mod test {
         let pool_client = PrivacyPoolClient::new(&env, &pool_id);
         pool_client.initialize(&sac_addr, &verifier_id, &asp_id, &pool_admin);
 
-        token_admin_client.mint(&pool_id, &DEPOSIT_AMOUNT);
+        token_admin_client.mint(&pool_id, &TEST_AMOUNT);
 
         // Pool root is valid — this check must pass so the ASP check is reached
         let pool_root = BytesN::<32>::from_array(&env, &PUB_INPUT_0);
@@ -602,7 +613,7 @@ mod test {
             &BytesN::<32>::from_array(&env, &PUB_INPUT_2),
             &recipient,
             &BytesN::<32>::from_array(&env, &PUB_INPUT_3),
-            &DEPOSIT_AMOUNT,
+            &TEST_AMOUNT,
         );
     }
 }

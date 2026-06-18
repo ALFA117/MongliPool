@@ -4,7 +4,7 @@
 
 [![Stellar Hacks: ZK](https://img.shields.io/badge/Hackathon-Stellar%20Hacks%3A%20ZK-7C3AED)](https://dorahacks.io/hackathon/stellar-hacks-zk)
 [![Live Demo](https://img.shields.io/badge/Demo-frontend--ebon--xi--57.vercel.app-10B981)](https://frontend-ebon-xi-57.vercel.app)
-[![Testnet](https://img.shields.io/badge/Network-Stellar%20Testnet-3B82F6)](https://stellar.expert/explorer/testnet/contract/CDGY6VEK6EOCNA2DIM2PCYQGUVOYHB4G76I6A65MRHQ6MUCXA5EHTSMN)
+[![Testnet](https://img.shields.io/badge/Network-Stellar%20Testnet-3B82F6)](https://stellar.expert/explorer/testnet/contract/CAPKM3CCICBB3FMTUWX6KQFG5NF3D4XOF2MAV7PKTRI4HMQSJ2H4YFI7)
 [![License: MIT](https://img.shields.io/badge/License-MIT-gray)](LICENSE)
 
 ---
@@ -76,7 +76,7 @@ MongliPool es un **pool de privacidad** en la blockchain de Stellar: te permite 
 
 | Contrato | ID |
 |----------|-----|
-| PrivacyPool | [`CAP3KLDDTSIARNICKYZK4PJYA4WI5PPQUUSZOJVBGJAXVZLHNQG5ENFB`](https://stellar.expert/explorer/testnet/contract/CAP3KLDDTSIARNICKYZK4PJYA4WI5PPQUUSZOJVBGJAXVZLHNQG5ENFB) |
+| PrivacyPool | [`CAPKM3CCICBB3FMTUWX6KQFG5NF3D4XOF2MAV7PKTRI4HMQSJ2H4YFI7`](https://stellar.expert/explorer/testnet/contract/CAPKM3CCICBB3FMTUWX6KQFG5NF3D4XOF2MAV7PKTRI4HMQSJ2H4YFI7) |
 | ASPRegistry | [`CCVH3IBNL7TJHWTG4DC2F6ZPLHK4J2UZGUT3VCJRQGKCZTWXHTMOQIHX`](https://stellar.expert/explorer/testnet/contract/CCVH3IBNL7TJHWTG4DC2F6ZPLHK4J2UZGUT3VCJRQGKCZTWXHTMOQIHX) |
 | Groth16Verifier | [`CAXRVY3IUC2WEKOCHWVJBYMARKHCULKY77WL3E3UJIAGY3G6SHNFU5LZ`](https://stellar.expert/explorer/testnet/contract/CAXRVY3IUC2WEKOCHWVJBYMARKHCULKY77WL3E3UJIAGY3G6SHNFU5LZ) |
 | XLM SAC (token) | `CDLZFC3SYJYDZT7K67VZ75HPJVIEUVNIXF47ZG2FB2RMQQVU2HHGCYSC` |
@@ -127,7 +127,7 @@ node ../node_modules/snarkjs/build/cli.cjs groth16 setup withdraw.r1cs pot15_fin
 
 **Variables de entorno necesarias** (ya en `frontend/.env`):
 ```
-VITE_POOL_CONTRACT_ID=CAP3KLDDTSIARNICKYZK4PJYA4WI5PPQUUSZOJVBGJAXVZLHNQG5ENFB
+VITE_POOL_CONTRACT_ID=CAPKM3CCICBB3FMTUWX6KQFG5NF3D4XOF2MAV7PKTRI4HMQSJ2H4YFI7
 VITE_ASP_CONTRACT_ID=CCVH3IBNL7TJHWTG4DC2F6ZPLHK4J2UZGUT3VCJRQGKCZTWXHTMOQIHX
 VITE_VERIFIER_CONTRACT_ID=CAXRVY3IUC2WEKOCHWVJBYMARKHCULKY77WL3E3UJIAGY3G6SHNFU5LZ
 VITE_STELLAR_RPC_URL=https://soroban-testnet.stellar.org
@@ -167,8 +167,8 @@ En el frontend, el árbol de Merkle del ASP es el mismo que el del pool (la raí
 **4. Actualización de raíces sin permisos (simplificación MVP)**
 En el MVP, `update_root` y `update_asp_root` son funciones permisionless — cualquier usuario puede llamarlas. Esto permite que el frontend sincronice automáticamente después de cada depósito sin depender de un admin. En producción, esto se reemplazaría por un árbol de Merkle calculado dentro de `deposit()` on-chain, o por un relayer de confianza con pruebas de fraude.
 
-**5. Monto fijo de 10 XLM**
-El contrato solo acepta depósitos de exactamente 10 XLM. Montos variables complicarían el circuito ZK (habría que incluir el monto como público de la prueba y manejar múltiples denominaciones), lo cual está fuera del alcance del hackathon.
+**5. Monto variable 1–1000 XLM (testnet)**
+El contrato acepta depósitos de entre 1 y 1000 XLM. El monto se incluye como input público del circuito ZK y se verifica on-chain. En producción, se soportarían múltiples assets y denominaciones más amplias.
 
 **6. Sin auditoría del circuito**
 El circuito `withdraw.circom` no fue auditado por terceros. Podría tener vulnerabilidades de under-constraint que permitan pruebas inválidas.

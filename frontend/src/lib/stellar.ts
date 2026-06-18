@@ -135,12 +135,14 @@ async function simulateReadOnly(
 export async function deposit(
   senderAddress: string,
   commitmentHex: string,
-  encryptedNote: Uint8Array
+  encryptedNote: Uint8Array,
+  amount: bigint
 ): Promise<string> {
   const args = [
     toScAddress(senderAddress),
     toScBytes(hexToUint8Array(commitmentHex)),
     toScBytes(encryptedNote),
+    toScI128(amount),
   ];
   const { hash } = await invokeContract(POOL_CONTRACT_ID, "deposit", args, senderAddress);
   return hash;

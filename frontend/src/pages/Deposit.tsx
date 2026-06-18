@@ -16,7 +16,10 @@ import { useWallet } from "../lib/walletContext";
 
 type Step = "connect" | "amount" | "generating" | "confirm" | "done";
 
-const FIXED_AMOUNT = 10_000_000n; // 1 XLM (7 decimals, 10^7 stroops)
+const MIN_XLM = 1;
+const MAX_XLM = 1000;
+const STROOPS = 10_000_000n;
+const SUGGESTED = [10, 50, 100];
 
 const DAO_VIEW_KEY = new Uint8Array(32).fill(1);
 
@@ -24,6 +27,7 @@ export default function Deposit() {
   const { t, lang } = useI18n();
   const { address, connect } = useWallet();
   const [step, setStep] = useState<Step>("connect");
+  const [amountXLM, setAmountXLM] = useState("10");
   const [receipt, setReceipt] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -50,9 +54,16 @@ export default function Deposit() {
     setStep("generating");
 
     try {
+      const parsedXLM = parseFloat(amountXLM);
+      if (isNaN(parsedXLM) || parsedXLM < MIN_XLM || parsedXLM > MAX_XLM) {
+        throw new Error(lang === "es"
+          ? `Monto debe ser entre ${MIN_XLM} y ${MAX_XLM} XLM`
+          : `Amount must be between ${MIN_XLM} and ${MAX_XLM} XLM`);
+      }
+      const amount = BigInt(Math.round(parsedXLM * 1e7));
+
       const secret = randomFieldElement();
       const nullifierSecret = randomFieldElement();
-      const amount = FIXED_AMOUNT;
 
       const commitment = await computeCommitment(secret, nullifierSecret, amount);
       const commitmentHex = bigintToHex32(commitment);
@@ -71,7 +82,7 @@ export default function Deposit() {
       setReceipt(receiptB64);
 
       setDepositPhase("1/3");
-      const hash = await deposit(address, commitmentHex, encryptedNote);
+      const hash = await deposit(address, commitmentHex, encryptedNote, amount);
       setTxHash(hash);
 
       // Save receipt to localStorage as backup
@@ -166,15 +177,51 @@ export default function Deposit() {
         </div>
       )}
 
-      {/* Confirm amount */}
+      {/* Choose amount + confirm */}
       {step === "amount" && (
         <div className="bg-white/[0.03] backdrop-blur-sm border border-white/[0.06] rounded-2xl p-7 animate-slide-up">
           <h2 className="text-xl font-semibold mb-5">{t("deposit", "confirmTitle")}</h2>
-          <div className="bg-white/[0.03] rounded-xl p-5 mb-6 border border-white/[0.06]">
-            <div className="flex justify-between items-center mb-3">
-              <span className="text-pool-text-dim text-sm">{t("deposit", "fixedAmount")}</span>
-              <span className="font-mono font-bold text-2xl text-pool-text">1 XLM</span>
+
+          {/* Amount input */}
+          <div className="mb-4">
+            <label className="block text-sm font-medium text-pool-text-dim mb-2">
+              {lang === "es" ? "Monto a depositar" : "Amount to deposit"}
+            </label>
+            <div className="relative">
+              <input
+                type="number"
+                min={MIN_XLM}
+                max={MAX_XLM}
+                step="1"
+                value={amountXLM}
+                onChange={(e) => setAmountXLM(e.target.value)}
+                className="input-field pr-16 text-lg font-bold"
+              />
+              <span className="absolute right-4 top-1/2 -translate-y-1/2 text-pool-text-dim font-medium text-sm">XLM</span>
             </div>
+            <p className="text-xs text-pool-muted mt-1.5">
+              {lang === "es" ? `Mínimo ${MIN_XLM} XLM — Máximo ${MAX_XLM} XLM` : `Min ${MIN_XLM} XLM — Max ${MAX_XLM} XLM`}
+            </p>
+          </div>
+
+          {/* Suggested amounts */}
+          <div className="flex gap-2 mb-5">
+            {SUGGESTED.map((v) => (
+              <button
+                key={v}
+                onClick={() => setAmountXLM(String(v))}
+                className={`flex-1 py-2 rounded-lg text-sm font-medium transition-all cursor-pointer ${
+                  amountXLM === String(v)
+                    ? "bg-pool-violet/20 border border-pool-violet/40 text-pool-violet-light"
+                    : "bg-white/[0.03] border border-white/[0.06] text-pool-text-dim hover:border-pool-violet/20"
+                }`}
+              >
+                {v} XLM
+              </button>
+            ))}
+          </div>
+
+          <div className="bg-white/[0.03] rounded-xl p-4 mb-5 border border-white/[0.06]">
             <div className="flex justify-between items-center">
               <span className="text-pool-text-dim text-sm">{t("deposit", "from")}</span>
               <span className="font-mono text-xs text-pool-text-dim">
@@ -198,7 +245,7 @@ export default function Deposit() {
           </div>
           <button onClick={handleDeposit} disabled={loading} className="btn-primary w-full inline-flex items-center justify-center gap-2">
             <ArrowDownToLine size={18} />
-            {t("deposit", "depositBtn")}
+            {lang === "es" ? `Depositar ${amountXLM} XLM` : `Deposit ${amountXLM} XLM`}
           </button>
         </div>
       )}
