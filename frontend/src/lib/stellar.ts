@@ -147,8 +147,12 @@ export async function getCommitments(): Promise<string[]> {
 export async function getDepositEvents(): Promise<
   Array<{ commitment: string; encryptedNote: Uint8Array; timestamp: number }>
 > {
+  const latestLedger = (await server.getLatestLedger()).sequence;
+  // RPC only retains events for ~17280 ledgers (~24h). Use recent window.
+  const startLedger = Math.max(1, latestLedger - 17280);
+
   const events = await server.getEvents({
-    startLedger: 1,
+    startLedger,
     filters: [
       {
         type: "contract",
@@ -159,10 +163,20 @@ export async function getDepositEvents(): Promise<
     limit: 100,
   });
 
-  return events.events.map((e: { topic: xdr.ScVal[]; value: xdr.ScVal; ledgerClosedAt: string }) => {
+  return events.events.map((e) => {
+    // Event value is a DepositEvent struct {commitment, encrypted_note, leaf_index}
+    const eventData = scValToNative(e.value as xdr.ScVal) as {
+      commitment: Uint8Array;
+      encrypted_note: Uint8Array;
+      leaf_index: number;
+    };
+    const commitmentHex = e.topic.length > 1
+      ? uint8ArrayToHex(new Uint8Array((e.topic[1] as xdr.ScVal).bytes()))
+      : uint8ArrayToHex(new Uint8Array(eventData.commitment));
+
     return {
-      commitment: uint8ArrayToHex(new Uint8Array(e.topic[1].bytes())),
-      encryptedNote: new Uint8Array(e.value.bytes()),
+      commitment: commitmentHex,
+      encryptedNote: new Uint8Array(eventData.encrypted_note),
       timestamp: new Date(e.ledgerClosedAt).getTime(),
     };
   });
