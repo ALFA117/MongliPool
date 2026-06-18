@@ -6,7 +6,7 @@ import { useI18n } from "../i18n/context";
 const PrivacyVisualizer3D = lazy(() => import("../components/PrivacyVisualizer3D"));
 
 export default function Home() {
-  const { t } = useI18n();
+  const { t, lang } = useI18n();
 
   return (
     <div className="flex flex-col">
@@ -154,6 +154,53 @@ export default function Home() {
                 Built by Mongli DAO
               </span>
             </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Divider */}
+      <div className="max-w-5xl mx-auto px-6">
+        <div className="h-px bg-gradient-to-r from-transparent via-white/[0.06] to-transparent" />
+      </div>
+
+      {/* FAQ */}
+      <section className="py-24 px-6">
+        <div className="max-w-3xl mx-auto">
+          <h2 className="text-3xl font-bold text-center mb-12 tracking-tight">
+            {lang === "es" ? "Preguntas frecuentes" : "FAQ"}
+          </h2>
+          <div className="space-y-4">
+            {[
+              {
+                q: lang === "es" ? "¿Es seguro?" : "Is it safe?",
+                a: lang === "es"
+                  ? "MongliPool es un prototipo de hackathon en Stellar testnet. La criptografía ZK es real (Groth16/BN254 verificado on-chain), pero el circuito no ha sido auditado externamente. No usar con fondos reales hasta completar auditoría."
+                  : "MongliPool is a hackathon prototype on Stellar testnet. The ZK cryptography is real (Groth16/BN254 verified on-chain), but the circuit hasn't been externally audited. Do not use with real funds until audited."
+              },
+              {
+                q: lang === "es" ? "¿Qué pasa si pierdo mi recibo?" : "What if I lose my receipt?",
+                a: lang === "es"
+                  ? "Los fondos quedan en el pool para siempre. No existe recuperación — es una propiedad fundamental del diseño de privacidad. Guarda tu recibo en múltiples lugares seguros."
+                  : "The funds stay in the pool forever. There is no recovery — this is a fundamental property of the privacy design. Save your receipt in multiple safe places."
+              },
+              {
+                q: lang === "es" ? "¿Por qué necesito una wallet?" : "Why do I need a wallet?",
+                a: lang === "es"
+                  ? "Freighter (extensión de Stellar) autoriza las transacciones en la blockchain. Tu recibo privado se genera localmente — la wallet solo firma, no ve tus secretos."
+                  : "Freighter (Stellar extension) authorizes blockchain transactions. Your private receipt is generated locally — the wallet only signs, it doesn't see your secrets."
+              },
+              {
+                q: lang === "es" ? "¿Esto es dinero real?" : "Is this real money?",
+                a: lang === "es"
+                  ? "Corre en Stellar testnet — usa XLM de prueba sin valor monetario real. Puedes experimentar sin riesgo. Pide XLM de prueba gratis en friendbot.stellar.org."
+                  : "It runs on Stellar testnet — uses test XLM with no real monetary value. You can experiment risk-free. Get free test XLM at friendbot.stellar.org."
+              },
+            ].map(({ q, a }) => (
+              <div key={q} className="glass-panel p-5">
+                <h3 className="font-semibold text-pool-text mb-2">{q}</h3>
+                <p className="text-pool-text-dim text-sm leading-relaxed">{a}</p>
+              </div>
+            ))}
           </div>
         </div>
       </section>

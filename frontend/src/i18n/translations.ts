@@ -6,6 +6,7 @@ export const translations = {
     deposit: { es: "Depositar", en: "Deposit" },
     withdraw: { es: "Retirar", en: "Withdraw" },
     auditor: { es: "Auditor", en: "Auditor" },
+    stats: { es: "Métricas", en: "Metrics" },
     status: { es: "Estado", en: "Status" },
     connectWallet: { es: "Conectar Wallet", en: "Connect Wallet" },
     connecting: { es: "Conectando…", en: "Connecting…" },

@@ -136,6 +136,15 @@ export default function Auditor() {
         </button>
       </div>
 
+      <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-4 mb-8 flex items-start gap-3">
+        <Clock size={16} className="text-pool-muted flex-shrink-0 mt-0.5" />
+        <p className="text-xs text-pool-text-dim leading-relaxed">
+          {lang === "es"
+            ? "Nota: por una limitación del RPC de Stellar testnet, este panel solo puede mostrar depósitos de las últimas ~24 horas. Para probarlo, deposita primero y luego vuelve aquí."
+            : "Note: due to a Stellar testnet RPC limitation, this panel can only show deposits from the last ~24 hours. To test it, make a deposit first and then come back here."}
+        </p>
+      </div>
+
       {error && (
         <div className="mb-6 p-4 bg-red-500/10 border border-red-500/20 rounded-xl text-red-400 text-sm flex items-start gap-3">
           <AlertTriangle size={18} className="flex-shrink-0 mt-0.5" />

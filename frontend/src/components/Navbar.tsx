@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { ArrowDownToLine, ArrowUpFromLine, Eye, Activity, Globe, Menu, X } from "lucide-react";
+import { ArrowDownToLine, ArrowUpFromLine, Eye, Activity, BarChart3, Globe, Menu, X } from "lucide-react";
 import { useI18n } from "../i18n/context";
 import WalletButton from "./WalletButton";
 
@@ -8,6 +8,7 @@ const navItems = [
   { to: "/deposit", labelKey: "deposit", Icon: ArrowDownToLine },
   { to: "/withdraw", labelKey: "withdraw", Icon: ArrowUpFromLine },
   { to: "/auditor", labelKey: "auditor", Icon: Eye },
+  { to: "/stats", labelKey: "stats", Icon: BarChart3 },
   { to: "/status", labelKey: "status", Icon: Activity },
 ] as const;
 
