@@ -79,11 +79,10 @@ impl AspRegistry {
         );
     }
 
-    /// Admin updates the ASP Merkle root after approving commitments.
-    /// The root represents the Merkle tree of all approved commitments.
+    /// Update the ASP Merkle root.
+    /// MVP: permissionless so any user can sync roots after deposit.
+    /// Production: restrict to admin or trusted relayer.
     pub fn update_asp_root(env: Env, new_root: BytesN<32>) {
-        let admin: Address = env.storage().instance().get(&DataKey::Admin).unwrap();
-        admin.require_auth();
 
         let mut history: Vec<BytesN<32>> = env
             .storage()

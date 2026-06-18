@@ -14,8 +14,6 @@ import { PoseidonMerkleTree } from "../lib/merkle";
 import { useI18n } from "../i18n/context";
 import { useWallet } from "../lib/walletContext";
 
-const ADMIN_ADDRESS = import.meta.env.VITE_ADMIN_ADDRESS ?? "";
-
 type Step = "connect" | "amount" | "generating" | "confirm" | "done";
 
 const FIXED_AMOUNT = 10_000_000n; // 10 XLM (7 decimals)
@@ -72,14 +70,14 @@ export default function Deposit() {
 
       await deposit(address, commitmentHex, encryptedNote);
 
-      if (ADMIN_ADDRESS && address === ADMIN_ADDRESS) {
-        const rawCommitments = await getCommitments();
-        const commitments = rawCommitments.map(hex32ToBigint);
-        const tree = PoseidonMerkleTree.fromCommitments(commitments);
-        const newRoot = bigintToHex32(tree.getRoot());
-        await updatePoolRoot(address, newRoot);
-        await updateAspRoot(address, newRoot);
-      }
+      // MVP: update roots permissionlessly after every deposit so withdraw works
+      // immediately. Production would use an on-chain Merkle tree or trusted relayer.
+      const rawCommitments = await getCommitments();
+      const commitments = rawCommitments.map(hex32ToBigint);
+      const tree = PoseidonMerkleTree.fromCommitments(commitments);
+      const newRoot = bigintToHex32(tree.getRoot());
+      await updatePoolRoot(address, newRoot);
+      await updateAspRoot(address, newRoot);
 
       setStep("done");
     } catch (e: unknown) {

@@ -225,11 +225,11 @@ impl PrivacyPool {
         );
     }
 
-    /// Called by off-chain indexer after each deposit to store the new Merkle root.
-    /// In production: replace with on-chain Merkle tree update (more expensive).
+    /// Store a new Merkle root in the history.
+    /// MVP: permissionless so any user can sync roots after their deposit.
+    /// Production: replace with on-chain Merkle tree computed inside deposit(),
+    /// or restrict to a trusted relayer with fraud proofs.
     pub fn update_root(env: Env, new_root: BytesN<32>) {
-        let admin: Address = env.storage().instance().get(&DataKey::Admin).unwrap();
-        admin.require_auth();
 
         let mut roots: Vec<BytesN<32>> = env
             .storage()
