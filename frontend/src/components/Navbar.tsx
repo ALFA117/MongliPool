@@ -22,9 +22,7 @@ export default function Navbar() {
       <div className="max-w-6xl mx-auto px-5 h-16 flex items-center justify-between">
         {/* Logo */}
         <Link to="/" className="flex items-center gap-2.5 group" onClick={() => setMobileOpen(false)}>
-          <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-pool-violet to-purple-600 flex items-center justify-center shadow-violet-sm group-hover:shadow-violet transition-all duration-300">
-            <span className="text-white font-bold text-base tracking-tight">M</span>
-          </div>
+          <img src="/logo.svg" alt="MongliPool" className="w-9 h-9 group-hover:drop-shadow-[0_0_8px_rgba(124,58,237,0.5)] transition-all duration-300" />
           <span className="font-semibold text-pool-text text-[17px] tracking-tight">
             Mongli<span className="text-pool-violet-light">Pool</span>
           </span>

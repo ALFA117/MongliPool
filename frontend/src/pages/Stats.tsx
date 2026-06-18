@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Activity, ArrowDownToLine, ArrowUpFromLine, Wallet, RefreshCw } from "lucide-react";
 import { useI18n } from "../i18n/context";
 import { rpc, TransactionBuilder, Networks, BASE_FEE, Contract, scValToNative } from "@stellar/stellar-sdk";
@@ -100,24 +100,28 @@ export default function Stats() {
               icon={<Wallet size={20} />}
               label={lang === "es" ? "TVL del Pool" : "Pool TVL"}
               value={`${metrics.tvl} XLM`}
+              numericValue={parseFloat(metrics.tvl)}
               color="violet"
             />
             <MetricCard
               icon={<ArrowDownToLine size={20} />}
               label={lang === "es" ? "Depósitos totales" : "Total Deposits"}
               value={String(metrics.depositCount)}
+              numericValue={metrics.depositCount}
               color="green"
             />
             <MetricCard
               icon={<Activity size={20} />}
               label={lang === "es" ? "Commitments" : "Commitments"}
               value={String(metrics.commitments)}
+              numericValue={metrics.commitments}
               color="blue"
             />
             <MetricCard
               icon={<ArrowUpFromLine size={20} />}
               label={lang === "es" ? "Raíces registradas" : "Registered Roots"}
               value={String(metrics.rootsCount)}
+              numericValue={metrics.rootsCount}
               color="violet"
             />
           </div>
@@ -156,12 +160,33 @@ export default function Stats() {
   );
 }
 
-function MetricCard({ icon, label, value, color }: {
+function useCountUp(target: number, duration = 1000) {
+  const [val, setVal] = useState(0);
+  const started = useRef(false);
+  useEffect(() => {
+    if (started.current || target === 0) return;
+    started.current = true;
+    const start = performance.now();
+    const tick = (now: number) => {
+      const elapsed = now - start;
+      const progress = Math.min(elapsed / duration, 1);
+      const eased = 1 - Math.pow(1 - progress, 3);
+      setVal(Math.round(target * eased));
+      if (progress < 1) requestAnimationFrame(tick);
+    };
+    requestAnimationFrame(tick);
+  }, [target, duration]);
+  return val;
+}
+
+function MetricCard({ icon, label, value, numericValue, color }: {
   icon: React.ReactNode;
   label: string;
   value: string;
+  numericValue?: number;
   color: "violet" | "green" | "blue";
 }) {
+  const animated = useCountUp(numericValue ?? 0);
   const colors = {
     violet: "from-pool-violet/20 to-pool-violet/5 border-pool-violet/20 text-pool-violet-light",
     green: "from-pool-green/20 to-pool-green/5 border-pool-green/20 text-pool-green",
@@ -169,12 +194,15 @@ function MetricCard({ icon, label, value, color }: {
   };
 
   return (
-    <div className={`bg-gradient-to-br ${colors[color]} border rounded-2xl p-5`}>
+    <div className={`bg-gradient-to-br ${colors[color]} border rounded-2xl p-5 card-hover`}>
       <div className="flex items-center gap-2 mb-3 opacity-70">
         {icon}
         <span className="text-xs font-medium">{label}</span>
       </div>
-      <p className="text-2xl font-bold text-pool-text tabular-nums">{value}</p>
+      <p className="text-2xl font-bold text-pool-text tabular-nums">
+        {numericValue != null ? animated : value}
+        {numericValue != null && value.includes("XLM") ? " XLM" : ""}
+      </p>
     </div>
   );
 }

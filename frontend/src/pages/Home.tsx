@@ -2,6 +2,7 @@ import { Suspense, lazy } from "react";
 import { Link } from "react-router-dom";
 import { ArrowDownToLine, Sparkles, ArrowUpFromLine, Shield, Eye, Lock, CheckCircle } from "lucide-react";
 import { useI18n } from "../i18n/context";
+import Reveal from "../components/Reveal";
 
 const PrivacyVisualizer3D = lazy(() => import("../components/PrivacyVisualizer3D"));
 
@@ -87,10 +88,10 @@ export default function Home() {
                 title: t("home", "step3Title"),
                 desc: t("home", "step3Desc"),
               },
-            ].map(({ Icon, color, step, title, desc }) => (
+            ].map(({ Icon, color, step, title, desc }, i) => (
+              <Reveal key={step} delay={i * 100}>
               <div
-                key={step}
-                className="group glass-panel p-8 hover:border-white/[0.12] transition-all duration-300 hover:-translate-y-1"
+                className="group glass-panel p-8 hover:border-white/[0.12] transition-all duration-300 card-hover"
               >
                 <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${color} flex items-center justify-center mb-6 shadow-violet-sm group-hover:shadow-violet transition-shadow duration-300`}>
                   <Icon size={22} className="text-white" strokeWidth={2} />
@@ -101,6 +102,7 @@ export default function Home() {
                 <h3 className="text-lg font-semibold mb-3 tracking-tight">{title}</h3>
                 <p className="text-pool-text-dim text-[15px] leading-relaxed">{desc}</p>
               </div>
+              </Reveal>
             ))}
           </div>
         </div>
@@ -195,11 +197,13 @@ export default function Home() {
                   ? "Corre en Stellar testnet — usa XLM de prueba sin valor monetario real. Puedes experimentar sin riesgo. Pide XLM de prueba gratis en friendbot.stellar.org."
                   : "It runs on Stellar testnet — uses test XLM with no real monetary value. You can experiment risk-free. Get free test XLM at friendbot.stellar.org."
               },
-            ].map(({ q, a }) => (
-              <div key={q} className="glass-panel p-5">
-                <h3 className="font-semibold text-pool-text mb-2">{q}</h3>
-                <p className="text-pool-text-dim text-sm leading-relaxed">{a}</p>
-              </div>
+            ].map(({ q, a }, i) => (
+              <Reveal key={q} delay={i * 80}>
+                <div className="glass-panel p-5 card-hover">
+                  <h3 className="font-semibold text-pool-text mb-2">{q}</h3>
+                  <p className="text-pool-text-dim text-sm leading-relaxed">{a}</p>
+                </div>
+              </Reveal>
             ))}
           </div>
         </div>

@@ -57,6 +57,20 @@ export default {
           "0%, 100%": { boxShadow: "0 0 20px rgba(124,58,237,0.15)" },
           "50%": { boxShadow: "0 0 40px rgba(124,58,237,0.3)" },
         },
+        drift: {
+          "0%, 100%": { transform: "translate(0, 0)" },
+          "25%": { transform: "translate(30px, -20px)" },
+          "50%": { transform: "translate(-20px, 30px)" },
+          "75%": { transform: "translate(20px, 10px)" },
+        },
+        "count-up": {
+          "0%": { opacity: "0", transform: "translateY(8px)" },
+          "100%": { opacity: "1", transform: "translateY(0)" },
+        },
+        "shimmer-btn": {
+          "0%": { left: "-100%" },
+          "100%": { left: "200%" },
+        },
       },
       boxShadow: {
         violet: "0 0 30px rgba(124,58,237,0.25), 0 0 60px rgba(124,58,237,0.1)",
