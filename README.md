@@ -70,14 +70,14 @@ MongliPool es un **pool de privacidad** en la blockchain de Stellar: te permite 
 
 ## Demo en vivo
 
-**Frontend:** [https://frontend-ebon-xi-57.vercel.app](https://frontend-ebon-xi-57.vercel.app)
+**Frontend:** [https://mongli-pool.vercel.app](https://mongli-pool.vercel.app)
 
 **Contratos en Stellar Testnet:**
 
 | Contrato | ID |
 |----------|-----|
-| PrivacyPool | [`CDGY6VEK6EOCNA2DIM2PCYQGUVOYHB4G76I6A65MRHQ6MUCXA5EHTSMN`](https://stellar.expert/explorer/testnet/contract/CDGY6VEK6EOCNA2DIM2PCYQGUVOYHB4G76I6A65MRHQ6MUCXA5EHTSMN) |
-| ASPRegistry | [`CADASIHQGQ5LVVXEXBLMTXJJO7MSPXAF2QHADH4A7JYDRW2LGGGAZ653`](https://stellar.expert/explorer/testnet/contract/CADASIHQGQ5LVVXEXBLMTXJJO7MSPXAF2QHADH4A7JYDRW2LGGGAZ653) |
+| PrivacyPool | [`CAP3KLDDTSIARNICKYZK4PJYA4WI5PPQUUSZOJVBGJAXVZLHNQG5ENFB`](https://stellar.expert/explorer/testnet/contract/CAP3KLDDTSIARNICKYZK4PJYA4WI5PPQUUSZOJVBGJAXVZLHNQG5ENFB) |
+| ASPRegistry | [`CCVH3IBNL7TJHWTG4DC2F6ZPLHK4J2UZGUT3VCJRQGKCZTWXHTMOQIHX`](https://stellar.expert/explorer/testnet/contract/CCVH3IBNL7TJHWTG4DC2F6ZPLHK4J2UZGUT3VCJRQGKCZTWXHTMOQIHX) |
 | Groth16Verifier | [`CAXRVY3IUC2WEKOCHWVJBYMARKHCULKY77WL3E3UJIAGY3G6SHNFU5LZ`](https://stellar.expert/explorer/testnet/contract/CAXRVY3IUC2WEKOCHWVJBYMARKHCULKY77WL3E3UJIAGY3G6SHNFU5LZ) |
 | XLM SAC (token) | `CDLZFC3SYJYDZT7K67VZ75HPJVIEUVNIXF47ZG2FB2RMQQVU2HHGCYSC` |
 
@@ -88,10 +88,11 @@ deposit (10 XLM) → update_root → update_asp_root → withdraw con prueba ZK 
 
 **Para probar en el browser:**
 1. Instala [Freighter](https://freighter.app) y conecta a Testnet.
-2. Importa la cuenta del demo o usa tu propia cuenta (pide XLM en [friendbot](https://friendbot.stellar.org)).
-3. Ve a `/depositar`, conecta wallet, deposita 10 XLM, guarda el recibo.
-4. **Nota:** El paso de actualizar raíces solo lo ejecuta automáticamente la cuenta admin (`GALJ6O2J...`). Si usas otra cuenta, pide al admin que corra `node scripts/admin_update_roots.js` antes de intentar retirar.
-5. Ve a `/retirar`, pega el recibo, espera ~30 segundos para que se genere la prueba, confirma.
+2. Usa tu propia cuenta (pide XLM en [friendbot](https://friendbot.stellar.org)) o importa la cuenta demo.
+3. Abre [https://mongli-pool.vercel.app](https://mongli-pool.vercel.app), conecta wallet.
+4. Ve a Depositar, deposita 10 XLM (se te pedirán 3 firmas: depósito + sincronizar árbol + registrar en ASP).
+5. **Guarda el recibo** — es la única forma de retirar.
+6. Ve a Retirar, pega el recibo, pon la dirección destino, espera ~30s para la prueba ZK, confirma.
 
 ---
 
@@ -126,8 +127,8 @@ node ../node_modules/snarkjs/build/cli.cjs groth16 setup withdraw.r1cs pot15_fin
 
 **Variables de entorno necesarias** (ya en `frontend/.env`):
 ```
-VITE_POOL_CONTRACT_ID=CDGY6VEK6EOCNA2DIM2PCYQGUVOYHB4G76I6A65MRHQ6MUCXA5EHTSMN
-VITE_ASP_CONTRACT_ID=CADASIHQGQ5LVVXEXBLMTXJJO7MSPXAF2QHADH4A7JYDRW2LGGGAZ653
+VITE_POOL_CONTRACT_ID=CAP3KLDDTSIARNICKYZK4PJYA4WI5PPQUUSZOJVBGJAXVZLHNQG5ENFB
+VITE_ASP_CONTRACT_ID=CCVH3IBNL7TJHWTG4DC2F6ZPLHK4J2UZGUT3VCJRQGKCZTWXHTMOQIHX
 VITE_VERIFIER_CONTRACT_ID=CAXRVY3IUC2WEKOCHWVJBYMARKHCULKY77WL3E3UJIAGY3G6SHNFU5LZ
 VITE_STELLAR_RPC_URL=https://soroban-testnet.stellar.org
 VITE_STELLAR_NETWORK=Test SDF Network ; September 2015
@@ -163,8 +164,8 @@ La view key del auditor es una constante hardcoded de 32 bytes `[1,1,1,...,1]` v
 **3. ASP tree == Pool tree (simplificación de diseño)**
 En el frontend, el árbol de Merkle del ASP es el mismo que el del pool (la raíz del pool se usa también como raíz del ASP). Un diseño real separa ambos árboles: el ASP gestiona su propia lista de direcciones autorizadas de forma independiente.
 
-**4. Actualización de raíces manual/admin**
-Después de cada depósito, alguien (el admin) tiene que llamar a `update_root` y `update_asp_root` para que el contrato vea el nuevo depósito. En producción esto lo haría un indexer automatizado on-chain o un contrato de gestión de raíces. El auto-update del frontend solo funciona si la wallet conectada es la del admin.
+**4. Actualización de raíces sin permisos (simplificación MVP)**
+En el MVP, `update_root` y `update_asp_root` son funciones permisionless — cualquier usuario puede llamarlas. Esto permite que el frontend sincronice automáticamente después de cada depósito sin depender de un admin. En producción, esto se reemplazaría por un árbol de Merkle calculado dentro de `deposit()` on-chain, o por un relayer de confianza con pruebas de fraude.
 
 **5. Monto fijo de 10 XLM**
 El contrato solo acepta depósitos de exactamente 10 XLM. Montos variables complicarían el circuito ZK (habría que incluir el monto como público de la prueba y manejar múltiples denominaciones), lo cual está fuera del alcance del hackathon.

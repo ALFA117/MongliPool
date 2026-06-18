@@ -21,12 +21,13 @@ const FIXED_AMOUNT = 10_000_000n; // 10 XLM (7 decimals)
 const DAO_VIEW_KEY = new Uint8Array(32).fill(1);
 
 export default function Deposit() {
-  const { t } = useI18n();
-  const { address, loading: walletLoading, connect } = useWallet();
+  const { t, lang } = useI18n();
+  const { address, connect } = useWallet();
   const [step, setStep] = useState<Step>("connect");
   const [receipt, setReceipt] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [depositPhase, setDepositPhase] = useState("");
 
   useEffect(() => {
     if (address && step === "connect") setStep("amount");
@@ -68,15 +69,17 @@ export default function Deposit() {
       const receiptB64 = toBase64(new TextEncoder().encode(JSON.stringify(receiptData)));
       setReceipt(receiptB64);
 
+      setDepositPhase("1/3");
       await deposit(address, commitmentHex, encryptedNote);
 
-      // MVP: update roots permissionlessly after every deposit so withdraw works
-      // immediately. Production would use an on-chain Merkle tree or trusted relayer.
+      setDepositPhase("2/3");
       const rawCommitments = await getCommitments();
       const commitments = rawCommitments.map(hex32ToBigint);
       const tree = PoseidonMerkleTree.fromCommitments(commitments);
       const newRoot = bigintToHex32(tree.getRoot());
       await updatePoolRoot(address, newRoot);
+
+      setDepositPhase("3/3");
       await updateAspRoot(address, newRoot);
 
       setStep("done");
@@ -192,7 +195,14 @@ export default function Deposit() {
         <div className="bg-white/[0.03] backdrop-blur-sm border border-white/[0.06] rounded-2xl p-8 animate-slide-up text-center">
           <div className="w-16 h-16 border-4 border-pool-violet border-t-transparent rounded-full animate-spin mx-auto mb-5" />
           <h2 className="text-xl font-semibold mb-2">{t("deposit", "generating")}</h2>
-          <p className="text-pool-text-dim text-sm">{t("deposit", "generatingDesc")}</p>
+          <p className="text-pool-text-dim text-sm mb-4">{t("deposit", "generatingDesc")}</p>
+          {depositPhase && (
+            <div className="inline-flex items-center gap-2 bg-pool-violet/10 border border-pool-violet/20 rounded-full px-4 py-1.5 text-xs font-medium text-pool-violet-light">
+              {depositPhase === "1/3" && (lang === "es" ? "Firma 1 de 3: depositando fondos..." : "Signature 1 of 3: depositing funds...")}
+              {depositPhase === "2/3" && (lang === "es" ? "Firma 2 de 3: sincronizando árbol..." : "Signature 2 of 3: syncing tree...")}
+              {depositPhase === "3/3" && (lang === "es" ? "Firma 3 de 3: registrando en ASP..." : "Signature 3 of 3: registering in ASP...")}
+            </div>
+          )}
         </div>
       )}
 
