@@ -65,7 +65,7 @@ async function invokeContract(
     networkPassphrase: NETWORK,
   })
     .addOperation(contract.call(method, ...args))
-    .setTimeout(30)
+    .setTimeout(300)
     .build();
 
   const sim = await server.simulateTransaction(tx);
@@ -80,10 +80,16 @@ async function invokeContract(
 
   const result = await server.sendTransaction(signedTx);
   if (result.status === "ERROR") {
-    const detail = result.errorResult
-      ? (typeof result.errorResult === "string" ? result.errorResult : JSON.stringify(result.errorResult))
-      : "unknown error";
-    throw new Error(`Transaction rejected: ${detail.substring(0, 300)}`);
+    let detail = "unknown error";
+    try {
+      const er = result.errorResult as { result?: () => { switch?: () => { name?: string } } };
+      const name = er?.result?.()?.switch?.()?.name;
+      if (name) detail = name;
+      else detail = JSON.stringify(result.errorResult).substring(0, 300);
+    } catch {
+      detail = String(result.errorResult);
+    }
+    throw new Error(`Transaction rejected: ${detail}`);
   }
 
   const POLL_TIMEOUT = 60_000;
@@ -125,7 +131,7 @@ async function simulateReadOnly(
     networkPassphrase: NETWORK,
   })
     .addOperation(contract.call(method, ...args))
-    .setTimeout(30)
+    .setTimeout(300)
     .build();
 
   const sim = await server.simulateTransaction(tx);
