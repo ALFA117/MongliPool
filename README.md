@@ -158,8 +158,8 @@ Esta sección es intencional. MongliPool es un prototipo de hackathon. Antes de 
 **1. Trusted setup local (crítico)**
 La ceremonia de generación del `.zkey` se hizo en local con una sola contribución (`snarkjs zkey contribute`), sin participantes externos. En producción, un sistema ZK requiere una ceremonia MPC pública donde múltiples participantes garantizan que nadie conoce el "toxic waste" de la ceremonia. Si alguien tiene el toxic waste, puede fabricar pruebas falsas y robar fondos del pool.
 
-**2. View key simétrica (crítico)**
-La view key del auditor es una constante hardcoded de 32 bytes `[1,1,1,...,1]` visible en el código fuente. Cualquiera que lea este repo puede descifrar todas las notas. El diseño correcto usa cifrado asimétrico: la DAO publica una clave pública, los usuarios cifran contra ella, y solo la clave privada de la DAO (offline, multisig) puede descifrar.
+**2. View key asimétrica (NaCl box / Curve25519)**
+El cifrado del auditor usa NaCl box asimétrico: la clave pública del DAO está embebida en el frontend, y cada depósito cifra con un keypair efímero único. Solo la clave privada del DAO (gestionada offline) puede descifrar. Mejora futura: multisig M-de-N para que ningún miembro del DAO pueda descifrar solo.
 
 **3. ASP tree == Pool tree (simplificación de diseño)**
 En el frontend, el árbol de Merkle del ASP es el mismo que el del pool (la raíz del pool se usa también como raíz del ASP). Un diseño real separa ambos árboles: el ASP gestiona su propia lista de direcciones autorizadas de forma independiente.

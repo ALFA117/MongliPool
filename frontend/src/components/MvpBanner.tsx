@@ -7,7 +7,7 @@ interface Item { now: string; prod: string; }
 const items: Record<string, Item[]> = {
   es: [
     { now: "Setup criptográfico local (1 máquina)", prod: "Ceremonia MPC pública con múltiples participantes" },
-    { now: "View key simétrica compartida", prod: "View key multisig del DAO (3-de-5)" },
+    { now: "Una clave privada del DAO (Curve25519)", prod: "View key multisig del DAO (3-de-5)" },
     { now: "ASP tree = Pool tree (simplificado)", prod: "Árboles separados e independientes" },
     { now: "Sincronización de raíces abierta", prod: "Relayer de confianza o cálculo on-chain" },
     { now: "Sin auditoría externa del circuito", prod: "Auditoría profesional antes de mainnet" },
@@ -15,7 +15,7 @@ const items: Record<string, Item[]> = {
   ],
   en: [
     { now: "Local cryptographic setup (1 machine)", prod: "Public MPC ceremony with multiple participants" },
-    { now: "Shared symmetric view key", prod: "DAO multisig view key (3-of-5)" },
+    { now: "Single DAO private key (Curve25519)", prod: "DAO multisig view key (3-of-5)" },
     { now: "ASP tree = Pool tree (simplified)", prod: "Separate independent trees" },
     { now: "Open root synchronization", prod: "Trusted relayer or on-chain computation" },
     { now: "No external circuit audit", prod: "Professional audit before mainnet" },

@@ -49,32 +49,56 @@ export function bigintToBytes32(val: bigint): Uint8Array {
 }
 
 // -------------------------
-// View key encryption (NaCl box — symmetric for MVP)
-// In production: use auditor's public key for asymmetric encryption
+// Asymmetric encryption: NaCl box (Curve25519 + XSalsa20 + Poly1305)
+// Each deposit generates an ephemeral keypair. Only the DAO's private key can decrypt.
 // -------------------------
 
-/** Encrypt a note with the DAO view key (NaCl secretbox) */
+/** Mongli DAO public key — embedded in frontend by design (public keys are public).
+ *  The corresponding private key is managed offline by Mongli DAO. */
+export const DAO_PUBLIC_KEY = hexToBytes(
+  "21fe6bc9b51c2f24880287dc293023873309265a77e53c8ac6c58bd75cf93759"
+);
+
+function hexToBytes(hex: string): Uint8Array {
+  const bytes = new Uint8Array(hex.length / 2);
+  for (let i = 0; i < hex.length; i += 2) {
+    bytes[i / 2] = parseInt(hex.substring(i, i + 2), 16);
+  }
+  return bytes;
+}
+
+/** Encrypt a note to the DAO using NaCl box with an ephemeral keypair.
+ *  Format: [ephemeralPublicKey: 32][nonce: 24][ciphertext: variable] */
 export function encryptNote(
-  viewKey: Uint8Array, // 32 bytes
+  daoPublicKey: Uint8Array,
   plaintext: Uint8Array
 ): Uint8Array {
-  const nonce = crypto.getRandomValues(new Uint8Array(nacl.secretbox.nonceLength));
-  const ciphertext = nacl.secretbox(plaintext, nonce, viewKey);
-  // Prepend nonce to ciphertext
-  const result = new Uint8Array(nonce.length + ciphertext.length);
-  result.set(nonce);
-  result.set(ciphertext, nonce.length);
+  const ephemeral = nacl.box.keyPair();
+  const nonce = nacl.randomBytes(nacl.box.nonceLength);
+
+  const ciphertext = nacl.box(plaintext, nonce, daoPublicKey, ephemeral.secretKey);
+  if (!ciphertext) throw new Error("Encryption failed");
+
+  const result = new Uint8Array(32 + nacl.box.nonceLength + ciphertext.length);
+  result.set(ephemeral.publicKey, 0);
+  result.set(nonce, 32);
+  result.set(ciphertext, 32 + nacl.box.nonceLength);
   return result;
 }
 
-/** Decrypt a note with the DAO view key */
+/** Decrypt a note using the DAO's private key.
+ *  Returns null if the key is wrong or data is corrupted. */
 export function decryptNote(
-  viewKey: Uint8Array,
-  encryptedWithNonce: Uint8Array
+  daoSecretKey: Uint8Array,
+  encryptedNote: Uint8Array
 ): Uint8Array | null {
-  const nonce = encryptedWithNonce.slice(0, nacl.secretbox.nonceLength);
-  const ciphertext = encryptedWithNonce.slice(nacl.secretbox.nonceLength);
-  return nacl.secretbox.open(ciphertext, nonce, viewKey);
+  if (encryptedNote.length < 72) return null;
+
+  const ephemeralPublicKey = encryptedNote.slice(0, 32);
+  const nonce = encryptedNote.slice(32, 56);
+  const ciphertext = encryptedNote.slice(56);
+
+  return nacl.box.open(ciphertext, nonce, ephemeralPublicKey, daoSecretKey);
 }
 
 /** Encode a deposit note as bytes for encryption */

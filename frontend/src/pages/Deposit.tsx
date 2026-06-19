@@ -5,6 +5,7 @@ import {
   computeCommitment,
   encodeNote,
   encryptNote,
+  DAO_PUBLIC_KEY,
   toBase64,
   bigintToHex32,
   hex32ToBigint,
@@ -19,8 +20,6 @@ type Step = "amount" | "generating" | "done";
 const MIN_XLM = 1;
 const MAX_XLM = 1000;
 const SUGGESTED = [10, 50, 100];
-
-const DAO_VIEW_KEY = new Uint8Array(32).fill(1);
 
 export default function Deposit() {
   const { t, lang } = useI18n();
@@ -59,7 +58,7 @@ export default function Deposit() {
       const commitmentHex = bigintToHex32(commitment);
 
       const notePlaintext = encodeNote(secret, nullifierSecret, amount);
-      const encryptedNote = encryptNote(DAO_VIEW_KEY, notePlaintext);
+      const encryptedNote = encryptNote(DAO_PUBLIC_KEY, notePlaintext);
 
       const receiptData = {
         v: 1,

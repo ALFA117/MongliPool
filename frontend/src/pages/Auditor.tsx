@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Eye, Download, AlertTriangle, Shield, Loader2, CheckCircle, XCircle, Clock } from "lucide-react";
-import { fromBase64, decryptNote, decodeNote } from "../lib/crypto";
+import { decryptNote, decodeNote } from "../lib/crypto";
 import { getDepositEvents } from "../lib/stellar";
 import { useI18n } from "../i18n/context";
 
@@ -33,22 +33,19 @@ export default function Auditor() {
     setDone(false);
 
     try {
-      let viewKey: Uint8Array;
       const trimmed = viewKeyInput.trim();
-      if (/^[0-9a-fA-F]{64}$/.test(trimmed)) {
-        viewKey = hexToBytes(trimmed);
-      } else {
-        viewKey = fromBase64(trimmed);
+      if (!/^[0-9a-fA-F]{64}$/.test(trimmed)) {
+        throw new Error(lang === "es"
+          ? "La clave privada debe tener exactamente 64 caracteres hexadecimales (32 bytes)"
+          : "Private key must be exactly 64 hexadecimal characters (32 bytes)");
       }
-      if (viewKey.length !== 32) {
-        throw new Error(t("auditor", "errorKeyLength"));
-      }
+      const daoSecretKey = hexToBytes(trimmed);
 
       const events = await getDepositEvents();
 
       const results: AuditRecord[] = events.map((event) => {
         try {
-          const plaintext = decryptNote(viewKey, event.encryptedNote);
+          const plaintext = decryptNote(daoSecretKey, event.encryptedNote);
           if (!plaintext) {
             return {
               commitment: event.commitment,
