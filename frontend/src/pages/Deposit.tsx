@@ -225,17 +225,19 @@ export default function Deposit() {
 
       {/* Generating */}
       {step === "generating" && (
-        <div className="bg-white/[0.03] backdrop-blur-sm border border-white/[0.06] rounded-2xl p-8 animate-slide-up text-center">
-          <div className="w-16 h-16 border-4 border-pool-violet border-t-transparent rounded-full animate-spin mx-auto mb-5" />
-          <h2 className="text-xl font-semibold mb-2">{t("deposit", "generating")}</h2>
-          <p className="text-pool-text-dim text-sm mb-4">{t("deposit", "generatingDesc")}</p>
-          {depositPhase && (
-            <div className="inline-flex items-center gap-2 bg-pool-violet/10 border border-pool-violet/20 rounded-full px-4 py-1.5 text-xs font-medium text-pool-violet-light">
-              {depositPhase === "1/3" && (lang === "es" ? "Firma 1 de 3: depositando fondos..." : "Signature 1 of 3: depositing funds...")}
-              {depositPhase === "2/3" && (lang === "es" ? "Firma 2 de 3: sincronizando árbol..." : "Signature 2 of 3: syncing tree...")}
-              {depositPhase === "3/3" && (lang === "es" ? "Firma 3 de 3: registrando en ASP..." : "Signature 3 of 3: registering in ASP...")}
-            </div>
-          )}
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md">
+          <div className="bg-pool-bg border border-pool-green/30 rounded-2xl p-8 max-w-sm w-full mx-4 text-center shadow-[0_0_60px_rgba(5,213,161,0.15)]">
+            <div className="w-16 h-16 border-4 border-pool-green border-t-transparent rounded-full animate-spin mx-auto mb-5" />
+            <h2 className="text-xl font-semibold mb-2">{t("deposit", "generating")}</h2>
+            <p className="text-pool-text-dim text-sm mb-4">{t("deposit", "generatingDesc")}</p>
+            {depositPhase && (
+              <div className="inline-flex items-center gap-2 bg-pool-green/10 border border-pool-green/20 rounded-full px-4 py-1.5 text-xs font-medium text-pool-green">
+                {depositPhase === "1/3" && (lang === "es" ? "Firma 1 de 3: depositando fondos..." : "Signature 1 of 3: depositing funds...")}
+                {depositPhase === "2/3" && (lang === "es" ? "Firma 2 de 3: sincronizando árbol..." : "Signature 2 of 3: syncing tree...")}
+                {depositPhase === "3/3" && (lang === "es" ? "Firma 3 de 3: registrando en ASP..." : "Signature 3 of 3: registering in ASP...")}
+              </div>
+            )}
+          </div>
         </div>
       )}
 

@@ -61,23 +61,23 @@ export default function PrivacyVisualizer3D({ className = "", fullscreen = false
     camera.position.set(0, 0, fullscreen ? 10 : 7.5);
 
     // Lighting — multi-source for depth
-    scene.add(new THREE.AmbientLight(0x0a0a2e, 1.5));
-    const violetKey = new THREE.PointLight(0x7c3aed, 15, 25);
-    violetKey.position.set(4, 4, 4);
-    scene.add(violetKey);
-    const greenFill = new THREE.PointLight(0x10b981, 8, 20);
-    greenFill.position.set(-4, -3, -5);
-    scene.add(greenFill);
-    const blueRim = new THREE.PointLight(0x3b82f6, 6, 15);
-    blueRim.position.set(-2, 5, -3);
-    scene.add(blueRim);
+    scene.add(new THREE.AmbientLight(0x0a1128, 1.5));
+    const greenKey = new THREE.PointLight(0x05D5A1, 15, 25);
+    greenKey.position.set(4, 4, 4);
+    scene.add(greenKey);
+    const blueFill = new THREE.PointLight(0x0066FF, 8, 20);
+    blueFill.position.set(-4, -3, -5);
+    scene.add(blueFill);
+    const accentRim = new THREE.PointLight(0x00F5D4, 6, 15);
+    accentRim.position.set(-2, 5, -3);
+    scene.add(accentRim);
 
     // Central sphere — MeshPhysicalMaterial for realism
     const sphereR = fullscreen ? 2.2 : 1.6;
     const sphereGeo = new THREE.SphereGeometry(sphereR, 64, 64);
     const sphereMat = new THREE.MeshPhysicalMaterial({
-      color: 0x2d1065,
-      emissive: 0x7c3aed,
+      color: 0x003366,
+      emissive: 0x0066FF,
       emissiveIntensity: 0.7,
       roughness: 0.1,
       metalness: 0.9,
@@ -91,7 +91,7 @@ export default function PrivacyVisualizer3D({ className = "", fullscreen = false
     // Inner glow sphere
     const glowGeo = new THREE.SphereGeometry(sphereR * 1.15, 32, 32);
     const glowMat = new THREE.MeshBasicMaterial({
-      color: 0x7c3aed,
+      color: 0x05D5A1,
       transparent: true,
       opacity: 0.2,
       side: THREE.BackSide,
@@ -102,8 +102,8 @@ export default function PrivacyVisualizer3D({ className = "", fullscreen = false
     const ring1R = fullscreen ? 3.2 : 2.4;
     const ringGeo = new THREE.TorusGeometry(ring1R, 0.04, 20, 120);
     const ringMat = new THREE.MeshPhysicalMaterial({
-      color: 0xa855f7,
-      emissive: 0x8b5cf6,
+      color: 0x05D5A1,
+      emissive: 0x05D5A1,
       emissiveIntensity: 1.5,
       roughness: 0.2,
       metalness: 0.9,
@@ -116,8 +116,8 @@ export default function PrivacyVisualizer3D({ className = "", fullscreen = false
     const ring2R = fullscreen ? 3.8 : 2.8;
     const ring2Geo = new THREE.TorusGeometry(ring2R, 0.025, 16, 120);
     const ring2Mat = new THREE.MeshPhysicalMaterial({
-      color: 0x10b981,
-      emissive: 0x10b981,
+      color: 0x0066FF,
+      emissive: 0x0066FF,
       emissiveIntensity: 1.2,
       roughness: 0.3,
       metalness: 0.7,
@@ -128,7 +128,7 @@ export default function PrivacyVisualizer3D({ className = "", fullscreen = false
 
     // Third decorative ring
     const ring3Geo = new THREE.TorusGeometry(ring1R * 0.85, 0.015, 12, 100);
-    const ring3Mat = new THREE.MeshBasicMaterial({ color: 0x3b82f6, transparent: true, opacity: 0.4 });
+    const ring3Mat = new THREE.MeshBasicMaterial({ color: 0x00F5D4, transparent: true, opacity: 0.4 });
     const ring3 = new THREE.Mesh(ring3Geo, ring3Mat);
     ring3.rotation.x = -Math.PI / 4;
     ring3.rotation.y = Math.PI / 6;

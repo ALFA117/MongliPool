@@ -4,8 +4,8 @@
 
 @layer base {
   html {
-    background-color: #080816;
-    color: #eef0f6;
+    background-color: #0A1128;
+    color: #FFFFFF;
     font-family: "Inter", system-ui, -apple-system, sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
@@ -37,7 +37,7 @@
   }
 
   ::selection {
-    background: rgba(124, 58, 237, 0.3);
+    background: rgba(5, 213, 161, 0.3);
     color: #eef0f6;
   }
 }
@@ -45,7 +45,7 @@
 @layer components {
   .btn-primary {
     @apply relative overflow-hidden
-           bg-gradient-to-r from-pool-violet to-purple-600
+           bg-gradient-to-r from-pool-green to-pool-violet
            text-white font-semibold
            px-6 py-3 rounded-xl
            transition-all duration-200 ease-out
@@ -72,10 +72,10 @@
   }
 
   .btn-primary:hover:not(:disabled) {
-    @apply from-[#8b4cf7] to-[#7e36ea];
+    @apply from-[#00F5D4] to-[#3399FF];
     box-shadow:
-      0 0 40px rgba(124, 58, 237, 0.4),
-      0 0 80px rgba(124, 58, 237, 0.15),
+      0 0 40px rgba(5, 213, 161, 0.35),
+      0 0 80px rgba(0, 102, 255, 0.15),
       0 4px 16px rgba(0, 0, 0, 0.3);
     transform: translateY(-2px);
   }
@@ -182,7 +182,7 @@
     padding: 1px;
     background: linear-gradient(
       135deg,
-      rgba(124, 58, 237, 0.3),
+      rgba(5, 213, 161, 0.3),
       transparent 50%,
       rgba(16, 185, 129, 0.2)
     );

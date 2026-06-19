@@ -1,32 +1,19 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40" fill="none">
-  <!-- Shield outline -->
-  <path d="M20 2L4 10v12c0 9.5 6.8 16.3 16 18 9.2-1.7 16-8.5 16-18V10L20 2z" stroke="url(#shield-grad)" stroke-width="1.5" fill="url(#shield-fill)" />
-  <!-- Lock body -->
-  <rect x="14" y="18" width="12" height="10" rx="2" fill="url(#lock-grad)" opacity="0.9"/>
-  <!-- Lock shackle -->
-  <path d="M16 18v-3a4 4 0 018 0v3" stroke="#a78bfa" stroke-width="1.5" fill="none" stroke-linecap="round"/>
-  <!-- Check inside lock -->
-  <path d="M17.5 23.5l2 2 3.5-3.5" stroke="#10b981" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-  <!-- Circuit nodes (top corners) -->
-  <circle cx="10" cy="12" r="1.2" fill="#7c3aed" opacity="0.6"/>
-  <circle cx="30" cy="12" r="1.2" fill="#7c3aed" opacity="0.6"/>
-  <line x1="10" y1="12" x2="14" y2="14" stroke="#7c3aed" stroke-width="0.6" opacity="0.4"/>
-  <line x1="30" y1="12" x2="26" y2="14" stroke="#7c3aed" stroke-width="0.6" opacity="0.4"/>
-  <!-- Circuit dots (bottom) -->
-  <circle cx="14" cy="32" r="0.8" fill="#10b981" opacity="0.5"/>
-  <circle cx="26" cy="32" r="0.8" fill="#10b981" opacity="0.5"/>
   <defs>
-    <linearGradient id="shield-grad" x1="4" y1="2" x2="36" y2="40">
-      <stop offset="0%" stop-color="#7c3aed"/>
-      <stop offset="100%" stop-color="#10b981"/>
+    <linearGradient id="main-grad" x1="0" y1="0" x2="40" y2="40" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#05D5A1"/>
+      <stop offset="100%" stop-color="#0066FF"/>
     </linearGradient>
-    <linearGradient id="shield-fill" x1="20" y1="2" x2="20" y2="42">
-      <stop offset="0%" stop-color="#7c3aed" stop-opacity="0.12"/>
-      <stop offset="100%" stop-color="#10b981" stop-opacity="0.05"/>
-    </linearGradient>
-    <linearGradient id="lock-grad" x1="14" y1="18" x2="26" y2="28">
-      <stop offset="0%" stop-color="#2d1065"/>
-      <stop offset="100%" stop-color="#1a1a3a"/>
+    <linearGradient id="star-grad" x1="20" y1="2" x2="20" y2="14">
+      <stop offset="0%" stop-color="#00F5D4"/>
+      <stop offset="100%" stop-color="#05D5A1"/>
     </linearGradient>
   </defs>
+  <!-- Fluid M shape (wave/pool) -->
+  <path d="M6 32 C6 32 8 18 12 18 C16 18 15 28 20 22 C25 16 24 18 28 18 C32 18 34 32 34 32"
+        stroke="url(#main-grad)" stroke-width="3.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- Pool wave beneath -->
+  <path d="M4 34 Q12 30 20 34 Q28 38 36 34" stroke="url(#main-grad)" stroke-width="1.5" fill="none" opacity="0.4" stroke-linecap="round"/>
+  <!-- 4-point star at top -->
+  <path d="M20 3 L21 7 L25 8 L21 9 L20 13 L19 9 L15 8 L19 7 Z" fill="url(#star-grad)"/>
 </svg>
