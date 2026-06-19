@@ -192,6 +192,11 @@
     pointer-events: none;
   }
 
+  /* Pause animations during heavy computation (ZK proof, signing) */
+  [data-busy="true"] .animated-blob {
+    animation-play-state: paused !important;
+  }
+
   /* Scroll reveal */
   .reveal {
     opacity: 0;

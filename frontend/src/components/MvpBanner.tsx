@@ -1,23 +1,25 @@
 import { useState } from "react";
-import { X, FlaskConical, ChevronDown, ChevronUp } from "lucide-react";
+import { X, FlaskConical, ChevronDown, ChevronUp, ArrowRight } from "lucide-react";
 import { useI18n } from "../i18n/context";
 
-const limitations = {
+interface Item { now: string; prod: string; }
+
+const items: Record<string, Item[]> = {
   es: [
-    "Trusted setup local — las claves criptográficas se generaron en una sola máquina. En producción, múltiples participantes independientes garantizarían que nadie puede comprometerlas solo.",
-    "View key compartida — la llave del auditor es la misma para todos en esta demo. En producción, sería una llave repartida entre varios miembros del DAO (multisig).",
-    "ASP tree = Pool tree — en esta demo comparten el mismo árbol. En producción, el ASP gestionaría su propia lista de direcciones autorizadas por separado.",
-    "Root updates abiertos — cualquier usuario puede sincronizar el árbol. En producción, solo un relayer de confianza o el propio contrato lo haría automáticamente.",
-    "Circuito sin auditoría externa — el código ZK no ha sido revisado por terceros. Necesario antes de usar con fondos reales.",
-    "Prueba ZK ~30s — se genera en un solo hilo del navegador por compatibilidad con Freighter. Con optimización bajaría a ~5s.",
+    { now: "Setup criptográfico local (1 máquina)", prod: "Ceremonia MPC pública con múltiples participantes" },
+    { now: "View key simétrica compartida", prod: "View key multisig del DAO (3-de-5)" },
+    { now: "ASP tree = Pool tree (simplificado)", prod: "Árboles separados e independientes" },
+    { now: "Sincronización de raíces abierta", prod: "Relayer de confianza o cálculo on-chain" },
+    { now: "Sin auditoría externa del circuito", prod: "Auditoría profesional antes de mainnet" },
+    { now: "Prueba ZK ~30s (un hilo)", prod: "~5s con WebWorkers multi-hilo" },
   ],
   en: [
-    "Local trusted setup — cryptographic keys were generated on a single machine. In production, multiple independent participants would ensure no one can compromise them alone.",
-    "Shared view key — the auditor key is the same for everyone in this demo. In production, it would be split among multiple DAO members (multisig).",
-    "ASP tree = Pool tree — in this demo they share the same tree. In production, the ASP would manage its own authorized address list separately.",
-    "Open root updates — any user can sync the tree. In production, only a trusted relayer or the contract itself would do this automatically.",
-    "Circuit not externally audited — the ZK code hasn't been reviewed by third parties. Required before using with real funds.",
-    "ZK proof ~30s — generated in a single browser thread for Freighter compatibility. With optimization it would drop to ~5s.",
+    { now: "Local cryptographic setup (1 machine)", prod: "Public MPC ceremony with multiple participants" },
+    { now: "Shared symmetric view key", prod: "DAO multisig view key (3-of-5)" },
+    { now: "ASP tree = Pool tree (simplified)", prod: "Separate independent trees" },
+    { now: "Open root synchronization", prod: "Trusted relayer or on-chain computation" },
+    { now: "No external circuit audit", prod: "Professional audit before mainnet" },
+    { now: "ZK proof ~30s (single thread)", prod: "~5s with multi-threaded WebWorkers" },
   ],
 };
 
@@ -29,21 +31,21 @@ export default function MvpBanner() {
   if (dismissed) return null;
 
   return (
-    <div className="bg-pool-violet/8 border-b border-pool-violet/15">
+    <div className="bg-pool-violet/[0.06] border-b border-pool-violet/10">
       <div className="max-w-6xl mx-auto px-4 py-2">
         <div className="flex items-center justify-between gap-3">
           <div className="flex items-center gap-2 min-w-0">
             <FlaskConical size={14} className="text-pool-violet-light flex-shrink-0" />
             <span className="text-xs text-pool-text-dim">
               {lang === "es"
-                ? "MongliPool es un MVP para Stellar Hacks: ZK — corre en testnet, no en producción."
-                : "MongliPool is an MVP for Stellar Hacks: ZK — runs on testnet, not production."}
+                ? "MongliPool — prototipo MVP en Stellar testnet para Stellar Hacks: ZK"
+                : "MongliPool — MVP prototype on Stellar testnet for Stellar Hacks: ZK"}
             </span>
             <button
               onClick={() => setExpanded(!expanded)}
               className="text-xs text-pool-violet-light hover:text-pool-violet font-medium flex items-center gap-1 flex-shrink-0 cursor-pointer"
             >
-              {lang === "es" ? "Ver limitaciones" : "See limitations"}
+              {lang === "es" ? "Transparencia técnica" : "Technical transparency"}
               {expanded ? <ChevronUp size={12} /> : <ChevronDown size={12} />}
             </button>
           </div>
@@ -56,11 +58,24 @@ export default function MvpBanner() {
           </button>
         </div>
         {expanded && (
-          <ul className="mt-2 mb-1 space-y-1 pl-6">
-            {limitations[lang].map((item, i) => (
-              <li key={i} className="text-xs text-pool-text-dim list-disc">{item}</li>
-            ))}
-          </ul>
+          <div className="mt-3 mb-2">
+            <div className="grid grid-cols-[1fr_auto_1fr] gap-x-3 gap-y-1.5 text-xs">
+              <div className="font-medium text-pool-text-dim pb-1 border-b border-white/[0.06]">
+                {lang === "es" ? "En esta versión" : "Current version"}
+              </div>
+              <div className="pb-1 border-b border-white/[0.06]" />
+              <div className="font-medium text-pool-green pb-1 border-b border-white/[0.06]">
+                {lang === "es" ? "En producción" : "Production"}
+              </div>
+              {items[lang].map((item, i) => (
+                <div key={i} className="contents">
+                  <span className="text-pool-text-dim py-0.5">{item.now}</span>
+                  <ArrowRight size={10} className="text-pool-muted self-center" />
+                  <span className="text-pool-green/80 py-0.5">{item.prod}</span>
+                </div>
+              ))}
+            </div>
+          </div>
         )}
       </div>
     </div>

@@ -38,6 +38,7 @@ export default function Deposit() {
     setLoading(true);
     setError(null);
     setStep("generating");
+    document.documentElement.setAttribute("data-busy", "true");
 
     try {
       const parsedXLM = parseFloat(amountXLM);
@@ -46,7 +47,10 @@ export default function Deposit() {
           ? `Monto debe ser entre ${MIN_XLM} y ${MAX_XLM} XLM`
           : `Amount must be between ${MIN_XLM} and ${MAX_XLM} XLM`);
       }
-      const amount = BigInt(Math.round(parsedXLM * 1e7));
+      // Use string math to avoid float precision issues (667 * 1e7 must be exact)
+      const wholePart = Math.floor(parsedXLM);
+      const fracPart = Math.round((parsedXLM - wholePart) * 1e7);
+      const amount = BigInt(wholePart) * 10000000n + BigInt(fracPart);
 
       const secret = randomFieldElement();
       const nullifierSecret = randomFieldElement();
@@ -89,6 +93,7 @@ export default function Deposit() {
       setError(e instanceof Error ? e.message : t("deposit", "errorDeposit"));
       setStep("amount");
     } finally {
+      document.documentElement.removeAttribute("data-busy");
       setLoading(false);
     }
   }

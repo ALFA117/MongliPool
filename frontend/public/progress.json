@@ -45,7 +45,7 @@
         {"name": "Esquema de cifrado — NaCl secretbox (MVP simétrico)", "done": true},
         {"name": "Encrypt/decrypt en frontend lib", "done": true},
         {"name": "Panel de auditor con getDepositEvents()", "done": true},
-        {"name": "View key asimétrica real (DAO multisig)", "done": false}
+        {"name": "View key asimétrica real (DAO multisig) — mejora futura documentada", "done": false}
       ]
     },
     {

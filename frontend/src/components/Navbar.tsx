@@ -23,8 +23,8 @@ export default function Navbar() {
         {/* Logo */}
         <Link to="/" className="flex items-center gap-2.5 group" onClick={() => setMobileOpen(false)}>
           <img src="/logo.svg" alt="MongliPool" className="w-9 h-9 group-hover:drop-shadow-[0_0_8px_rgba(124,58,237,0.5)] transition-all duration-300" />
-          <span className="font-semibold text-pool-text text-[17px] tracking-tight">
-            Mongli<span className="text-pool-violet-light">Pool</span>
+          <span className="font-semibold text-[17px] tracking-tight bg-gradient-to-r from-pool-text via-pool-violet-light to-pool-green bg-clip-text text-transparent">
+            MongliPool
           </span>
         </Link>
 

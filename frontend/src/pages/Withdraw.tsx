@@ -36,6 +36,7 @@ export default function Withdraw() {
     }
     setError(null);
     setStep("prove");
+    document.documentElement.setAttribute("data-busy", "true");
     onProgress("Parsing receipt…", 5);
 
     try {
@@ -109,6 +110,8 @@ export default function Withdraw() {
     } catch (e: unknown) {
       setError(e instanceof Error ? e.message : "Unknown error");
       setStep("paste");
+    } finally {
+      document.documentElement.removeAttribute("data-busy");
     }
   }
 
