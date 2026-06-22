@@ -50,7 +50,7 @@ function useCountdown(deadline: string) {
 }
 
 export default function Status() {
-  const { t } = useI18n();
+  const { t, lang } = useI18n();
   const [data, setData] = useState<Progress | null>(null);
   const [error, setError] = useState<string | null>(null);
   const countdown = useCountdown(data?.deadline ?? new Date(Date.now() + 1).toISOString());
@@ -108,7 +108,7 @@ export default function Status() {
                 { val: countdown.d, label: t("status", "days") },
                 { val: countdown.h, label: "h" },
                 { val: countdown.m, label: "min" },
-                { val: countdown.s, label: "seg" },
+                { val: countdown.s, label: lang === "es" ? "seg" : "sec" },
               ].map(({ val, label }) => (
                 <div key={label} className="bg-white/[0.04] rounded-lg px-3 py-2 min-w-12">
                   <div className="font-mono font-bold text-2xl text-pool-violet-light tabular-nums">

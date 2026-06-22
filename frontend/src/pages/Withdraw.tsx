@@ -192,10 +192,10 @@ export default function Withdraw() {
         <div className="bg-white/[0.03] backdrop-blur-sm border border-white/[0.06] rounded-2xl p-8 animate-slide-up text-center">
           <div className="relative w-20 h-20 mx-auto mb-6">
             <svg className="w-20 h-20 -rotate-90" viewBox="0 0 80 80">
-              <circle cx="40" cy="40" r="36" fill="none" stroke="rgba(124,58,237,0.15)" strokeWidth="4" />
+              <circle cx="40" cy="40" r="36" fill="none" stroke="rgba(5,213,161,0.15)" strokeWidth="4" />
               <circle
                 cx="40" cy="40" r="36" fill="none"
-                stroke="#7c3aed" strokeWidth="4" strokeLinecap="round"
+                stroke="#05D5A1" strokeWidth="4" strokeLinecap="round"
                 strokeDasharray={`${2 * Math.PI * 36}`}
                 strokeDashoffset={`${2 * Math.PI * 36 * (1 - progressPct / 100)}`}
                 className="transition-all duration-500"

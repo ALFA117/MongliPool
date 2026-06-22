@@ -28,12 +28,12 @@
   }
 
   ::-webkit-scrollbar-thumb {
-    background: #1e1e4a;
+    background: #1a2d5a;
     border-radius: 999px;
   }
 
   ::-webkit-scrollbar-thumb:hover {
-    background: #7c3aed;
+    background: #05D5A1;
   }
 
   ::selection {
@@ -104,7 +104,7 @@
     @apply border-pool-violet/30 bg-white/[0.06];
     box-shadow:
       inset 0 1px 0 0 rgba(255, 255, 255, 0.06),
-      0 0 20px rgba(124, 58, 237, 0.1);
+      0 0 20px rgba(5, 213, 161, 0.1);
   }
 
   .btn-secondary:focus-visible {
@@ -137,7 +137,7 @@
   .input-field:focus {
     @apply outline-none border-pool-violet/50;
     box-shadow:
-      0 0 0 3px rgba(124, 58, 237, 0.15),
+      0 0 0 3px rgba(0, 102, 255, 0.2),
       inset 0 1px 0 0 rgba(255, 255, 255, 0.06);
   }
 

@@ -30,7 +30,7 @@ export default function Home() {
 
           <h1 className="text-5xl sm:text-6xl md:text-7xl font-bold tracking-[-0.03em] mb-7 leading-[1.05]">
             <span className="text-pool-text">{t("home", "heroTitle1")}</span>{" "}
-            <span className="bg-gradient-to-r from-pool-green via-pool-accent to-pool-violet bg-clip-text text-transparent glow-text">
+            <span className="bg-gradient-to-r from-[#05D5A1] via-[#00F5D4] to-[#0066FF] bg-clip-text text-transparent glow-text">
               {t("home", "heroTitle2")}
             </span>
           </h1>
@@ -97,7 +97,7 @@ export default function Home() {
 
       {/* How it works */}
       <section className="py-28 px-6 relative">
-        <div className="absolute inset-0 bg-violet-glow opacity-30 pointer-events-none" />
+        <div className="absolute inset-0 bg-gradient-radial opacity-30 pointer-events-none" />
         <div className="max-w-5xl mx-auto relative">
           <h2 className="text-3xl md:text-4xl font-bold text-center mb-3 tracking-tight">{t("home", "howTitle")}</h2>
           <p className="text-pool-text-dim text-center mb-16 text-lg">{t("home", "howSub")}</p>
@@ -106,24 +106,21 @@ export default function Home() {
             {[
               {
                 Icon: ArrowDownToLine,
-                color: "from-pool-violet to-pool-violet-dim",
-                accent: "pool-violet",
+                color: "from-pool-green to-pool-accent",
                 step: "01",
                 title: t("home", "step1Title"),
                 desc: t("home", "step1Desc"),
               },
               {
                 Icon: Sparkles,
-                color: "from-pool-violet to-purple-600",
-                accent: "purple-500",
+                color: "from-pool-accent to-pool-violet",
                 step: "02",
                 title: t("home", "step2Title"),
                 desc: t("home", "step2Desc"),
               },
               {
                 Icon: ArrowUpFromLine,
-                color: "from-purple-600 to-pool-green",
-                accent: "pool-green",
+                color: "from-pool-violet to-pool-green",
                 step: "03",
                 title: t("home", "step3Title"),
                 desc: t("home", "step3Desc"),
@@ -137,7 +134,7 @@ export default function Home() {
                   <Icon size={22} className="text-white" strokeWidth={2} />
                 </div>
                 <div className="text-[11px] text-pool-muted font-medium mb-3 uppercase tracking-[0.15em] font-mono">
-                  Step {step}
+                  {lang === "es" ? "Paso" : "Step"} {step}
                 </div>
                 <h3 className="text-lg font-semibold mb-3 tracking-tight">{title}</h3>
                 <p className="text-pool-text-dim text-[15px] leading-relaxed">{desc}</p>
@@ -193,7 +190,7 @@ export default function Home() {
             <div className="mt-4 flex items-center justify-center">
               <span className="badge-verified">
                 <CheckCircle size={10} />
-                Built by Mongli DAO
+                {lang === "es" ? "Hecho por Mongli DAO" : "Built by Mongli DAO"}
               </span>
             </div>
           </div>
@@ -256,7 +253,7 @@ export default function Home() {
 
       {/* CTA */}
       <section className="py-28 px-6 text-center relative">
-        <div className="absolute inset-0 bg-violet-glow opacity-20 pointer-events-none" />
+        <div className="absolute inset-0 bg-gradient-radial opacity-20 pointer-events-none" />
         <div className="relative">
           <h2 className="text-3xl md:text-4xl font-bold mb-4 tracking-tight">{t("home", "ctaBottom")}</h2>
           <p className="text-pool-text-dim mb-12 text-lg">{t("home", "ctaBottomSub")}</p>

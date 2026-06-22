@@ -124,7 +124,7 @@ export default function Deposit() {
             <div
               className={`w-9 h-9 rounded-full flex items-center justify-center text-xs font-bold transition-all duration-300 flex-shrink-0 ${
                 stepIndex === i
-                  ? "bg-gradient-to-br from-pool-violet to-purple-600 text-white shadow-violet animate-glow"
+                  ? "bg-gradient-to-br from-pool-green to-pool-violet text-white shadow-violet animate-glow"
                   : stepIndex > i
                   ? "bg-pool-green text-white shadow-green"
                   : "bg-white/[0.04] text-pool-muted border border-white/[0.08]"

@@ -10,7 +10,7 @@ function StaticFallback({ fullscreen }: { fullscreen?: boolean }) {
       className={`relative overflow-hidden flex items-center justify-center ${
         fullscreen ? "absolute inset-0" : "w-full h-full rounded-2xl"
       }`}
-      style={{ background: "radial-gradient(ellipse at center, rgba(124,58,237,0.08) 0%, #080816 70%)" }}
+      style={{ background: "radial-gradient(ellipse at center, rgba(5,213,161,0.08) 0%, #0A1128 70%)" }}
       role="img"
       aria-label="Privacy visualization"
     >

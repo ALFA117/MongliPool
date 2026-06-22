@@ -16,7 +16,7 @@ export default function Footer() {
           {/* Brand + Team */}
           <div className="md:col-span-2">
             <div className="flex items-center gap-2 mb-3">
-              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-pool-violet to-purple-600 flex items-center justify-center">
+              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-pool-green to-pool-violet flex items-center justify-center">
                 <span className="text-white font-bold text-sm">M</span>
               </div>
               <span className="font-semibold text-pool-text">

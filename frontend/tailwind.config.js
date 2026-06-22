@@ -27,9 +27,9 @@ export default {
       backgroundImage: {
         "gradient-radial": "radial-gradient(var(--tw-gradient-stops))",
         "pool-gradient":
-          "linear-gradient(135deg, #080816 0%, #0e0e24 50%, #080816 100%)",
+          "linear-gradient(135deg, #0A1128 0%, #0d1a3a 50%, #0A1128 100%)",
         "violet-glow":
-          "radial-gradient(ellipse at center, rgba(124,58,237,0.12) 0%, transparent 70%)",
+          "radial-gradient(ellipse at center, rgba(5,213,161,0.08) 0%, rgba(0,102,255,0.04) 40%, transparent 70%)",
         "glass-shine":
           "linear-gradient(135deg, rgba(255,255,255,0.04) 0%, transparent 50%, rgba(255,255,255,0.02) 100%)",
       },
