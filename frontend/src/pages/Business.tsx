@@ -111,8 +111,8 @@ export default function Business() {
               active: true,
             },
             {
-              phase: es ? "Post-hackathon" : "Post-hackathon",
-              desc: es ? "Auditoría de seguridad externa del circuito y contratos" : "External security audit of circuit and contracts",
+              phase: es ? "Seguridad de producción" : "Production Security",
+              desc: es ? "Ceremonia de trusted setup pública (MPC), auditoría externa del circuito ZK, migración a root updates con relayer" : "Public trusted setup ceremony (MPC), external ZK circuit audit, migration to relayer-based root updates",
               active: false,
             },
             {

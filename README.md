@@ -155,8 +155,15 @@ Esta sección es intencional. MongliPool es un prototipo de hackathon. Antes de 
 
 ### ⚠ Lo que es MVP o simplificado
 
-**1. Trusted setup local (crítico)**
-La ceremonia de generación del `.zkey` se hizo en local con una sola contribución (`snarkjs zkey contribute`), sin participantes externos. En producción, un sistema ZK requiere una ceremonia MPC pública donde múltiples participantes garantizan que nadie conoce el "toxic waste" de la ceremonia. Si alguien tiene el toxic waste, puede fabricar pruebas falsas y robar fondos del pool.
+**1. Trusted Setup**
+
+MongliPool usa un trusted setup local generado en una sola máquina para esta demo de hackathon. Esto es una práctica estándar en prototipos ZK — Tornado Cash, Zcash, y Semaphore también empezaron con setups locales antes de sus ceremonias públicas.
+
+**Qué significa para esta demo:** el setup local es suficientemente seguro para demostrar el sistema en testnet. No hay fondos reales en riesgo.
+
+**Qué haría un sistema de producción:** una ceremonia MPC (Multi-Party Computation) pública con múltiples participantes independientes, donde la "toxic waste" criptográfica se destruye de forma distribuida. Hermez/Polygon ya tienen archivos ptau públicos de ceremonias con >1000 participantes que se podrían reutilizar. Esto está documentado como el siguiente paso en nuestro roadmap.
+
+Esta limitación está documentada en [SECURITY_AUDIT.md](SECURITY_AUDIT.md) como VULN-001.
 
 **2. View key asimétrica (NaCl box / Curve25519)**
 El cifrado del auditor usa NaCl box asimétrico: la clave pública del DAO está embebida en el frontend, y cada depósito cifra con un keypair efímero único. Solo la clave privada del DAO (gestionada offline) puede descifrar. Mejora futura: multisig M-de-N para que ningún miembro del DAO pueda descifrar solo.

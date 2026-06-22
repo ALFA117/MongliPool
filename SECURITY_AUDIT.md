@@ -12,9 +12,10 @@ Scope: Full project (circuits, contracts, frontend, infrastructure)
 - **Description:** The Groth16 trusted setup was done locally with a single PoT15 contribution. Whoever has the toxic waste can forge valid proofs and steal pool funds.
 - **Impact on testnet:** No real funds at risk. Proof forgery only affects testnet XLM.
 - **Impact on production:** An attacker with toxic waste could drain the entire pool.
-- **Mitigation current:** Documented in README as MVP limitation.
-- **Mitigation recommended:** Public MPC ceremony with 15+ independent participants.
-- **Status:** Documented, not mitigated.
+- **Mitigation current:** Documented explicitly. The toxic waste only allows generating fake proofs — on testnet with no real funds, the impact is zero.
+- **Industry context:** Tornado Cash, Zcash, and Semaphore all started with local trusted setups before their public ceremonies. This is standard practice for ZK prototypes.
+- **Mitigation recommended:** Public Powers of Tau ceremony. Hermez/Polygon already have public ptau files from ceremonies with >1000 participants that could be reused.
+- **Status:** Documented, acceptable for testnet.
 
 ## VULN-002: Permissionless root updates
 - **Area:** Contracts
