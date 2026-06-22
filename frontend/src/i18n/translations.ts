@@ -52,6 +52,19 @@ export const translations = {
       es: "El ASP (Authorized Set Provider) de Mongli DAO verifica que cada depósito es legítimo. Un auditor autorizado puede ver los detalles con su llave de vista — nadie más.",
       en: "Mongli DAO's ASP (Authorized Set Provider) verifies every deposit is legit. An authorized auditor can see the details with their view key — nobody else.",
     },
+    // Case study
+    caseTitle: { es: "Un caso real", en: "A real case" },
+    caseProblem: {
+      es: "Sofía es tesorera de una DAO en Stellar. Cada mes paga a 15 contribuidores, pero cada pago es público: cualquiera puede ver cuánto gana cada persona, rastrear los fondos, y deducir la estructura salarial completa de la organización. Los contribuidores le han pedido privacidad, pero Sofía también necesita poder demostrarle al consejo del DAO que los fondos se usaron correctamente.",
+      en: "Sofia is a DAO treasurer on Stellar. Every month she pays 15 contributors, but every payment is public: anyone can see how much each person earns, track the funds, and deduce the organization's entire salary structure. Contributors have asked for privacy, but Sofia also needs to prove to the DAO council that funds were used correctly.",
+    },
+    caseSolution: {
+      es: "Con MongliPool, Sofía deposita los fondos en el pool. Cada contribuidor retira su pago a una dirección diferente — nadie puede conectar quién depositó con quién retiró. Pero si el consejo del DAO necesita auditar, el auditor autorizado usa su clave privada para ver el historial completo. Privacidad para los contribuidores. Transparencia para el consejo. Sin contradicción.",
+      en: "With MongliPool, Sofia deposits funds into the pool. Each contributor withdraws their payment to a different address — nobody can connect who deposited with who withdrew. But if the DAO council needs to audit, the authorized auditor uses their private key to see the complete history. Privacy for contributors. Transparency for the council. No contradiction.",
+    },
+    caseProblemLabel: { es: "El problema", en: "The problem" },
+    caseSolutionLabel: { es: "La solución", en: "The solution" },
+
     compItem1: { es: "Pruebas ZK verificadas on-chain en Soroban", en: "ZK proofs verified on-chain on Soroban" },
     compItem2: { es: "Sistema de auditoría con view key", en: "Audit system with view key" },
     compItem3: { es: "Doble gasto imposible por nullifier", en: "Double-spend impossible via nullifier" },

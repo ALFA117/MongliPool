@@ -1,6 +1,6 @@
 import { Suspense, lazy } from "react";
 import { Link } from "react-router-dom";
-import { ArrowDownToLine, Sparkles, ArrowUpFromLine, Shield, Eye, Lock, CheckCircle } from "lucide-react";
+import { ArrowDownToLine, Sparkles, ArrowUpFromLine, Shield, Eye, Lock, CheckCircle, AlertTriangle, Lightbulb } from "lucide-react";
 import { useI18n } from "../i18n/context";
 import Reveal from "../components/Reveal";
 
@@ -54,6 +54,46 @@ export default function Home() {
         {/* Subtle bottom fade */}
         <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-pool-bg to-transparent pointer-events-none" />
       </section>
+
+      {/* Real-world case study */}
+      <section className="py-20 px-6">
+        <div className="max-w-4xl mx-auto">
+          <Reveal>
+            <h2 className="text-3xl md:text-4xl font-bold text-center mb-12 tracking-tight">
+              {t("home", "caseTitle")}
+            </h2>
+          </Reveal>
+          <div className="grid md:grid-cols-2 gap-6">
+            <Reveal delay={100}>
+              <div className="glass-panel p-7 h-full border-red-500/10">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-10 h-10 rounded-xl bg-red-500/10 border border-red-500/20 flex items-center justify-center">
+                    <AlertTriangle size={20} className="text-red-400" />
+                  </div>
+                  <h3 className="font-semibold text-red-400">{t("home", "caseProblemLabel")}</h3>
+                </div>
+                <p className="text-pool-text-dim text-[15px] leading-relaxed">{t("home", "caseProblem")}</p>
+              </div>
+            </Reveal>
+            <Reveal delay={200}>
+              <div className="glass-panel p-7 h-full border-pool-green/10">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-10 h-10 rounded-xl bg-pool-green/10 border border-pool-green/20 flex items-center justify-center">
+                    <Lightbulb size={20} className="text-pool-green" />
+                  </div>
+                  <h3 className="font-semibold text-pool-green">{t("home", "caseSolutionLabel")}</h3>
+                </div>
+                <p className="text-pool-text-dim text-[15px] leading-relaxed">{t("home", "caseSolution")}</p>
+              </div>
+            </Reveal>
+          </div>
+        </div>
+      </section>
+
+      {/* Divider */}
+      <div className="max-w-5xl mx-auto px-6">
+        <div className="h-px bg-gradient-to-r from-transparent via-white/[0.06] to-transparent" />
+      </div>
 
       {/* How it works */}
       <section className="py-28 px-6 relative">
