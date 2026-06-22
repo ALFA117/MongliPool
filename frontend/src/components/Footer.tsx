@@ -53,6 +53,7 @@ export default function Footer() {
                 { to: "/deposit", label: lang === "es" ? "Depositar" : "Deposit" },
                 { to: "/withdraw", label: lang === "es" ? "Retirar" : "Withdraw" },
                 { to: "/auditor", label: "Auditor" },
+                { to: "/history", label: lang === "es" ? "Historial" : "History" },
                 { to: "/explorer", label: lang === "es" ? "Explorador" : "Explorer" },
                 { to: "/verify", label: lang === "es" ? "Verificar" : "Verify" },
                 { to: "/stats", label: lang === "es" ? "Métricas" : "Metrics" },

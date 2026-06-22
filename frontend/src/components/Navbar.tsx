@@ -12,7 +12,7 @@ const navItems = [
   { to: "/status", labelKey: "status", Icon: Activity },
 ] as const;
 
-export default function Navbar() {
+export default function Navbar({ onStartTour }: { onStartTour?: () => void }) {
   const { pathname } = useLocation();
   const { lang, toggleLang, t } = useI18n();
   const [mobileOpen, setMobileOpen] = useState(false);

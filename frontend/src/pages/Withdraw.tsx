@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { ClipboardPaste, AlertTriangle, CheckCircle, Sparkles, Info, ExternalLink, History } from "lucide-react";
+import { ClipboardPaste, AlertTriangle, CheckCircle, Sparkles, Info, ExternalLink, History, X } from "lucide-react";
 import { fromBase64, hex32ToBigint, bigintToHex32 } from "../lib/crypto";
 import { generateWithdrawProof, addressToField } from "../lib/zkproof";
 import { PoseidonMerkleTree } from "../lib/merkle";
@@ -267,8 +267,69 @@ export default function Withdraw() {
               {lang === "es" ? "Ver transacción en Stellar Expert" : "View transaction on Stellar Expert"}
             </a>
           )}
+
+          {/* Share */}
+          <ShareSection lang={lang} />
         </div>
       )}
+    </div>
+  );
+}
+
+function ShareSection({ lang }: { lang: string }) {
+  const [dismissed, setDismissed] = useState(false);
+  const es = lang === "es";
+
+  if (dismissed) return null;
+
+  const tweetText = encodeURIComponent(
+    es
+      ? "Acabo de hacer una transacción privada verificada con pruebas ZK en @StellarOrg 🔐\n\nMis fondos se movieron sin que nadie pueda vincular el origen con el destino — con cumplimiento regulatorio integrado.\n\nMongliPool por Mongli DAO\nmongli-pool.vercel.app\n#Stellar #ZKProof #Privacy"
+      : "Just made a verified private transaction with ZK proofs on @StellarOrg 🔐\n\nMy funds moved without anyone linking origin to destination — with built-in regulatory compliance.\n\nMongliPool by Mongli DAO\nmongli-pool.vercel.app\n#Stellar #ZKProof #Privacy"
+  );
+
+  const waText = encodeURIComponent(
+    es
+      ? "🔐 Acabo de mover fondos en blockchain con privacidad total usando MongliPool — un privacy pool con cumplimiento regulatorio en Stellar. Pruébalo: mongli-pool.vercel.app"
+      : "🔐 Just moved funds on blockchain with total privacy using MongliPool — a privacy pool with regulatory compliance on Stellar. Try it: mongli-pool.vercel.app"
+  );
+
+  return (
+    <div className="glass-panel p-5 relative">
+      <button onClick={() => setDismissed(true)} className="absolute top-3 right-3 text-pool-muted hover:text-pool-text cursor-pointer">
+        <X size={14} />
+      </button>
+      <p className="text-sm font-medium mb-3">{es ? "¿Quieres compartirlo?" : "Want to share?"}</p>
+      <div className="flex flex-wrap gap-2">
+        <a
+          href={`https://twitter.com/intent/tweet?text=${tweetText}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="btn-secondary py-2 px-4 text-xs inline-flex items-center gap-1.5"
+        >
+          𝕏 Twitter
+        </a>
+        <a
+          href={`https://wa.me/?text=${waText}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="btn-secondary py-2 px-4 text-xs inline-flex items-center gap-1.5"
+        >
+          WhatsApp
+        </a>
+        <button
+          onClick={() => {
+            navigator.clipboard.writeText(
+              es
+                ? "Acabo de hacer una transacción privada con ZK proofs en Stellar usando MongliPool. Privacidad real + cumplimiento regulatorio. mongli-pool.vercel.app"
+                : "Just made a private transaction with ZK proofs on Stellar using MongliPool. Real privacy + regulatory compliance. mongli-pool.vercel.app"
+            );
+          }}
+          className="btn-secondary py-2 px-4 text-xs inline-flex items-center gap-1.5 cursor-pointer"
+        >
+          {es ? "Copiar mensaje" : "Copy message"}
+        </button>
+      </div>
     </div>
   );
 }

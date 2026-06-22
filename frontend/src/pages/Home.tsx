@@ -1,12 +1,12 @@
 import { Suspense, lazy } from "react";
 import { Link } from "react-router-dom";
-import { ArrowDownToLine, Sparkles, ArrowUpFromLine, Shield, Eye, Lock, CheckCircle, AlertTriangle, Lightbulb } from "lucide-react";
+import { ArrowDownToLine, Sparkles, ArrowUpFromLine, Shield, Eye, Lock, CheckCircle, AlertTriangle, Lightbulb, Play } from "lucide-react";
 import { useI18n } from "../i18n/context";
 import Reveal from "../components/Reveal";
 
 const PrivacyVisualizer3D = lazy(() => import("../components/PrivacyVisualizer3D"));
 
-export default function Home() {
+export default function Home({ onStartTour }: { onStartTour?: () => void }) {
   const { t, lang } = useI18n();
 
   return (
@@ -49,6 +49,15 @@ export default function Home() {
               {t("home", "ctaWithdraw")}
             </Link>
           </div>
+          {onStartTour && (
+            <button
+              onClick={onStartTour}
+              className="mt-6 text-sm text-pool-accent hover:text-pool-green-light transition-colors inline-flex items-center gap-1.5 cursor-pointer mx-auto"
+            >
+              <Play size={14} />
+              {lang === "es" ? "Ver demo guiada →" : "See guided demo →"}
+            </button>
+          )}
         </div>
 
         {/* Subtle bottom fade */}
