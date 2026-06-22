@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { ArrowDownToLine, ArrowUpFromLine, Eye, Activity, BarChart3, Globe, Menu, X, Home } from "lucide-react";
+import { ArrowDownToLine, ArrowUpFromLine, Eye, Activity, BarChart3, Menu, X, Home } from "lucide-react";
 import { useI18n } from "../i18n/context";
 import WalletButton from "./WalletButton";
 
@@ -51,11 +51,20 @@ export default function Navbar({ onStartTour }: { onStartTour?: () => void }) {
         <div className="flex items-center gap-1.5">
           <button
             onClick={toggleLang}
-            className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-[11px] font-semibold text-pool-text-dim hover:text-pool-text hover:bg-white/[0.04] transition-all tracking-wider uppercase"
+            className="relative flex items-center w-[72px] h-8 rounded-full bg-white/[0.06] border border-white/[0.08] cursor-pointer overflow-hidden"
             aria-label="Toggle language"
           >
-            <Globe size={13} />
-            {lang}
+            <div
+              className={`absolute top-0.5 w-[34px] h-7 rounded-full bg-gradient-to-r from-pool-green to-pool-violet transition-all duration-300 ease-out ${
+                lang === "en" ? "left-[36px]" : "left-0.5"
+              }`}
+            />
+            <span className={`relative z-10 flex-1 text-center text-[10px] font-bold tracking-wider transition-colors duration-200 ${lang === "es" ? "text-white" : "text-pool-text-dim"}`}>
+              ES
+            </span>
+            <span className={`relative z-10 flex-1 text-center text-[10px] font-bold tracking-wider transition-colors duration-200 ${lang === "en" ? "text-white" : "text-pool-text-dim"}`}>
+              EN
+            </span>
           </button>
           <WalletButton />
           <button
