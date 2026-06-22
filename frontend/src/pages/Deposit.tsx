@@ -188,6 +188,8 @@ export default function Deposit() {
             <div className="relative">
               <input
                 type="number"
+                inputMode="decimal"
+                autoComplete="off"
                 min={MIN_XLM}
                 max={MAX_XLM}
                 step="1"

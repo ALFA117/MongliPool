@@ -7,7 +7,7 @@ import { getAccountBalance } from "../lib/stellar";
 
 export default function WalletButton() {
   const { t, lang } = useI18n();
-  const { address, loading, connect, disconnect } = useWallet();
+  const { address, loading, isGuest, connect, disconnect } = useWallet();
   const toast = useToast();
   const [menuOpen, setMenuOpen] = useState(false);
   const [balance, setBalance] = useState<number | null>(null);
@@ -38,9 +38,9 @@ export default function WalletButton() {
           onClick={() => setMenuOpen(!menuOpen)}
           className="flex items-center gap-2 bg-white/[0.04] border border-white/[0.08] rounded-xl px-3 py-2 hover:bg-white/[0.06] transition-all cursor-pointer"
         >
-          <div className="w-2 h-2 rounded-full bg-pool-green animate-pulse" />
+          <div className={`w-2 h-2 rounded-full ${isGuest ? "bg-amber-400" : "bg-pool-green"} animate-pulse`} />
           <span className="font-mono text-xs text-pool-text-dim">
-            {address.slice(0, 4)}...{address.slice(-4)}
+            {isGuest ? (lang === "es" ? "Temp" : "Guest") : `${address.slice(0, 4)}...${address.slice(-4)}`}
           </span>
           {balance !== null && (
             <span className="text-[10px] text-pool-green font-medium">

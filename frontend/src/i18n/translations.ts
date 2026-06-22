@@ -3,6 +3,7 @@ export type Lang = "es" | "en";
 export const translations = {
   // ─── Navbar ──────────────────────────────────────────────
   nav: {
+    home: { es: "Inicio", en: "Home" },
     deposit: { es: "Depositar", en: "Deposit" },
     withdraw: { es: "Retirar", en: "Withdraw" },
     auditor: { es: "Auditor", en: "Auditor" },

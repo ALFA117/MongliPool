@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { ExternalLink } from "lucide-react";
+import { ExternalLink, RotateCcw } from "lucide-react";
 import { useI18n } from "../i18n/context";
 
 const POOL_ID = import.meta.env.VITE_POOL_CONTRACT_ID ?? "";
@@ -15,14 +15,12 @@ export default function Footer() {
         <div className="grid md:grid-cols-4 gap-8 mb-10">
           {/* Brand + Team */}
           <div className="md:col-span-2">
-            <div className="flex items-center gap-2 mb-3">
-              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-pool-green to-pool-violet flex items-center justify-center">
-                <span className="text-white font-bold text-sm">M</span>
-              </div>
+            <Link to="/" className="flex items-center gap-2 mb-3 hover:opacity-80 transition-opacity">
+              <img src="/logo.svg" alt="MongliPool" className="w-8 h-8" />
               <span className="font-semibold text-pool-text">
                 Mongli<span className="text-pool-violet-light">Pool</span>
               </span>
-            </div>
+            </Link>
             <p className="text-pool-text-dim text-sm leading-relaxed mb-3 max-w-sm">
               {lang === "es"
                 ? "Pool de privacidad ZK en Stellar con cumplimiento regulatorio. Construido por Mongli DAO para Stellar Hacks: ZK."
@@ -100,6 +98,13 @@ export default function Footer() {
               <ExternalLink size={10} />
               GitHub
             </a>
+            <button
+              onClick={() => { localStorage.removeItem("monglipool-onboarded"); window.location.reload(); }}
+              className="flex items-center gap-1.5 text-xs text-pool-muted hover:text-pool-text-dim transition-colors mt-2 cursor-pointer"
+            >
+              <RotateCcw size={10} />
+              {lang === "es" ? "Ver introducción" : "Replay intro"}
+            </button>
           </div>
         </div>
 

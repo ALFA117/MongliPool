@@ -6,6 +6,7 @@ import AnimatedBg from "./components/AnimatedBg";
 import WalletGate from "./components/WalletGate";
 import DemoTour from "./components/DemoTour";
 import Onboarding from "./components/Onboarding";
+import ScrollToTop from "./components/ScrollToTop";
 import Home from "./pages/Home";
 import Deposit from "./pages/Deposit";
 import Withdraw from "./pages/Withdraw";
@@ -46,6 +47,7 @@ export default function App() {
         </Routes>
       </main>
       <Footer />
+      <ScrollToTop />
       {showTour && <DemoTour onClose={() => setShowTour(false)} />}
       {showOnboarding && (
         <Onboarding

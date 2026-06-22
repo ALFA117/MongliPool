@@ -130,6 +130,7 @@ export default function Auditor() {
         </div>
         <input
           type="password"
+          autoComplete="off"
           value={viewKeyInput}
           onChange={(e) => setViewKeyInput(e.target.value)}
           placeholder={t("auditor", "viewKeyPlaceholder")}
