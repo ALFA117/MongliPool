@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { ClipboardPaste, AlertTriangle, CheckCircle, Sparkles, Info, ExternalLink } from "lucide-react";
+import { ClipboardPaste, AlertTriangle, CheckCircle, Sparkles, Info, ExternalLink, History } from "lucide-react";
 import { fromBase64, hex32ToBigint, bigintToHex32 } from "../lib/crypto";
 import { generateWithdrawProof, addressToField } from "../lib/zkproof";
 import { PoseidonMerkleTree } from "../lib/merkle";
@@ -142,16 +142,33 @@ export default function Withdraw() {
               placeholder={t("withdraw", "receiptPlaceholder")}
               className="input-field h-32 resize-none"
             />
-            <button
-              onClick={async () => {
-                const text = await navigator.clipboard.readText();
-                setReceiptText(text);
-              }}
-              className="text-xs text-pool-violet-light hover:text-pool-violet mt-1.5 inline-flex items-center gap-1"
-            >
-              <ClipboardPaste size={12} />
-              {t("withdraw", "paste")}
-            </button>
+            <div className="flex gap-3 mt-1.5">
+              <button
+                onClick={async () => {
+                  const text = await navigator.clipboard.readText();
+                  setReceiptText(text);
+                }}
+                className="text-xs text-pool-violet-light hover:text-pool-violet inline-flex items-center gap-1 cursor-pointer"
+              >
+                <ClipboardPaste size={12} />
+                {t("withdraw", "paste")}
+              </button>
+              {(() => {
+                try {
+                  const saved = JSON.parse(localStorage.getItem("monglipool-receipts") || "[]");
+                  if (saved.length > 0) return (
+                    <button
+                      onClick={() => setReceiptText(saved[0])}
+                      className="text-xs text-pool-green hover:text-pool-green-light inline-flex items-center gap-1 cursor-pointer"
+                    >
+                      <History size={12} />
+                      {lang === "es" ? "Usar último recibo guardado" : "Use last saved receipt"}
+                    </button>
+                  );
+                } catch { /* ignore */ }
+                return null;
+              })()}
+            </div>
           </div>
 
           <div>
@@ -174,6 +191,13 @@ export default function Withdraw() {
               <strong className="text-pool-violet-light">{t("withdraw", "howTitle")}</strong>{" "}
               {t("withdraw", "howDesc")}
             </p>
+          </div>
+
+          <div className="bg-white/[0.03] border border-white/[0.06] rounded-lg px-3 py-2 mb-4 flex items-center gap-2">
+            <svg className="w-4 h-4 text-pool-accent flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" strokeWidth="1.5"/><path d="M12 6v6l4 2" strokeWidth="1.5" strokeLinecap="round"/></svg>
+            <span className="text-xs text-pool-text-dim">
+              {lang === "es" ? "Tiempo estimado: ~30-60 segundos (prueba ZK + firma + confirmación)" : "Estimated time: ~30-60 seconds (ZK proof + signing + confirmation)"}
+            </span>
           </div>
 
           <button

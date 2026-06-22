@@ -55,6 +55,27 @@ export default function Home() {
         <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-pool-bg to-transparent pointer-events-none" />
       </section>
 
+      {/* Live pool stats bar */}
+      <section className="py-8 px-6">
+        <Reveal>
+          <div className="max-w-4xl mx-auto flex flex-wrap justify-center gap-8 md:gap-16">
+            {[
+              { value: "1–1000", label: lang === "es" ? "XLM por depósito" : "XLM per deposit" },
+              { value: "~30s", label: lang === "es" ? "prueba ZK en browser" : "ZK proof in browser" },
+              { value: "3", label: lang === "es" ? "contratos en testnet" : "contracts on testnet" },
+              { value: "18/18", label: lang === "es" ? "tests pasando" : "tests passing" },
+            ].map(({ value, label }) => (
+              <div key={label} className="text-center">
+                <div className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-pool-green to-pool-violet bg-clip-text text-transparent">
+                  {value}
+                </div>
+                <div className="text-xs text-pool-text-dim mt-1">{label}</div>
+              </div>
+            ))}
+          </div>
+        </Reveal>
+      </section>
+
       {/* Real-world case study */}
       <section className="py-20 px-6">
         <div className="max-w-4xl mx-auto">

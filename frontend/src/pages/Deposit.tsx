@@ -1,5 +1,6 @@
-import { useState } from "react";
-import { ArrowDownToLine, Download, Copy, AlertTriangle, CheckCircle, ExternalLink, Info } from "lucide-react";
+import { useState, useRef, useEffect } from "react";
+import { ArrowDownToLine, Download, Copy, AlertTriangle, CheckCircle, ExternalLink, Info, RotateCcw, History } from "lucide-react";
+import { useToast } from "../components/Toast";
 import {
   randomFieldElement,
   computeCommitment,
@@ -24,6 +25,8 @@ const SUGGESTED = [10, 50, 100];
 export default function Deposit() {
   const { t, lang } = useI18n();
   const { address } = useWallet();
+  const toast = useToast();
+  const receiptRef = useRef<HTMLDivElement>(null);
   const [step, setStep] = useState<Step>("amount");
   const [amountXLM, setAmountXLM] = useState("10");
   const [receipt, setReceipt] = useState<string | null>(null);
@@ -31,6 +34,14 @@ export default function Deposit() {
   const [loading, setLoading] = useState(false);
   const [depositPhase, setDepositPhase] = useState("");
   const [txHash, setTxHash] = useState<string | null>(null);
+  const [savedReceipts, setSavedReceipts] = useState<string[]>([]);
+
+  useEffect(() => {
+    try {
+      const saved = JSON.parse(localStorage.getItem("monglipool-receipts") || "[]");
+      if (Array.isArray(saved)) setSavedReceipts(saved);
+    } catch { /* ignore */ }
+  }, []);
 
   async function handleDeposit() {
     if (!address) return;
@@ -74,8 +85,12 @@ export default function Deposit() {
       const hash = await deposit(address, commitmentHex, encryptedNote, amount);
       setTxHash(hash);
 
-      // Save receipt to localStorage as backup
-      try { localStorage.setItem("monglipool-last-receipt", receiptB64); } catch { /* quota */ }
+      try {
+        const prev = JSON.parse(localStorage.getItem("monglipool-receipts") || "[]");
+        const updated = [receiptB64, ...prev].slice(0, 20);
+        localStorage.setItem("monglipool-receipts", JSON.stringify(updated));
+        setSavedReceipts(updated);
+      } catch { /* quota */ }
 
       setDepositPhase("2/3");
       const rawCommitments = await getCommitments();
@@ -88,6 +103,7 @@ export default function Deposit() {
       await updateAspRoot(address, newRoot);
 
       setStep("done");
+      setTimeout(() => receiptRef.current?.scrollIntoView({ behavior: "smooth", block: "center" }), 200);
     } catch (e: unknown) {
       setError(e instanceof Error ? e.message : t("deposit", "errorDeposit"));
       setStep("amount");
@@ -243,7 +259,7 @@ export default function Deposit() {
 
       {/* Done */}
       {step === "done" && receipt && (
-        <div className="animate-slide-up space-y-4">
+        <div ref={receiptRef} className="animate-slide-up space-y-4">
           <div className="bg-pool-green/5 border border-pool-green/20 rounded-2xl text-center py-7 px-6">
             <div className="w-14 h-14 rounded-full bg-pool-green/20 flex items-center justify-center mx-auto mb-4">
               <CheckCircle size={28} className="text-pool-green" />
@@ -264,7 +280,10 @@ export default function Deposit() {
                 {t("deposit", "download")}
               </button>
               <button
-                onClick={() => navigator.clipboard.writeText(receipt)}
+                onClick={() => {
+                  navigator.clipboard.writeText(receipt);
+                  toast.show(lang === "es" ? "Recibo copiado al portapapeles" : "Receipt copied to clipboard");
+                }}
                 className="btn-secondary flex-1 text-sm py-2.5 inline-flex items-center justify-center gap-2"
               >
                 <Copy size={16} />
@@ -298,6 +317,45 @@ export default function Deposit() {
             <AlertTriangle size={16} className="text-amber-400 flex-shrink-0 mt-0.5" />
             <p className="text-amber-300 text-xs">{t("deposit", "warning")}</p>
           </div>
+
+          <button
+            onClick={() => { setStep("amount"); setReceipt(null); setTxHash(null); setError(null); setDepositPhase(""); }}
+            className="btn-secondary w-full text-sm py-2.5 inline-flex items-center justify-center gap-2"
+          >
+            <RotateCcw size={14} />
+            {lang === "es" ? "Hacer otro depósito" : "Make another deposit"}
+          </button>
+        </div>
+      )}
+
+      {/* Saved receipts */}
+      {savedReceipts.length > 0 && step === "amount" && (
+        <div className="mt-10 glass-panel p-5">
+          <div className="flex items-center gap-2 mb-3">
+            <History size={16} className="text-pool-text-dim" />
+            <h3 className="text-sm font-semibold text-pool-text-dim">
+              {lang === "es" ? `${savedReceipts.length} recibo(s) guardado(s)` : `${savedReceipts.length} saved receipt(s)`}
+            </h3>
+          </div>
+          <div className="space-y-2">
+            {savedReceipts.slice(0, 3).map((r, i) => (
+              <div key={i} className="flex items-center justify-between gap-3 bg-white/[0.03] rounded-lg px-3 py-2">
+                <span className="font-mono text-[10px] text-pool-text-dim truncate flex-1">{r.substring(0, 40)}...</span>
+                <button
+                  onClick={() => { navigator.clipboard.writeText(r); toast.show(lang === "es" ? "Recibo copiado" : "Receipt copied"); }}
+                  className="text-pool-green hover:text-pool-green-light text-xs flex items-center gap-1 cursor-pointer flex-shrink-0"
+                >
+                  <Copy size={12} />
+                  {lang === "es" ? "Copiar" : "Copy"}
+                </button>
+              </div>
+            ))}
+          </div>
+          {savedReceipts.length > 3 && (
+            <p className="text-[10px] text-pool-muted mt-2">
+              {lang === "es" ? `+${savedReceipts.length - 3} más guardados` : `+${savedReceipts.length - 3} more saved`}
+            </p>
+          )}
         </div>
       )}
     </div>
