@@ -158,6 +158,36 @@ export async function deposit(
   return hash;
 }
 
+export async function getAccountBalance(address: string): Promise<number> {
+  try {
+    const resp = await fetch(`https://horizon-testnet.stellar.org/accounts/${address}`);
+    if (!resp.ok) return 0;
+    const data = await resp.json();
+    const xlm = data.balances?.find((b: { asset_type: string }) => b.asset_type === "native");
+    return xlm ? parseFloat(xlm.balance) : 0;
+  } catch {
+    return 0;
+  }
+}
+
+export async function getPoolDepositCount(): Promise<number> {
+  try {
+    const retval = await simulateReadOnly(POOL_CONTRACT_ID, "get_deposit_count");
+    return scValToNative(retval) as number;
+  } catch {
+    return 0;
+  }
+}
+
+export async function getPoolBalance(): Promise<number> {
+  try {
+    const retval = await simulateReadOnly(POOL_CONTRACT_ID, "get_pool_balance");
+    return Number(scValToNative(retval) as bigint) / 1e7;
+  } catch {
+    return 0;
+  }
+}
+
 export async function getCommitments(): Promise<string[]> {
   const retval = await simulateReadOnly(POOL_CONTRACT_ID, "get_commitments");
   const result = scValToNative(retval);

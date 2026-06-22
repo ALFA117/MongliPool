@@ -35,6 +35,15 @@ export default function Deposit() {
   const [depositPhase, setDepositPhase] = useState("");
   const [txHash, setTxHash] = useState<string | null>(null);
   const [savedReceipts, setSavedReceipts] = useState<string[]>([]);
+  const [walletBalance, setWalletBalance] = useState<number | null>(null);
+
+  useEffect(() => {
+    if (address) {
+      import("../lib/stellar").then(({ getAccountBalance }) =>
+        getAccountBalance(address).then(setWalletBalance)
+      );
+    }
+  }, [address]);
 
   useEffect(() => {
     try {
@@ -188,9 +197,24 @@ export default function Deposit() {
               />
               <span className="absolute right-4 top-1/2 -translate-y-1/2 text-pool-text-dim font-medium text-sm">XLM</span>
             </div>
-            <p className="text-xs text-pool-muted mt-1.5">
-              {lang === "es" ? `Mínimo ${MIN_XLM} XLM — Máximo ${MAX_XLM} XLM` : `Min ${MIN_XLM} XLM — Max ${MAX_XLM} XLM`}
-            </p>
+            <div className="flex items-center justify-between mt-1.5">
+              <p className="text-xs text-pool-muted">
+                {lang === "es" ? `Mín ${MIN_XLM} — Máx ${MAX_XLM} XLM` : `Min ${MIN_XLM} — Max ${MAX_XLM} XLM`}
+              </p>
+              {walletBalance !== null && (
+                <p className="text-xs text-pool-text-dim">
+                  {lang === "es" ? "Disponible:" : "Available:"}{" "}
+                  <span className={parseFloat(amountXLM) > walletBalance ? "text-red-400" : "text-pool-green"}>
+                    {walletBalance.toFixed(1)} XLM
+                  </span>
+                </p>
+              )}
+            </div>
+            {walletBalance !== null && parseFloat(amountXLM) > walletBalance && (
+              <p className="text-xs text-red-400 mt-1">
+                {lang === "es" ? "Saldo insuficiente" : "Insufficient balance"}
+              </p>
+            )}
           </div>
 
           {/* Suggested amounts */}

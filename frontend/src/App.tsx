@@ -10,6 +10,8 @@ import Auditor from "./pages/Auditor";
 import Status from "./pages/Status";
 import Stats from "./pages/Stats";
 import Business from "./pages/Business";
+import Explorer from "./pages/Explorer";
+import Verify from "./pages/Verify";
 
 export default function App() {
   return (
@@ -22,6 +24,8 @@ export default function App() {
           <Route path="/deposit" element={<WalletGate><Deposit /></WalletGate>} />
           <Route path="/withdraw" element={<WalletGate><Withdraw /></WalletGate>} />
           <Route path="/auditor" element={<Auditor />} />
+          <Route path="/explorer" element={<Explorer />} />
+          <Route path="/verify" element={<Verify />} />
           <Route path="/status" element={<Status />} />
           <Route path="/stats" element={<Stats />} />
           <Route path="/business" element={<Business />} />
