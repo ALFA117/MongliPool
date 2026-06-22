@@ -47,11 +47,12 @@ export default function Navbar({ onStartTour }: { onStartTour?: () => void }) {
           ))}
         </div>
 
-        {/* Right side */}
+        {/* Right side — desktop: lang + wallet + hamburger; mobile: only hamburger */}
         <div className="flex items-center gap-1.5">
+          {/* Language toggle — desktop only */}
           <button
             onClick={toggleLang}
-            className="relative flex items-center w-[72px] h-8 rounded-full bg-white/[0.06] border border-white/[0.08] cursor-pointer overflow-hidden"
+            className="hidden md:flex relative items-center w-[72px] h-8 rounded-full bg-white/[0.06] border border-white/[0.08] cursor-pointer overflow-hidden"
             aria-label="Toggle language"
           >
             <div
@@ -66,7 +67,11 @@ export default function Navbar({ onStartTour }: { onStartTour?: () => void }) {
               EN
             </span>
           </button>
-          <WalletButton />
+          {/* Wallet — desktop only */}
+          <div className="hidden md:block">
+            <WalletButton />
+          </div>
+          {/* Hamburger — mobile only */}
           <button
             onClick={() => setMobileOpen(!mobileOpen)}
             className="md:hidden p-2.5 rounded-lg text-pool-text-dim hover:text-pool-text hover:bg-white/[0.04] transition-colors"
@@ -81,12 +86,24 @@ export default function Navbar({ onStartTour }: { onStartTour?: () => void }) {
       {mobileOpen && (
         <div className="md:hidden border-t border-white/[0.04] bg-pool-bg/95 backdrop-blur-2xl animate-slide-up">
           <div className="px-4 py-3 space-y-1">
+            {/* Wallet + language in mobile menu */}
+            <div className="flex items-center justify-between px-4 py-3 border-b border-white/[0.06] mb-2">
+              <WalletButton />
+              <button
+                onClick={toggleLang}
+                className="relative flex items-center w-[64px] h-7 rounded-full bg-white/[0.06] border border-white/[0.08] cursor-pointer overflow-hidden"
+              >
+                <div className={`absolute top-0.5 w-[30px] h-6 rounded-full bg-gradient-to-r from-pool-green to-pool-violet transition-all duration-300 ease-out ${lang === "en" ? "left-[32px]" : "left-0.5"}`} />
+                <span className={`relative z-10 flex-1 text-center text-[9px] font-bold ${lang === "es" ? "text-white" : "text-pool-text-dim"}`}>ES</span>
+                <span className={`relative z-10 flex-1 text-center text-[9px] font-bold ${lang === "en" ? "text-white" : "text-pool-text-dim"}`}>EN</span>
+              </button>
+            </div>
             {navItems.map(({ to, labelKey, Icon }) => (
               <Link
                 key={to}
                 to={to}
                 onClick={() => setMobileOpen(false)}
-                className={`flex items-center gap-3 px-4 py-3.5 rounded-xl text-sm font-medium transition-all ${
+                className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all ${
                   pathname === to
                     ? "bg-pool-violet/12 text-pool-violet-light"
                     : "text-pool-text-dim hover:text-pool-text hover:bg-white/[0.04]"

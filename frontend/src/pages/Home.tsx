@@ -12,40 +12,38 @@ export default function Home({ onStartTour }: { onStartTour?: () => void }) {
   return (
     <div className="flex flex-col">
       {/* Hero with 3D background */}
-      <section className="relative overflow-hidden min-h-[90vh] flex items-center justify-center">
+      <section className="relative overflow-hidden min-h-[auto] md:min-h-[90vh] flex items-center justify-center py-16 md:py-0">
         <Suspense fallback={<div className="absolute inset-0 bg-pool-bg" />}>
           <PrivacyVisualizer3D fullscreen className="opacity-30" />
         </Suspense>
 
-        {/* Gradient overlays */}
         <div className="absolute inset-0 bg-gradient-to-b from-pool-bg/60 via-transparent to-pool-bg pointer-events-none" />
         <div className="absolute inset-0 bg-gradient-to-r from-pool-bg/40 via-transparent to-pool-bg/40 pointer-events-none" />
 
-        {/* Content */}
-        <div className="relative z-10 max-w-3xl mx-auto text-center px-6 animate-fade-in">
-          <div className="inline-flex items-center gap-2 bg-pool-green/8 text-pool-green border border-pool-green/15 px-4 py-1.5 rounded-full text-xs font-medium mb-10 shadow-inner-glow animate-float">
-            <CheckCircle size={12} />
+        <div className="relative z-10 max-w-3xl mx-auto text-center px-4 md:px-6">
+          <div className="inline-flex items-center gap-1.5 bg-pool-green/8 text-pool-green border border-pool-green/15 px-3 py-1 md:px-4 md:py-1.5 rounded-full text-[11px] md:text-xs font-medium mb-6 md:mb-10">
+            <CheckCircle size={11} />
             {t("home", "badge")}
           </div>
 
-          <h1 className="text-4xl sm:text-5xl md:text-7xl font-bold tracking-[-0.03em] mb-7 leading-[1.05]">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-7xl font-bold tracking-tight mb-4 md:mb-7 leading-tight">
             <span className="text-pool-text">{t("home", "heroTitle1")}</span>{" "}
-            <span className="bg-gradient-to-r from-[#05D5A1] via-[#00F5D4] to-[#0066FF] bg-clip-text text-transparent glow-text">
+            <span className="bg-gradient-to-r from-[#05D5A1] via-[#00F5D4] to-[#0066FF] bg-clip-text text-transparent">
               {t("home", "heroTitle2")}
             </span>
           </h1>
 
-          <p className="text-pool-text-dim text-lg md:text-xl max-w-xl mx-auto mb-12 leading-relaxed tracking-[-0.01em]">
+          <p className="text-pool-text-dim text-sm md:text-lg max-w-xl mx-auto mb-6 md:mb-12 leading-relaxed">
             {t("home", "heroSub")}
           </p>
 
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link to="/deposit" className="btn-primary text-base inline-flex items-center justify-center gap-2.5 px-8 py-3.5">
-              <ArrowDownToLine size={18} strokeWidth={2.5} />
+          <div className="flex flex-col sm:flex-row gap-3 justify-center">
+            <Link to="/deposit" className="btn-primary text-sm md:text-base inline-flex items-center justify-center gap-2 px-6 py-3 md:px-8 md:py-3.5">
+              <ArrowDownToLine size={16} strokeWidth={2.5} />
               {t("home", "ctaDeposit")}
             </Link>
-            <Link to="/withdraw" className="btn-secondary text-base inline-flex items-center justify-center gap-2.5 px-8 py-3.5">
-              <ArrowUpFromLine size={18} />
+            <Link to="/withdraw" className="btn-secondary text-sm md:text-base inline-flex items-center justify-center gap-2 px-6 py-3 md:px-8 md:py-3.5">
+              <ArrowUpFromLine size={16} />
               {t("home", "ctaWithdraw")}
             </Link>
           </div>
@@ -86,7 +84,7 @@ export default function Home({ onStartTour }: { onStartTour?: () => void }) {
       </section>
 
       {/* Real-world case study */}
-      <section className="py-20 px-6">
+      <section className="py-10 md:py-20 px-4 md:px-6">
         <div className="max-w-4xl mx-auto">
           <Reveal>
             <h2 className="text-3xl md:text-4xl font-bold text-center mb-12 tracking-tight">
@@ -126,7 +124,7 @@ export default function Home({ onStartTour }: { onStartTour?: () => void }) {
       </div>
 
       {/* How it works */}
-      <section className="py-28 px-6 relative">
+      <section className="py-12 md:py-28 px-4 md:px-6 relative">
         <div className="absolute inset-0 bg-gradient-radial opacity-30 pointer-events-none" />
         <div className="max-w-5xl mx-auto relative">
           <h2 className="text-3xl md:text-4xl font-bold text-center mb-3 tracking-tight">{t("home", "howTitle")}</h2>
@@ -181,7 +179,7 @@ export default function Home({ onStartTour }: { onStartTour?: () => void }) {
       </div>
 
       {/* Compliance */}
-      <section className="py-28 px-6">
+      <section className="py-12 md:py-28 px-4 md:px-6">
         <div className="max-w-5xl mx-auto grid md:grid-cols-2 gap-16 items-center">
           <div>
             <h2 className="text-3xl md:text-4xl font-bold mb-6 tracking-tight">
@@ -233,7 +231,7 @@ export default function Home({ onStartTour }: { onStartTour?: () => void }) {
       </div>
 
       {/* FAQ */}
-      <section className="py-24 px-6">
+      <section className="py-10 md:py-24 px-4 md:px-6">
         <div className="max-w-3xl mx-auto">
           <h2 className="text-3xl font-bold text-center mb-12 tracking-tight">
             {lang === "es" ? "Preguntas frecuentes" : "FAQ"}
@@ -282,7 +280,7 @@ export default function Home({ onStartTour }: { onStartTour?: () => void }) {
       </div>
 
       {/* CTA */}
-      <section className="py-28 px-6 text-center relative">
+      <section className="py-12 md:py-28 px-4 md:px-6 text-center relative">
         <div className="absolute inset-0 bg-gradient-radial opacity-20 pointer-events-none" />
         <div className="relative">
           <h2 className="text-3xl md:text-4xl font-bold mb-4 tracking-tight">{t("home", "ctaBottom")}</h2>
