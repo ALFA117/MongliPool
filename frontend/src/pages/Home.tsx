@@ -23,14 +23,14 @@ export default function Home() {
 
         {/* Content */}
         <div className="relative z-10 max-w-3xl mx-auto text-center px-6 animate-fade-in">
-          <div className="inline-flex items-center gap-2 bg-pool-green/8 text-pool-green border border-pool-green/15 px-4 py-1.5 rounded-full text-xs font-medium mb-10 shadow-inner-glow">
+          <div className="inline-flex items-center gap-2 bg-pool-green/8 text-pool-green border border-pool-green/15 px-4 py-1.5 rounded-full text-xs font-medium mb-10 shadow-inner-glow animate-float">
             <CheckCircle size={12} />
             {t("home", "badge")}
           </div>
 
           <h1 className="text-5xl sm:text-6xl md:text-7xl font-bold tracking-[-0.03em] mb-7 leading-[1.05]">
             <span className="text-pool-text">{t("home", "heroTitle1")}</span>{" "}
-            <span className="bg-gradient-to-r from-pool-violet via-pool-violet-light to-pool-green bg-clip-text text-transparent">
+            <span className="bg-gradient-to-r from-pool-green via-pool-accent to-pool-violet bg-clip-text text-transparent glow-text">
               {t("home", "heroTitle2")}
             </span>
           </h1>
@@ -65,7 +65,7 @@ export default function Home() {
           </Reveal>
           <div className="grid md:grid-cols-2 gap-6">
             <Reveal delay={100}>
-              <div className="glass-panel p-7 h-full border-red-500/10">
+              <div className="glass-panel animated-border p-7 h-full border-red-500/10">
                 <div className="flex items-center gap-3 mb-4">
                   <div className="w-10 h-10 rounded-xl bg-red-500/10 border border-red-500/20 flex items-center justify-center">
                     <AlertTriangle size={20} className="text-red-400" />
@@ -76,7 +76,7 @@ export default function Home() {
               </div>
             </Reveal>
             <Reveal delay={200}>
-              <div className="glass-panel p-7 h-full border-pool-green/10">
+              <div className="glass-panel animated-border p-7 h-full border-pool-green/10">
                 <div className="flex items-center gap-3 mb-4">
                   <div className="w-10 h-10 rounded-xl bg-pool-green/10 border border-pool-green/20 flex items-center justify-center">
                     <Lightbulb size={20} className="text-pool-green" />
@@ -131,7 +131,7 @@ export default function Home() {
             ].map(({ Icon, color, step, title, desc }, i) => (
               <Reveal key={step} delay={i * 100}>
               <div
-                className="group glass-panel p-8 hover:border-white/[0.12] transition-all duration-300 card-hover"
+                className="group glass-panel animated-border p-8 transition-all duration-300 card-hover"
               >
                 <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${color} flex items-center justify-center mb-6 shadow-violet-sm group-hover:shadow-violet transition-shadow duration-300`}>
                   <Icon size={22} className="text-white" strokeWidth={2} />
@@ -164,7 +164,7 @@ export default function Home() {
             </h2>
             <p className="text-pool-text-dim leading-relaxed mb-10 text-[15px]">{t("home", "compDesc")}</p>
 
-            <div className="flex flex-col gap-5">
+            <div className="flex flex-col gap-5 stagger-children">
               {[
                 { icon: Shield, text: t("home", "compItem1") },
                 { icon: Eye, text: t("home", "compItem2") },
@@ -172,7 +172,7 @@ export default function Home() {
                 { icon: CheckCircle, text: t("home", "compItem4") },
               ].map(({ icon: Icon, text }) => (
                 <div key={text} className="flex items-center gap-4">
-                  <div className="w-9 h-9 rounded-lg bg-pool-green/8 border border-pool-green/15 flex items-center justify-center flex-shrink-0 shadow-inner-glow">
+                  <div className="relative w-9 h-9 rounded-lg bg-pool-green/8 border border-pool-green/15 flex items-center justify-center flex-shrink-0 shadow-inner-glow pulse-ring text-pool-green">
                     <Icon size={16} className="text-pool-green" />
                   </div>
                   <span className="text-pool-text-dim text-[15px]">{text}</span>
@@ -239,7 +239,7 @@ export default function Home() {
               },
             ].map(({ q, a }, i) => (
               <Reveal key={q} delay={i * 80}>
-                <div className="glass-panel p-5 card-hover">
+                <div className="glass-panel animated-border p-5 card-hover">
                   <h3 className="font-semibold text-pool-text mb-2">{q}</h3>
                   <p className="text-pool-text-dim text-sm leading-relaxed">{a}</p>
                 </div>

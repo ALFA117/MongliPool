@@ -1,6 +1,5 @@
 import { Routes, Route } from "react-router-dom";
 import Navbar from "./components/Navbar";
-import MvpBanner from "./components/MvpBanner";
 import Footer from "./components/Footer";
 import AnimatedBg from "./components/AnimatedBg";
 import WalletGate from "./components/WalletGate";
@@ -16,7 +15,6 @@ export default function App() {
   return (
     <div className="min-h-screen bg-pool-bg text-pool-text flex flex-col">
       <AnimatedBg />
-      <MvpBanner />
       <Navbar />
       <main className="flex-1">
         <Routes>
