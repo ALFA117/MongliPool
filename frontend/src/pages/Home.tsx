@@ -28,7 +28,7 @@ export default function Home({ onStartTour }: { onStartTour?: () => void }) {
             {t("home", "badge")}
           </div>
 
-          <h1 className="text-5xl sm:text-6xl md:text-7xl font-bold tracking-[-0.03em] mb-7 leading-[1.05]">
+          <h1 className="text-4xl sm:text-5xl md:text-7xl font-bold tracking-[-0.03em] mb-7 leading-[1.05]">
             <span className="text-pool-text">{t("home", "heroTitle1")}</span>{" "}
             <span className="bg-gradient-to-r from-[#05D5A1] via-[#00F5D4] to-[#0066FF] bg-clip-text text-transparent glow-text">
               {t("home", "heroTitle2")}
@@ -67,7 +67,7 @@ export default function Home({ onStartTour }: { onStartTour?: () => void }) {
       {/* Live pool stats bar */}
       <section className="py-8 px-6">
         <Reveal>
-          <div className="max-w-4xl mx-auto flex flex-wrap justify-center gap-8 md:gap-16">
+          <div className="max-w-4xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-8">
             {[
               { value: "1–1000", label: lang === "es" ? "XLM por depósito" : "XLM per deposit" },
               { value: "~30s", label: lang === "es" ? "prueba ZK en browser" : "ZK proof in browser" },

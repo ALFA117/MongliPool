@@ -197,7 +197,7 @@ export default function Status() {
                 {name.replace(/_/g, " ")}
               </span>
               {addr ? (
-                <span className="font-mono text-xs text-pool-green bg-pool-green/10 px-2 py-1 rounded truncate max-w-[280px]">
+                <span className="font-mono text-[10px] sm:text-xs text-pool-green bg-pool-green/10 px-2 py-1 rounded truncate max-w-[160px] sm:max-w-[280px]">
                   {addr}
                 </span>
               ) : (
