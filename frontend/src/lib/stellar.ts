@@ -229,14 +229,32 @@ export async function getDepositEvents(): Promise<
       const topicName = typeof topicVal === "string" ? topicVal : scValToNative(topicVal as xdr.ScVal);
       if (topicName !== "deposit") continue;
 
-      const eventData = scValToNative(e.value as xdr.ScVal) as {
-        commitment: Uint8Array;
-        encrypted_note: Uint8Array;
-        leaf_index: number;
-      };
+      const eventData = scValToNative(e.value as xdr.ScVal) as Record<string, unknown>;
+      const rawNote = eventData.encrypted_note;
+      const rawCommit = eventData.commitment;
+
+      // Ensure proper Uint8Array — scValToNative may return Buffer or typed array
+      let noteBytes: Uint8Array;
+      if (rawNote instanceof Uint8Array) {
+        noteBytes = new Uint8Array(rawNote);
+      } else if (rawNote && typeof rawNote === "object" && "data" in (rawNote as {data?: number[]})) {
+        noteBytes = new Uint8Array((rawNote as {data: number[]}).data);
+      } else {
+        noteBytes = new Uint8Array(rawNote as ArrayBuffer);
+      }
+
+      let commitBytes: Uint8Array;
+      if (rawCommit instanceof Uint8Array) {
+        commitBytes = new Uint8Array(rawCommit);
+      } else if (rawCommit && typeof rawCommit === "object" && "data" in (rawCommit as {data?: number[]})) {
+        commitBytes = new Uint8Array((rawCommit as {data: number[]}).data);
+      } else {
+        commitBytes = new Uint8Array(rawCommit as ArrayBuffer);
+      }
+
       results.push({
-        commitment: uint8ArrayToHex(new Uint8Array(eventData.commitment)),
-        encryptedNote: new Uint8Array(eventData.encrypted_note),
+        commitment: uint8ArrayToHex(commitBytes),
+        encryptedNote: noteBytes,
         timestamp: new Date(e.ledgerClosedAt).getTime(),
       });
     } catch {
