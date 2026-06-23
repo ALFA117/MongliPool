@@ -212,27 +212,30 @@ export async function getDepositEvents(): Promise<
     limit: 100,
   });
 
-  // Filter for deposit events client-side and parse the DepositEvent struct
-  return events.events
-    .filter((e) => {
-      try {
-        return scValToNative(e.topic[0] as xdr.ScVal) === "deposit";
-      } catch {
-        return false;
-      }
-    })
-    .map((e) => {
+  const results: Array<{ commitment: string; encryptedNote: Uint8Array; timestamp: number }> = [];
+
+  for (const e of events.events) {
+    try {
+      const topicVal = e.topic?.[0];
+      if (!topicVal) continue;
+      const topicName = typeof topicVal === "string" ? topicVal : scValToNative(topicVal as xdr.ScVal);
+      if (topicName !== "deposit") continue;
+
       const eventData = scValToNative(e.value as xdr.ScVal) as {
         commitment: Uint8Array;
         encrypted_note: Uint8Array;
         leaf_index: number;
       };
-      return {
+      results.push({
         commitment: uint8ArrayToHex(new Uint8Array(eventData.commitment)),
         encryptedNote: new Uint8Array(eventData.encrypted_note),
         timestamp: new Date(e.ledgerClosedAt).getTime(),
-      };
-    });
+      });
+    } catch {
+      // Skip unparseable events
+    }
+  }
+  return results;
 }
 
 export async function getAspRoot(): Promise<string | null> {
