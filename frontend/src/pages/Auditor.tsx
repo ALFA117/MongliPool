@@ -35,6 +35,7 @@ export default function Auditor() {
 
     try {
       const trimmed = viewKeyInput.trim();
+      console.log("[AUDIT] raw input length:", trimmed.length, "first8:", trimmed.substring(0, 8), "last8:", trimmed.substring(trimmed.length - 8));
       if (!/^[0-9a-fA-F]{64}$/.test(trimmed)) {
         throw new Error(lang === "es"
           ? "La clave privada debe tener exactamente 64 caracteres hexadecimales (32 bytes)"
@@ -167,7 +168,7 @@ export default function Auditor() {
           <p className="text-amber-300 text-xs">{t("auditor", "viewKeyWarning")}</p>
         </div>
         <input
-          type="password"
+          type="text"
           autoComplete="off"
           value={viewKeyInput}
           onChange={(e) => setViewKeyInput(e.target.value)}
