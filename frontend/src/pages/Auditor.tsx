@@ -72,7 +72,11 @@ export default function Auditor() {
             const nonce = noteArr.slice(32, 56);
             const ct = noteArr.slice(56);
             console.log("[AUDIT] ephPub len:", ephPub.length, "nonce len:", nonce.length, "ct len:", ct.length);
-            console.log("[AUDIT] daoSecretKey len:", daoSecretKey.length, "isUint8Array:", daoSecretKey instanceof Uint8Array);
+            console.log("[AUDIT] daoSecretKey len:", daoSecretKey.length, "isUint8Array:", daoSecretKey instanceof Uint8Array,
+              "first4:", [daoSecretKey[0], daoSecretKey[1], daoSecretKey[2], daoSecretKey[3]],
+              "last4:", [daoSecretKey[28], daoSecretKey[29], daoSecretKey[30], daoSecretKey[31]]);
+            // Version check - if you see this, the latest code IS deployed
+            console.log("[AUDIT] BUILD VERSION: 2026-06-23-v2");
 
             const plaintext = nacl.box.open(ct, nonce, ephPub, daoSecretKey);
             console.log("[AUDIT] decrypt result:", plaintext ? "OK len=" + plaintext.length : "NULL");
