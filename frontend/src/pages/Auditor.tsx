@@ -46,32 +46,56 @@ export default function Auditor() {
 
       const results: AuditRecord[] = events.map((event) => {
         try {
-          // Try asymmetric decryption (current format)
-          let plaintext = decryptNote(daoSecretKey, event.encryptedNote);
+          const note = event.encryptedNote;
+          console.log("[AUDIT] note type:", Object.prototype.toString.call(note),
+            "length:", note.length,
+            "isUint8Array:", note instanceof Uint8Array,
+            "first4:", note.length >= 4 ? [note[0],note[1],note[2],note[3]] : "short");
 
-          // Fallback: try old symmetric format (secretbox with key as-is)
-          if (!plaintext && event.encryptedNote.length < 72) {
-            const nonce = event.encryptedNote.slice(0, 24);
-            const ct = event.encryptedNote.slice(24);
-            plaintext = nacl.secretbox.open(ct, nonce, daoSecretKey);
+          // Ensure we have a real Uint8Array
+          let noteArr: Uint8Array;
+          if (note instanceof Uint8Array) {
+            noteArr = note;
+          } else if (Array.isArray(note)) {
+            noteArr = new Uint8Array(note);
+          } else if (note && typeof note === "object" && "data" in note) {
+            noteArr = new Uint8Array((note as { data: number[] }).data);
+          } else {
+            noteArr = new Uint8Array(note as ArrayBuffer);
           }
 
-          if (!plaintext) {
-            return {
-              commitment: event.commitment,
-              amount: "—",
-              timestamp: event.timestamp,
-              status: "error" as const,
-            };
+          console.log("[AUDIT] noteArr length:", noteArr.length, "isUint8Array:", noteArr instanceof Uint8Array);
+
+          // Manual decrypt inline (bypass decryptNote to debug)
+          if (noteArr.length >= 72) {
+            const ephPub = noteArr.slice(0, 32);
+            const nonce = noteArr.slice(32, 56);
+            const ct = noteArr.slice(56);
+            console.log("[AUDIT] ephPub len:", ephPub.length, "nonce len:", nonce.length, "ct len:", ct.length);
+            console.log("[AUDIT] daoSecretKey len:", daoSecretKey.length, "isUint8Array:", daoSecretKey instanceof Uint8Array);
+
+            const plaintext = nacl.box.open(ct, nonce, ephPub, daoSecretKey);
+            console.log("[AUDIT] decrypt result:", plaintext ? "OK len=" + plaintext.length : "NULL");
+
+            if (plaintext) {
+              const { amount } = decodeNote(plaintext);
+              return {
+                commitment: event.commitment,
+                amount: (Number(amount) / 1e7).toFixed(2) + " XLM",
+                timestamp: event.timestamp,
+                status: "valid" as const,
+              };
+            }
           }
-          const { amount } = decodeNote(plaintext);
+
           return {
             commitment: event.commitment,
-            amount: (Number(amount) / 1e7).toFixed(2) + " XLM",
+            amount: "—",
             timestamp: event.timestamp,
-            status: "valid" as const,
+            status: "error" as const,
           };
-        } catch {
+        } catch (err) {
+          console.error("[AUDIT] catch error:", err);
           return {
             commitment: event.commitment,
             amount: "—",
