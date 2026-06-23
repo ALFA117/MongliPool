@@ -199,22 +199,30 @@ export async function getDepositEvents(): Promise<
   Array<{ commitment: string; encryptedNote: Uint8Array; timestamp: number }>
 > {
   const latestLedger = (await server.getLatestLedger()).sequence;
-  const startLedger = Math.max(1, latestLedger - 17280);
 
-  const events = await server.getEvents({
-    startLedger,
-    filters: [
-      {
-        type: "contract",
-        contractIds: [POOL_CONTRACT_ID],
-      },
-    ],
-    limit: 100,
-  });
+  // Try progressively wider ranges — RPC retention varies on testnet
+  let events = { events: [] as typeof rawEvents };
+  type EventType = Awaited<ReturnType<typeof server.getEvents>>;
+  let rawEvents: EventType["events"] = [];
+
+  for (const range of [500, 2000, 8000, 17280]) {
+    const startLedger = Math.max(1, latestLedger - range);
+    try {
+      const resp = await server.getEvents({
+        startLedger,
+        filters: [{ type: "contract", contractIds: [POOL_CONTRACT_ID] }],
+        limit: 100,
+      });
+      if (resp.events.length > 0) {
+        rawEvents = resp.events;
+        break;
+      }
+    } catch { /* try wider */ }
+  }
 
   const results: Array<{ commitment: string; encryptedNote: Uint8Array; timestamp: number }> = [];
 
-  for (const e of events.events) {
+  for (const e of rawEvents) {
     try {
       const topicVal = e.topic?.[0];
       if (!topicVal) continue;
