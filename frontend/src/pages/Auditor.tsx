@@ -148,14 +148,35 @@ export default function Auditor() {
           <AlertTriangle size={14} className="text-amber-400 flex-shrink-0 mt-0.5" />
           <p className="text-amber-300 text-xs">{t("auditor", "viewKeyWarning")}</p>
         </div>
-        <input
-          type="password"
-          autoComplete="off"
-          value={viewKeyInput}
-          onChange={(e) => setViewKeyInput(e.target.value)}
-          placeholder={t("auditor", "viewKeyPlaceholder")}
-          className="input-field mb-4"
-        />
+        <div className="relative mb-4">
+          <input
+            type="text"
+            autoComplete="off"
+            autoCorrect="off"
+            autoCapitalize="off"
+            spellCheck={false}
+            data-1p-ignore="true"
+            data-lpignore="true"
+            data-form-type="other"
+            value={viewKeyInput}
+            onChange={(e) => setViewKeyInput(e.target.value)}
+            placeholder={t("auditor", "viewKeyPlaceholder")}
+            className="input-field pr-20"
+            style={{ WebkitTextSecurity: "disc" } as React.CSSProperties}
+          />
+          <button
+            type="button"
+            onClick={async () => {
+              try {
+                const text = await navigator.clipboard.readText();
+                setViewKeyInput(text.trim());
+              } catch { /* clipboard denied */ }
+            }}
+            className="absolute right-2 top-1/2 -translate-y-1/2 text-xs text-pool-green hover:text-pool-green-light cursor-pointer bg-pool-bg/80 px-2 py-1 rounded"
+          >
+            {lang === "es" ? "Pegar" : "Paste"}
+          </button>
+        </div>
         <button
           onClick={handleDecrypt}
           disabled={loading || !viewKeyInput.trim()}
