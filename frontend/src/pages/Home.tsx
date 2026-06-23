@@ -295,6 +295,14 @@ export default function Home({ onStartTour }: { onStartTour?: () => void }) {
               {t("home", "ctaAuditor")}
             </Link>
           </div>
+          <a
+            href="https://youtu.be/Me4MJGTcKgA"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="mt-6 text-sm text-pool-accent hover:text-pool-green-light transition-colors inline-flex items-center gap-1.5 cursor-pointer mx-auto"
+          >
+            ▶ {lang === "es" ? "Ver video demo" : "Watch demo video"}
+          </a>
         </div>
       </section>
     </div>

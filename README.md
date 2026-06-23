@@ -4,6 +4,7 @@
 
 [![Stellar Hacks: ZK](https://img.shields.io/badge/Hackathon-Stellar%20Hacks%3A%20ZK-05D5A1)](https://dorahacks.io/hackathon/stellar-hacks-zk)
 [![Live Demo](https://img.shields.io/badge/Demo-mongli--pool.vercel.app-0066FF)](https://mongli-pool.vercel.app)
+[![Video Demo](https://img.shields.io/badge/Video-YouTube-red)](https://youtu.be/Me4MJGTcKgA)
 [![Testnet](https://img.shields.io/badge/Network-Stellar%20Testnet-00F5D4)](https://stellar.expert/explorer/testnet/contract/CAPKM3CCICBB3FMTUWX6KQFG5NF3D4XOF2MAV7PKTRI4HMQSJ2H4YFI7)
 [![Tests](https://img.shields.io/badge/Tests-18%2F18%20passing-05D5A1)]()
 [![License: MIT](https://img.shields.io/badge/License-MIT-gray)](LICENSE)
@@ -42,6 +43,14 @@ MongliPool is a **privacy pool** on Stellar that breaks the public link between 
 ```
 
 **Flow:** Deposit → ZK proof generated in browser (21,781 constraints) → Proof verified on-chain with BN254 pairing → Funds sent to any address → Double-spend prevented by nullifier
+
+---
+
+## Demo Video
+
+[![MongliPool Demo](https://img.youtube.com/vi/Me4MJGTcKgA/maxresdefault.jpg)](https://youtu.be/Me4MJGTcKgA)
+
+**[▶ Watch the full demo on YouTube](https://youtu.be/Me4MJGTcKgA)** — Deposit, ZK proof generation, withdrawal, and auditor panel in action.
 
 ---
 

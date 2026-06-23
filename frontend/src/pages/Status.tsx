@@ -47,6 +47,33 @@ export default function Status() {
         </div>
       </div>
 
+      {/* Video Demo */}
+      <div className="glass-panel p-6 mb-6">
+        <h2 className="text-lg font-semibold mb-4">
+          {es ? "Video Demo" : "Demo Video"}
+        </h2>
+        <a
+          href="https://youtu.be/Me4MJGTcKgA"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="block rounded-xl overflow-hidden border border-white/[0.06] hover:border-pool-green/30 transition-all"
+        >
+          <img
+            src="https://img.youtube.com/vi/Me4MJGTcKgA/maxresdefault.jpg"
+            alt="MongliPool Demo"
+            className="w-full aspect-video object-cover"
+          />
+        </a>
+        <a
+          href="https://youtu.be/Me4MJGTcKgA"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="btn-primary w-full mt-3 text-sm py-2.5 inline-flex items-center justify-center gap-2"
+        >
+          ▶ {es ? "Ver demo completa en YouTube" : "Watch full demo on YouTube"}
+        </a>
+      </div>
+
       {/* Links */}
       <div className="glass-panel p-6 mb-6">
         <h2 className="text-lg font-semibold mb-4">Links</h2>
@@ -54,6 +81,7 @@ export default function Status() {
           {[
             { label: "GitHub", url: "https://github.com/ALFA117/MongliPool" },
             { label: "Live Demo", url: "https://mongli-pool.vercel.app" },
+            { label: "Video Demo", url: "https://youtu.be/Me4MJGTcKgA" },
             { label: "Hackathon", url: "https://dorahacks.io/hackathon/stellar-hacks-zk" },
             { label: "Stellar Expert", url: `https://stellar.expert/explorer/testnet/contract/${POOL_ID}` },
           ].map(({ label, url }) => (
