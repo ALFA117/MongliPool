@@ -1,228 +1,138 @@
 # MongliPool
 
-**Private transfers on Stellar — with compliance built in.**
+**ZK Privacy Pool on Stellar — with built-in regulatory compliance.**
 
-[![Stellar Hacks: ZK](https://img.shields.io/badge/Hackathon-Stellar%20Hacks%3A%20ZK-7C3AED)](https://dorahacks.io/hackathon/stellar-hacks-zk)
-[![Live Demo](https://img.shields.io/badge/Demo-frontend--ebon--xi--57.vercel.app-10B981)](https://frontend-ebon-xi-57.vercel.app)
-[![Testnet](https://img.shields.io/badge/Network-Stellar%20Testnet-3B82F6)](https://stellar.expert/explorer/testnet/contract/CAPKM3CCICBB3FMTUWX6KQFG5NF3D4XOF2MAV7PKTRI4HMQSJ2H4YFI7)
+[![Stellar Hacks: ZK](https://img.shields.io/badge/Hackathon-Stellar%20Hacks%3A%20ZK-05D5A1)](https://dorahacks.io/hackathon/stellar-hacks-zk)
+[![Live Demo](https://img.shields.io/badge/Demo-mongli--pool.vercel.app-0066FF)](https://mongli-pool.vercel.app)
+[![Testnet](https://img.shields.io/badge/Network-Stellar%20Testnet-00F5D4)](https://stellar.expert/explorer/testnet/contract/CAPKM3CCICBB3FMTUWX6KQFG5NF3D4XOF2MAV7PKTRI4HMQSJ2H4YFI7)
+[![Tests](https://img.shields.io/badge/Tests-18%2F18%20passing-05D5A1)]()
 [![License: MIT](https://img.shields.io/badge/License-MIT-gray)](LICENSE)
 
 ---
 
-## ¿Qué es MongliPool?
+## What is MongliPool?
 
-MongliPool es un **pool de privacidad** en la blockchain de Stellar: te permite depositar fondos y luego retirarlos a cualquier dirección, sin que nadie pueda ver que las dos transacciones están relacionadas. Es como pagar en efectivo, pero en digital.
+MongliPool is a **privacy pool** on Stellar that breaks the public link between deposits and withdrawals using **Zero-Knowledge Proofs** (Groth16/BN254), while maintaining regulatory compliance through an **Authorized Set Provider (ASP)** and **selective audit via asymmetric view keys** (NaCl box / Curve25519).
 
-**¿Cómo funciona sin magia?** Cuando depositas, el contrato registra un *compromiso matemático* (un hash de tu secreto, no tu dirección). Cuando retiras, demuestras criptográficamente que conoces el secreto detrás de algún compromiso en el pool, sin revelar cuál. Esta técnica se llama *prueba de conocimiento cero* (Zero-Knowledge Proof), y es verificada directamente por el contrato en Stellar.
-
-**¿Por qué "con cumplimiento"?** MongliPool incluye un **ASP (Authorized Set Provider)** — un registro de direcciones aprobadas por la DAO. Solo los usuarios en la lista blanca pueden retirar fondos. Esto permite privacidad real sin abrir la puerta al lavado de dinero: hay un actor responsable (Mongli DAO) que aprueba quién puede participar, y un **auditor con view key** que puede ver qué se depositó si la regulación lo exige.
+> Think of it as a communal vault: you deposit through one door and withdraw through another. Nobody can tell both doors are yours — but an authorized auditor can verify everything is legitimate when required.
 
 ---
 
-## Arquitectura
+## Architecture
 
 ```
-┌─────────────────────────────────────────────────────────────────────┐
-│  USUARIO (browser)                                                  │
-│                                                                     │
-│  secret, nullifierSecret ──► Poseidon hash ──► commitment           │
-│                          │                                          │
-│                          └──► snarkjs (Groth16 WASM)               │
-│                                    │ ZK proof (~30s, single-thread) │
-│                                    ▼                                │
-│             receipt (secreto local) ◄── cifrado con DAO view key   │
-└─────────────────────────────┬───────────────────────────────────────┘
-                              │  Freighter wallet → Stellar Testnet
-                 ┌────────────▼────────────┐
-                 │  privacy_pool           │  Soroban / Rust
-                 │  deposit(commitment,    │
-                 │          note)          │  Merkle tree (depth 20)
-                 │  withdraw(proof,        │  Poseidon hash on-chain
-                 │           nullifier,...)│
-                 └───┬──────────┬──────────┘
-                     │          │
-          ┌──────────▼──┐  ┌───▼─────────────┐
-          │ groth16_     │  │ asp_registry    │
-          │ verifier     │  │                 │
-          │              │  │ approve(addr)   │
-          │ BN254 pairing│  │ deny(addr)      │
-          │ on-chain     │  │ is_member(addr) │
-          └──────────────┘  └─────────────────┘
-                                    │
-                              ┌─────▼──────┐
-                              │ Mongli DAO  │
-                              │ (auditor)   │
-                              │ view key →  │
-                              │ decrypt all │
-                              │ notes       │
-                              └─────────────┘
+┌──────────────────────────────────────────────────────────────┐
+│  BROWSER                                                      │
+│  secret + nullifierSecret ──► Poseidon hash ──► commitment    │
+│                            └──► snarkjs Groth16 WASM (~30s)  │
+│  receipt (local only) ◄── encrypted with DAO public key       │
+└──────────────────────┬───────────────────────────────────────┘
+                       │  Freighter wallet → Stellar Testnet
+          ┌────────────▼────────────┐
+          │  privacy_pool           │  Soroban / Rust
+          │  deposit(commitment)    │  Merkle tree (depth 20)
+          │  withdraw(zk_proof)     │  Poseidon hash on-chain
+          └───┬──────────┬──────────┘
+              │          │
+   ┌──────────▼──┐  ┌───▼─────────────┐
+   │ groth16      │  │ asp_registry    │
+   │ verifier     │  │ approve/deny    │
+   │ BN254 pairing│  │ allowlist       │
+   └──────────────┘  └─────────────────┘
 ```
 
-**Flujo completo:**
-
-1. **Depositar** — El usuario genera un `secret` y `nullifierSecret` en el browser (nunca salen del dispositivo). Se calcula un `commitment = Poseidon(secret, nullifierSecret, amount)` y se envía al contrato junto con la nota cifrada con la view key del auditor.
-
-2. **Actualizar raíces** — El admin (Mongli DAO) llama a `update_root` y `update_asp_root` para que el árbol de Merkle del contrato refleje el nuevo depósito.
-
-3. **Retirar** — El usuario carga su recibo, el browser genera una prueba ZK (Groth16) que demuestra: (a) conoce el secreto de algún depósito en el árbol, (b) su dirección está en el ASP, (c) el nullifier no fue usado antes. El contrato verifica la prueba on-chain con pairing BN254.
+**Flow:** Deposit → ZK proof generated in browser (21,781 constraints) → Proof verified on-chain with BN254 pairing → Funds sent to any address → Double-spend prevented by nullifier
 
 ---
 
-## Demo en vivo
+## Live Demo
 
-**Frontend:** [https://mongli-pool.vercel.app](https://mongli-pool.vercel.app)
+**Frontend:** [mongli-pool.vercel.app](https://mongli-pool.vercel.app)
 
-**Contratos en Stellar Testnet:**
+| Contract | Testnet ID |
+|----------|-----------|
+| Privacy Pool | [`CAPKM3CC...YFI7`](https://stellar.expert/explorer/testnet/contract/CAPKM3CCICBB3FMTUWX6KQFG5NF3D4XOF2MAV7PKTRI4HMQSJ2H4YFI7) |
+| ASP Registry | [`CCVH3IBN...QIHX`](https://stellar.expert/explorer/testnet/contract/CCVH3IBNL7TJHWTG4DC2F6ZPLHK4J2UZGUT3VCJRQGKCZTWXHTMOQIHX) |
+| Groth16 Verifier | [`CAXRVY3I...U5LZ`](https://stellar.expert/explorer/testnet/contract/CAXRVY3IUC2WEKOCHWVJBYMARKHCULKY77WL3E3UJIAGY3G6SHNFU5LZ) |
 
-| Contrato | ID |
-|----------|-----|
-| PrivacyPool | [`CAPKM3CCICBB3FMTUWX6KQFG5NF3D4XOF2MAV7PKTRI4HMQSJ2H4YFI7`](https://stellar.expert/explorer/testnet/contract/CAPKM3CCICBB3FMTUWX6KQFG5NF3D4XOF2MAV7PKTRI4HMQSJ2H4YFI7) |
-| ASPRegistry | [`CCVH3IBNL7TJHWTG4DC2F6ZPLHK4J2UZGUT3VCJRQGKCZTWXHTMOQIHX`](https://stellar.expert/explorer/testnet/contract/CCVH3IBNL7TJHWTG4DC2F6ZPLHK4J2UZGUT3VCJRQGKCZTWXHTMOQIHX) |
-| Groth16Verifier | [`CAXRVY3IUC2WEKOCHWVJBYMARKHCULKY77WL3E3UJIAGY3G6SHNFU5LZ`](https://stellar.expert/explorer/testnet/contract/CAXRVY3IUC2WEKOCHWVJBYMARKHCULKY77WL3E3UJIAGY3G6SHNFU5LZ) |
-| XLM SAC (token) | `CDLZFC3SYJYDZT7K67VZ75HPJVIEUVNIXF47ZG2FB2RMQQVU2HHGCYSC` |
-
-**E2E verificado via CLI:**
-```
-deposit (10 XLM) → update_root → update_asp_root → withdraw con prueba ZK real → double-spend rechazado ✅
-```
-
-**Para probar en el browser:**
-1. Instala [Freighter](https://freighter.app) y conecta a Testnet.
-2. Usa tu propia cuenta (pide XLM en [friendbot](https://friendbot.stellar.org)) o importa la cuenta demo.
-3. Abre [https://mongli-pool.vercel.app](https://mongli-pool.vercel.app), conecta wallet.
-4. Ve a Depositar, deposita 10 XLM (se te pedirán 3 firmas: depósito + sincronizar árbol + registrar en ASP).
-5. **Guarda el recibo** — es la única forma de retirar.
-6. Ve a Retirar, pega el recibo, pon la dirección destino, espera ~30s para la prueba ZK, confirma.
+### Try it yourself
+1. Install [Freighter](https://freighter.app) → connect to Testnet
+2. Get test XLM from [friendbot](https://friendbot.stellar.org)
+3. Open [mongli-pool.vercel.app](https://mongli-pool.vercel.app) → connect wallet
+4. Deposit any amount (1-1000 XLM) → save your receipt
+5. Withdraw → paste receipt → wait ~30s for ZK proof → confirm
 
 ---
 
-## Cómo correrlo localmente
+## Tech Stack
 
-**Requisitos:** Node.js 20+, Rust + `wasm32v1-none` target, Stellar CLI, circom 2.1.6, snarkjs.
+| Layer | Technology |
+|-------|-----------|
+| ZK Circuit | Circom 2.1.6 — Groth16 / BN254, 21,781 constraints |
+| Proof Generation | snarkjs WASM (browser, ~30s single-thread) |
+| Smart Contracts | Soroban (Rust) — `soroban_sdk::crypto::bn254` native pairing |
+| View Key | NaCl box (Curve25519) — asymmetric, ephemeral keypair per deposit |
+| Hash Function | Poseidon — ZK-friendly, used in Merkle tree (depth 20) |
+| Frontend | React 18 + Vite + TypeScript + TailwindCSS + Three.js |
+| Wallet | Freighter via @creit.tech/stellar-wallets-kit |
+| Deploy | Vercel (frontend) + Stellar Testnet (contracts) |
+
+---
+
+## What's Real vs. Simplified
+
+| Feature | Status | Notes |
+|---------|--------|-------|
+| ZK Proof (Groth16/BN254) | ✅ Real | Generated in browser, verified on-chain |
+| On-chain verification | ✅ Real | BN254 pairing in Soroban contract |
+| Merkle tree (Poseidon) | ✅ Real | Depth 20, synced between frontend and contract |
+| Double-spend prevention | ✅ Real | Nullifier registered on-chain |
+| ASP compliance | ✅ Real | Contract validates ASP root before ZK verification |
+| Asymmetric view key | ✅ Real | NaCl box (Curve25519), ephemeral keypair per deposit |
+| Variable amounts | ✅ Real | 1-1000 XLM per deposit |
+| Trusted setup | ⚠️ Local | Standard for ZK prototypes (Tornado Cash, Zcash started the same way) |
+| Root updates | ⚠️ Permissionless | Production: on-chain Merkle or trusted relayer |
+| Circuit audit | ⚠️ Pending | Required before mainnet deployment |
+
+Full security analysis: [SECURITY_AUDIT.md](SECURITY_AUDIT.md)
+
+---
+
+## Local Development
 
 ```bash
 git clone https://github.com/ALFA117/MongliPool
 cd MongliPool
 
 # Frontend
-cd frontend
-npm install
-cp .env.example .env   # o copia frontend/.env del repo
-npm run dev             # http://localhost:5173
+cd frontend && npm install && npm run dev
 
-# Contratos (compilar)
-cd contracts/groth16-verifier
-cargo build --target wasm32v1-none --release
-# (igual para privacy-pool y asp-registry)
+# Contracts
+cargo test                                        # 18/18 tests
+cargo build --target wasm32v1-none --release      # 3 WASM contracts
 
-# Tests
-cargo test
-
-# Circuito ZK (solo si modificas withdraw.circom)
-cd circuits
-circom withdraw.circom --r1cs --wasm --sym
-node ../node_modules/snarkjs/build/cli.cjs groth16 setup withdraw.r1cs pot15_final.ptau withdraw_0000.zkey
-# ... (ver scripts/ para la ceremonia completa)
-```
-
-**Variables de entorno necesarias** (ya en `frontend/.env`):
-```
-VITE_POOL_CONTRACT_ID=CAPKM3CCICBB3FMTUWX6KQFG5NF3D4XOF2MAV7PKTRI4HMQSJ2H4YFI7
-VITE_ASP_CONTRACT_ID=CCVH3IBNL7TJHWTG4DC2F6ZPLHK4J2UZGUT3VCJRQGKCZTWXHTMOQIHX
-VITE_VERIFIER_CONTRACT_ID=CAXRVY3IUC2WEKOCHWVJBYMARKHCULKY77WL3E3UJIAGY3G6SHNFU5LZ
-VITE_STELLAR_RPC_URL=https://soroban-testnet.stellar.org
-VITE_STELLAR_NETWORK=Test SDF Network ; September 2015
-VITE_ADMIN_ADDRESS=GALJ6O2J66XUEBXXJBWCB2KXNFOCMBLIUF4NBXQZRYC3IWBJK7C6O2V3
+# Circuit (only if modifying withdraw.circom)
+cd circuits && circom withdraw.circom --r1cs --wasm --sym
 ```
 
 ---
 
-## Qué es real vs. qué es MVP/simplificado
+## Security
 
-Esta sección es intencional. MongliPool es un prototipo de hackathon. Antes de usarlo con fondos reales, hay que entender sus limitaciones honestamente:
-
-### ✅ Lo que sí es real
-
-| Componente | Estado |
-|------------|--------|
-| Prueba ZK Groth16 | Real — se genera en el browser con snarkjs WASM |
-| Verificación on-chain | Real — BN254 pairing ejecutado por el contrato Soroban |
-| Árbol de Merkle Poseidon | Real — depth 20, mismo en frontend y contrato |
-| Doble gasto imposible | Real — nullifier se registra en el contrato |
-| ASP allowlist | Real — contrato verifica la raíz del ASP antes del ZK |
-| Cifrado del recibo | Real — NaCl secretbox |
-| Contratos en testnet | Real — deployados, inicializados, E2E verificado |
-
-### ⚠ Lo que es MVP o simplificado
-
-**1. Trusted Setup**
-
-MongliPool usa un trusted setup local generado en una sola máquina para esta demo de hackathon. Esto es una práctica estándar en prototipos ZK — Tornado Cash, Zcash, y Semaphore también empezaron con setups locales antes de sus ceremonias públicas.
-
-**Qué significa para esta demo:** el setup local es suficientemente seguro para demostrar el sistema en testnet. No hay fondos reales en riesgo.
-
-**Qué haría un sistema de producción:** una ceremonia MPC (Multi-Party Computation) pública con múltiples participantes independientes, donde la "toxic waste" criptográfica se destruye de forma distribuida. Hermez/Polygon ya tienen archivos ptau públicos de ceremonias con >1000 participantes que se podrían reutilizar. Esto está documentado como el siguiente paso en nuestro roadmap.
-
-Esta limitación está documentada en [SECURITY_AUDIT.md](SECURITY_AUDIT.md) como VULN-001.
-
-**2. View key asimétrica (NaCl box / Curve25519)**
-El cifrado del auditor usa NaCl box asimétrico: la clave pública del DAO está embebida en el frontend, y cada depósito cifra con un keypair efímero único. Solo la clave privada del DAO (gestionada offline) puede descifrar. Mejora futura: multisig M-de-N para que ningún miembro del DAO pueda descifrar solo.
-
-**3. ASP tree == Pool tree (simplificación de diseño)**
-En el frontend, el árbol de Merkle del ASP es el mismo que el del pool (la raíz del pool se usa también como raíz del ASP). Un diseño real separa ambos árboles: el ASP gestiona su propia lista de direcciones autorizadas de forma independiente.
-
-**4. Actualización de raíces sin permisos (simplificación MVP)**
-En el MVP, `update_root` y `update_asp_root` son funciones permisionless — cualquier usuario puede llamarlas. Esto permite que el frontend sincronice automáticamente después de cada depósito sin depender de un admin. En producción, esto se reemplazaría por un árbol de Merkle calculado dentro de `deposit()` on-chain, o por un relayer de confianza con pruebas de fraude.
-
-**5. Monto variable 1–1000 XLM (testnet)**
-El contrato acepta depósitos de entre 1 y 1000 XLM. El monto se incluye como input público del circuito ZK y se verifica on-chain. En producción, se soportarían múltiples assets y denominaciones más amplias.
-
-**6. Sin auditoría del circuito**
-El circuito `withdraw.circom` no fue auditado por terceros. Podría tener vulnerabilidades de under-constraint que permitan pruebas inválidas.
-
-**7. Tiempo de generación de prueba ~30 segundos**
-Sin las cabeceras COOP/COEP en la página principal (necesarias para no romper Freighter/WalletConnect), snarkjs corre en modo single-thread y la generación toma ~30 segundos. Con `crossOriginIsolated=true` bajaría a ~5 segundos con Workers WASM multi-thread.
+See [SECURITY_AUDIT.md](SECURITY_AUDIT.md) for the full vulnerability assessment (12 items documented, from trusted setup to infrastructure).
 
 ---
 
-## Stack técnico
+## Credits
 
-**ZK / Criptografía:**
-- [Circom 2.1.6](https://docs.circom.io/) — lenguaje de circuitos ZK
-- [snarkjs](https://github.com/iden3/snarkjs) — generación de pruebas Groth16 en browser (WASM)
-- BN254 (alt_bn128) — curva elíptica para el pairing
-- Poseidon hash — función de hash ZK-friendly para Merkle tree
+Built by **- A L F A -** / **Mongli DAO** for **Stellar Hacks: ZK**.
 
-**Blockchain / Contratos:**
-- [Stellar Soroban](https://soroban.stellar.org/) — plataforma de contratos inteligentes
-- Rust + `wasm32v1-none` — target de compilación para Soroban SDK v25
-- `soroban_sdk::crypto::bn254` — pairing BN254 nativo en el SDK
+Inspired by [Privacy Pools](https://papers.ssrn.com/sol3/papers.cfm?abstract_id=4563364) (Buterin et al., 2023) — the idea of combining privacy with ASP compliance comes directly from that paper.
 
-**Frontend:**
-- [React 18](https://react.dev/) + [Vite](https://vitejs.dev/) + TypeScript
-- [TailwindCSS](https://tailwindcss.com/) — estilos
-- [stellar-sdk](https://github.com/stellar/js-stellar-sdk) — interacción con Stellar RPC
-- [@creit.tech/stellar-wallets-kit](https://github.com/Creit-Tech/Stellar-Wallets-Kit) — integración Freighter
-- [three.js](https://threejs.org/) — visualizador 3D del pool (lazy-loaded)
-- [tweetnacl](https://tweetnacl.js.org/) — cifrado NaCl para notas
-
-**Deploy:**
-- [Vercel](https://vercel.com/) — frontend
-- [Stellar Testnet](https://developers.stellar.org/) — contratos
+- [Stellar Foundation](https://stellar.org) — Soroban SDK with native BN254 pairing
+- [iden3](https://iden3.io) — Circom and snarkjs
+- [PSE](https://pse.dev) — Privacy pool design references
 
 ---
 
-## Créditos
-
-Construido por **Mongli DAO** para el hackathon **Stellar Hacks: ZK**.
-
-Inspirado en [Tornado Cash](https://tornado.cash/) y [Privacy Pools](https://papers.ssrn.com/sol3/papers.cfm?abstract_id=4563364) (Buterin et al., 2023) — la idea de combinar privacidad con ASP/compliance viene directamente de ese paper.
-
-Agradecimientos a:
-- Stellar Foundation — por el SDK de Soroban con pairing BN254 real
-- iden3 — por Circom y snarkjs
-- PSE (Privacy & Scaling Explorations) — por las referencias de diseño de privacy pools
-
----
-
-*Este código es un prototipo educativo. No usar con fondos reales hasta completar auditoría de seguridad.*
+**[@ALFA_EDG_](https://instagram.com/ALFA_EDG_)** · [GitHub](https://github.com/ALFA117/MongliPool) · [Live Demo](https://mongli-pool.vercel.app)

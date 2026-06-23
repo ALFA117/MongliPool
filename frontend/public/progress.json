@@ -1,101 +1,25 @@
 {
   "project": "MongliPool",
+  "description": "ZK Privacy Pool on Stellar with regulatory compliance",
   "hackathon": "Stellar Hacks: ZK",
-  "deadline": "2025-06-29T12:00:00-07:00",
-  "current_phase": "Fase 5 — Deploy y entrega",
-  "overall_progress": 95,
-  "phases": [
-    {
-      "id": 1,
-      "name": "Circuitos ZK",
-      "description": "Diseño e implementación del circuito Circom de retiro",
-      "status": "done",
-      "progress": 100,
-      "tasks": [
-        {"name": "Entorno configurado", "done": true},
-        {"name": "withdraw.circom diseñado (depth=20, ASP dual Merkle)", "done": true},
-        {"name": "Circuito compilado — 21,866 wires, 21,781 constraints", "done": true},
-        {"name": "Keys generadas (PoT15 + withdraw_final.zkey)", "done": true},
-        {"name": "Proof local verificado con snarkjs", "done": true}
-      ]
-    },
-    {
-      "id": 2,
-      "name": "Contratos Soroban",
-      "description": "Groth16Verifier, PrivacyPool y ASPRegistry",
-      "status": "done",
-      "progress": 98,
-      "tasks": [
-        {"name": "Groth16Verifier con pairing BN254 real — 8/8 tests", "done": true},
-        {"name": "PrivacyPool deposit() — lógica completa", "done": true},
-        {"name": "PrivacyPool withdraw() con ZK real — 5/5 tests", "done": true},
-        {"name": "ASPRegistry aprobación/denegación — 5/5 tests", "done": true},
-        {"name": "ASP root validado on-chain antes del ZK verifier", "done": true},
-        {"name": "Compilados con cargo build --target wasm32v1-none", "done": true},
-        {"name": "Deployados en testnet e inicializados", "done": true}
-      ]
-    },
-    {
-      "id": 3,
-      "name": "View Key",
-      "description": "Cifrado para auditor de Mongli DAO",
-      "status": "done",
-      "progress": 100,
-      "tasks": [
-        {"name": "Esquema de cifrado — NaCl secretbox (MVP simétrico)", "done": true},
-        {"name": "Encrypt/decrypt en frontend lib", "done": true},
-        {"name": "Panel de auditor con getDepositEvents()", "done": true},
-        {"name": "View key asimétrica NaCl box (Curve25519) — clave efímera por depósito", "done": true}
-      ]
-    },
-    {
-      "id": 4,
-      "name": "Frontend",
-      "description": "UI completa — Deposit, Withdraw, Auditor",
-      "status": "done",
-      "progress": 90,
-      "tasks": [
-        {"name": "Setup React + Vite + TypeScript + Tailwind", "done": true},
-        {"name": "Freighter wallet connect (stellar-wallets-kit)", "done": true},
-        {"name": "Flujo Deposit completo — auto-update roots si admin", "done": true},
-        {"name": "Flujo Withdraw — proof generation client-side + submit", "done": true},
-        {"name": "Panel Auditor — decrypt notes con view key", "done": true},
-        {"name": "PrivacyVisualizer3D (three.js, lazy-loaded)", "done": true},
-        {"name": "E2E browser con Freighter real", "done": true}
-      ]
-    },
-    {
-      "id": 5,
-      "name": "Deploy y entrega",
-      "description": "Testnet, Vercel, README, video demo",
-      "status": "in_progress",
-      "progress": 90,
-      "tasks": [
-        {"name": "E2E CLI completo — deposit → ZK proof → withdraw", "done": true},
-        {"name": "Deploy 3 contratos testnet + inicializados", "done": true},
-        {"name": "Deploy frontend Vercel", "done": true},
-        {"name": "README con arquitectura + limitaciones honestas", "done": true},
-        {"name": "Guion video demo", "done": true},
-        {"name": "E2E browser con Freighter real", "done": true},
-        {"name": "Video demo grabado", "done": false},
-        {"name": "Submission DoraHacks", "done": false}
-      ]
-    }
-  ],
+  "team": "- A L F A - / Mongli DAO",
+  "social": "https://instagram.com/ALFA_EDG_",
   "contracts": {
-    "testnet": {
-      "groth16_verifier": "CAXRVY3IUC2WEKOCHWVJBYMARKHCULKY77WL3E3UJIAGY3G6SHNFU5LZ",
-      "asp_registry": "CCVH3IBNL7TJHWTG4DC2F6ZPLHK4J2UZGUT3VCJRQGKCZTWXHTMOQIHX",
-      "privacy_pool": "CAPKM3CCICBB3FMTUWX6KQFG5NF3D4XOF2MAV7PKTRI4HMQSJ2H4YFI7",
-      "token_xlm_sac": "CDLZFC3SYJYDZT7K67VZ75HPJVIEUVNIXF47ZG2FB2RMQQVU2HHGCYSC",
-      "deployer_admin": "GALJ6O2J66XUEBXXJBWCB2KXNFOCMBLIUF4NBXQZRYC3IWBJK7C6O2V3"
-    }
+    "network": "Stellar Testnet",
+    "privacy_pool": "CAPKM3CCICBB3FMTUWX6KQFG5NF3D4XOF2MAV7PKTRI4HMQSJ2H4YFI7",
+    "asp_registry": "CCVH3IBNL7TJHWTG4DC2F6ZPLHK4J2UZGUT3VCJRQGKCZTWXHTMOQIHX",
+    "groth16_verifier": "CAXRVY3IUC2WEKOCHWVJBYMARKHCULKY77WL3E3UJIAGY3G6SHNFU5LZ"
   },
   "links": {
     "repo": "https://github.com/ALFA117/MongliPool",
     "frontend": "https://mongli-pool.vercel.app",
-    "demo_video": null,
-    "hackathon_submission": "https://dorahacks.io/hackathon/stellar-hacks-zk",
-    "stellar_expert_pool": "https://stellar.expert/explorer/testnet/contract/CAPKM3CCICBB3FMTUWX6KQFG5NF3D4XOF2MAV7PKTRI4HMQSJ2H4YFI7"
+    "hackathon": "https://dorahacks.io/hackathon/stellar-hacks-zk",
+    "stellar_expert": "https://stellar.expert/explorer/testnet/contract/CAPKM3CCICBB3FMTUWX6KQFG5NF3D4XOF2MAV7PKTRI4HMQSJ2H4YFI7"
+  },
+  "tech": {
+    "zk": "Circom 2.1.6 — Groth16/BN254, 21,781 constraints",
+    "contracts": "3 Soroban contracts (Rust), 18/18 tests",
+    "view_key": "NaCl box (Curve25519) — asymmetric, ephemeral keypair per deposit",
+    "frontend": "React 18 + Vite + TypeScript + TailwindCSS + Three.js"
   }
 }
