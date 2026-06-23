@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Eye, Download, AlertTriangle, Shield, Loader2, CheckCircle, XCircle, Clock } from "lucide-react";
 import { decryptNote, decodeNote } from "../lib/crypto";
+import nacl from "tweetnacl";
 import { getDepositEvents } from "../lib/stellar";
 import { useI18n } from "../i18n/context";
 
@@ -45,7 +46,16 @@ export default function Auditor() {
 
       const results: AuditRecord[] = events.map((event) => {
         try {
-          const plaintext = decryptNote(daoSecretKey, event.encryptedNote);
+          // Try asymmetric decryption (current format)
+          let plaintext = decryptNote(daoSecretKey, event.encryptedNote);
+
+          // Fallback: try old symmetric format (secretbox with key as-is)
+          if (!plaintext && event.encryptedNote.length < 72) {
+            const nonce = event.encryptedNote.slice(0, 24);
+            const ct = event.encryptedNote.slice(24);
+            plaintext = nacl.secretbox.open(ct, nonce, daoSecretKey);
+          }
+
           if (!plaintext) {
             return {
               commitment: event.commitment,
@@ -84,7 +94,7 @@ export default function Auditor() {
     const header = "Commitment,Amount,Timestamp,Status";
     const rows = records.map(
       (r) =>
-        `${r.commitment},${r.amount},${new Date(r.timestamp * 1000).toISOString()},${r.status}`
+        `${r.commitment},${r.amount},${new Date(r.timestamp).toISOString()},${r.status}`
     );
     const csv = [header, ...rows].join("\n");
     const blob = new Blob([csv], { type: "text/csv" });
@@ -207,7 +217,7 @@ export default function Auditor() {
                       </td>
                       <td className="py-3 px-4 font-mono text-pool-text">{r.amount}</td>
                       <td className="py-3 px-4 text-pool-text-dim">
-                        {new Date(r.timestamp * 1000).toLocaleString()}
+                        {new Date(r.timestamp).toLocaleString()}
                       </td>
                       <td className="py-3 px-4">
                         {r.status === "valid" ? (
