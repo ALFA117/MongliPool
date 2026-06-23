@@ -1,9 +1,9 @@
 import { useState } from "react";
 import { Eye, Download, AlertTriangle, Shield, Loader2, CheckCircle, XCircle, Clock } from "lucide-react";
-import { decryptNote, decodeNote } from "../lib/crypto";
-import nacl from "tweetnacl";
+import { decodeNote } from "../lib/crypto";
 import { getDepositEvents } from "../lib/stellar";
 import { useI18n } from "../i18n/context";
+import nacl from "tweetnacl";
 
 function hexToBytes(hex: string): Uint8Array {
   const bytes = new Uint8Array(hex.length / 2);
@@ -35,7 +35,6 @@ export default function Auditor() {
 
     try {
       const trimmed = viewKeyInput.trim();
-      console.log("[AUDIT] raw input length:", trimmed.length, "first8:", trimmed.substring(0, 8), "last8:", trimmed.substring(trimmed.length - 8));
       if (!/^[0-9a-fA-F]{64}$/.test(trimmed)) {
         throw new Error(lang === "es"
           ? "La clave privada debe tener exactamente 64 caracteres hexadecimales (32 bytes)"
@@ -48,39 +47,23 @@ export default function Auditor() {
       const results: AuditRecord[] = events.map((event) => {
         try {
           const note = event.encryptedNote;
-          console.log("[AUDIT] note type:", Object.prototype.toString.call(note),
-            "length:", note.length,
-            "isUint8Array:", note instanceof Uint8Array,
-            "first4:", note.length >= 4 ? [note[0],note[1],note[2],note[3]] : "short");
 
-          // Ensure we have a real Uint8Array
           let noteArr: Uint8Array;
           if (note instanceof Uint8Array) {
-            noteArr = note;
+            noteArr = new Uint8Array(note);
           } else if (Array.isArray(note)) {
             noteArr = new Uint8Array(note);
-          } else if (note && typeof note === "object" && "data" in note) {
+          } else if (note && typeof note === "object" && "data" in (note as Record<string, unknown>)) {
             noteArr = new Uint8Array((note as { data: number[] }).data);
           } else {
             noteArr = new Uint8Array(note as ArrayBuffer);
           }
 
-          console.log("[AUDIT] noteArr length:", noteArr.length, "isUint8Array:", noteArr instanceof Uint8Array);
-
-          // Manual decrypt inline (bypass decryptNote to debug)
           if (noteArr.length >= 72) {
             const ephPub = noteArr.slice(0, 32);
             const nonce = noteArr.slice(32, 56);
             const ct = noteArr.slice(56);
-            console.log("[AUDIT] ephPub len:", ephPub.length, "nonce len:", nonce.length, "ct len:", ct.length);
-            console.log("[AUDIT] daoSecretKey len:", daoSecretKey.length, "isUint8Array:", daoSecretKey instanceof Uint8Array,
-              "first4:", [daoSecretKey[0], daoSecretKey[1], daoSecretKey[2], daoSecretKey[3]],
-              "last4:", [daoSecretKey[28], daoSecretKey[29], daoSecretKey[30], daoSecretKey[31]]);
-            // Version check - if you see this, the latest code IS deployed
-            console.log("[AUDIT] BUILD VERSION: 2026-06-23-v2");
-
             const plaintext = nacl.box.open(ct, nonce, ephPub, daoSecretKey);
-            console.log("[AUDIT] decrypt result:", plaintext ? "OK len=" + plaintext.length : "NULL");
 
             if (plaintext) {
               const { amount } = decodeNote(plaintext);
@@ -99,8 +82,7 @@ export default function Auditor() {
             timestamp: event.timestamp,
             status: "error" as const,
           };
-        } catch (err) {
-          console.error("[AUDIT] catch error:", err);
+        } catch {
           return {
             commitment: event.commitment,
             amount: "—",
@@ -146,7 +128,6 @@ export default function Auditor() {
         <p className="text-pool-text-dim">{t("auditor", "subtitle")}</p>
       </div>
 
-      {/* Purpose explanation */}
       <div className="bg-pool-violet/5 border border-pool-violet/15 rounded-2xl p-5 mb-6">
         <h3 className="font-semibold text-pool-violet-light text-sm mb-2">
           {lang === "es" ? "¿Por qué existe esta página?" : "Why does this page exist?"}
@@ -168,7 +149,7 @@ export default function Auditor() {
           <p className="text-amber-300 text-xs">{t("auditor", "viewKeyWarning")}</p>
         </div>
         <input
-          type="text"
+          type="password"
           autoComplete="off"
           value={viewKeyInput}
           onChange={(e) => setViewKeyInput(e.target.value)}
