@@ -106,6 +106,25 @@ impl PrivacyPool {
     /// `recipient_field` is the BN254 scalar-field encoding of the recipient's
     /// Stellar address (computed off-chain and bound to the proof). It must match
     /// the field element used when the proof was generated, or verification fails.
+    ///
+    /// SECURITY — FRONT-RUNNING HOLE, NOT YET FIXED:
+    /// `recipient` and `recipient_field` are independent parameters. The proof
+    /// verification below only checks that `recipient_field` is a valid public
+    /// input for `proof`; it never checks that `recipient` is the address that
+    /// `recipient_field` actually encodes. Anyone watching the mempool can copy a
+    /// pending withdraw's `proof`/`merkle_root`/`asp_root`/`nullifier_hash`/
+    /// `recipient_field` (all public, all still valid) and resubmit with their
+    /// own `recipient`, stealing the payout before the real transaction lands.
+    /// Fix: recompute `addressToField(recipient)` on-chain (see
+    /// `frontend/src/lib/zkproof.ts::addressToField` for the exact algorithm —
+    /// decode the StrKey to its raw 32-byte ed25519 key, then big-endian-reduce
+    /// mod the BN254 prime) and reject the call unless it equals `recipient_field`.
+    /// `soroban_sdk::crypto::bn254::Fr` (already used by `groth16-verifier`) is
+    /// the right primitive, but `Fr::from_bytes` expects an already-canonical
+    /// element — the byte-by-byte modular reduction itself still needs to be
+    /// implemented and tested against real ed25519 keys before this ships,
+    /// which needs a Soroban toolchain this environment doesn't have. Do not
+    /// deploy a version of this contract without that check.
     pub fn withdraw(
         env: Env,
         proof: Bytes,
