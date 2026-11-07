@@ -37,7 +37,7 @@ export default function Status() {
                 href={`https://stellar.expert/explorer/testnet/contract/${id}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="font-mono text-[11px] text-pool-green hover:underline inline-flex items-center gap-1"
+                className="font-mono text-xs text-pool-green hover:underline inline-flex items-center gap-1"
               >
                 {id.slice(0, 8)}...{id.slice(-6)}
                 <ExternalLink size={10} />
@@ -56,7 +56,7 @@ export default function Status() {
           href="https://youtu.be/Me4MJGTcKgA"
           target="_blank"
           rel="noopener noreferrer"
-          className="block rounded-xl overflow-hidden border border-white/[0.06] hover:border-pool-green/30 transition-all"
+          className="block rounded-xl overflow-hidden border border-ink/[0.06] hover:border-pool-green/30 transition-all"
         >
           <img
             src="https://img.youtube.com/vi/Me4MJGTcKgA/maxresdefault.jpg"

@@ -8,7 +8,29 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
-    <title>MongliPool</title>
+    <title>MongliPool — pool de privacidad con cumplimiento en Stellar</title>
+    <link rel="canonical" href="https://mongli-pool.vercel.app/" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <meta name="theme-color" content="#0A1128" media="(prefers-color-scheme: dark)" />
+    <meta name="theme-color" content="#F0F6F8" media="(prefers-color-scheme: light)" />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://mongli-pool.vercel.app/" />
+    <meta property="og:site_name" content="MongliPool" />
+    <meta property="og:title" content="MongliPool — tu dinero, tu secreto" />
+    <meta property="og:description" content="Deposita y retira sin que nadie pueda vincular ambas operaciones, con pruebas ZK verificadas on-chain en Stellar testnet. Stellar Hacks: ZK 2025." />
+    <meta property="og:image" content="https://mongli-pool.vercel.app/og.png" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="MongliPool — tu dinero, tu secreto" />
+    <meta name="twitter:description" content="Pool de privacidad con cumplimiento en Stellar testnet, con pruebas ZK reales on-chain." />
+    <meta name="twitter:image" content="https://mongli-pool.vercel.app/og.png" />
+    <script>
+      try {
+        var t = localStorage.getItem("monglipool-theme");
+        var l = t ? t === "light" : matchMedia("(prefers-color-scheme: light)").matches;
+        document.documentElement.dataset.theme = l ? "light" : "dark";
+      } catch (e) {}
+    </script>
   </head>
   <body>
     <div id="root"></div>

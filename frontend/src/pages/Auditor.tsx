@@ -139,7 +139,7 @@ export default function Auditor() {
         </p>
       </div>
 
-      <div className="bg-white/[0.03] backdrop-blur-sm border border-white/[0.06] rounded-2xl p-7 mb-8">
+      <div className="bg-ink/[0.03] backdrop-blur-sm border border-ink/[0.06] rounded-2xl p-7 mb-8">
         <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
           <Eye size={20} className="text-pool-violet-light" />
           {t("auditor", "viewKeyTitle")}
@@ -187,7 +187,7 @@ export default function Auditor() {
         </button>
       </div>
 
-      <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-4 mb-8 flex items-start gap-3">
+      <div className="bg-ink/[0.03] border border-ink/[0.06] rounded-xl p-4 mb-8 flex items-start gap-3">
         <Clock size={16} className="text-pool-muted flex-shrink-0 mt-0.5" />
         <p className="text-xs text-pool-text-dim leading-relaxed">
           {lang === "es"
@@ -218,7 +218,7 @@ export default function Auditor() {
           </div>
 
           {records.length === 0 ? (
-            <div className="bg-white/[0.03] border border-white/[0.06] rounded-2xl py-8 px-6">
+            <div className="bg-ink/[0.03] border border-ink/[0.06] rounded-2xl py-8 px-6">
               <div className="flex flex-col items-center text-center gap-3">
                 <Clock size={24} className="text-pool-muted" />
                 <p className="text-pool-text-dim text-sm">{t("auditor", "noTx")}</p>
@@ -230,10 +230,10 @@ export default function Auditor() {
               </div>
             </div>
           ) : (
-            <div className="bg-white/[0.03] border border-white/[0.06] rounded-2xl overflow-x-auto">
+            <div className="bg-ink/[0.03] border border-ink/[0.06] rounded-2xl overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
-                  <tr className="text-pool-text-dim border-b border-white/[0.06]">
+                  <tr className="text-pool-text-dim border-b border-ink/[0.06]">
                     <th className="text-left py-3 px-4 font-medium">{t("auditor", "colCommitment")}</th>
                     <th className="text-left py-3 px-4 font-medium">{t("auditor", "colAmount")}</th>
                     <th className="text-left py-3 px-4 font-medium">{t("auditor", "colDate")}</th>
@@ -242,7 +242,7 @@ export default function Auditor() {
                 </thead>
                 <tbody>
                   {records.map((r, i) => (
-                    <tr key={i} className="border-b border-white/[0.03] hover:bg-white/[0.02] transition-colors">
+                    <tr key={i} className="border-b border-ink/[0.03] hover:bg-ink/[0.02] transition-colors">
                       <td className="py-3 px-4 font-mono text-xs text-pool-text-dim">
                         {r.commitment.slice(0, 8)}...{r.commitment.slice(-6)}
                       </td>

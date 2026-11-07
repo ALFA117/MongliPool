@@ -55,9 +55,9 @@ export default function WalletGate({ children }: { children: React.ReactNode }) 
       </button>
 
       <div className="flex items-center gap-3 max-w-xs mx-auto mb-4">
-        <div className="flex-1 h-px bg-white/[0.06]" />
+        <div className="flex-1 h-px bg-ink/[0.06]" />
         <span className="text-xs text-pool-muted">{lang === "es" ? "o" : "or"}</span>
-        <div className="flex-1 h-px bg-white/[0.06]" />
+        <div className="flex-1 h-px bg-ink/[0.06]" />
       </div>
 
       <button
@@ -67,7 +67,7 @@ export default function WalletGate({ children }: { children: React.ReactNode }) 
         <UserCircle size={16} />
         {lang === "es" ? "Probar sin wallet (cuenta temporal)" : "Try without wallet (temporary account)"}
       </button>
-      <p className="text-[10px] text-pool-muted mt-2 max-w-xs mx-auto">
+      <p className="text-xs text-pool-muted mt-2 max-w-xs mx-auto">
         {lang === "es"
           ? "La cuenta temporal se pierde al cerrar la pestaña. Solo para explorar."
           : "Temporary account is lost when you close the tab. For exploration only."}

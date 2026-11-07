@@ -103,7 +103,7 @@ export default function DemoTour({ onClose }: { onClose: () => void }) {
 
   return (
     <div className="fixed inset-0 z-[200] flex items-center justify-center bg-black/85 backdrop-blur-lg">
-      <div className="bg-pool-bg border border-pool-green/20 rounded-2xl p-8 max-w-lg w-full mx-4 shadow-[0_0_80px_rgba(5,213,161,0.12)] animate-fade-in">
+      <div role="dialog" aria-modal="true" className="bg-pool-bg border border-pool-green/20 rounded-2xl p-8 max-w-lg w-full mx-4 shadow-[0_0_80px_rgb(var(--pool-green)/0.1)] animate-fade-in">
         {/* Progress */}
         <div className="flex items-center justify-between mb-6">
           <div className="flex gap-1">
@@ -111,13 +111,13 @@ export default function DemoTour({ onClose }: { onClose: () => void }) {
               <div
                 key={i}
                 className={`h-1 rounded-full transition-all duration-300 ${
-                  i <= step ? "w-6 bg-pool-green" : "w-3 bg-white/10"
+                  i <= step ? "w-6 bg-pool-green" : "w-3 bg-ink/10"
                 }`}
               />
             ))}
           </div>
-          <button onClick={onClose} className="text-pool-muted hover:text-pool-text cursor-pointer">
-            <X size={18} />
+          <button onClick={onClose} aria-label="Cerrar" className="-m-3 inline-flex w-11 h-11 items-center justify-center rounded-full text-pool-muted hover:text-pool-text hover:bg-ink/[0.06] active:scale-95 transition cursor-pointer">
+            <X size={18} aria-hidden="true" />
           </button>
         </div>
 

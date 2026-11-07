@@ -18,7 +18,7 @@ export const translations = {
 
   // ─── Home ────────────────────────────────────────────────
   home: {
-    badge: { es: "Verificado en Stellar", en: "Verified on Stellar" },
+    badge: { es: "Verificado en Stellar testnet", en: "Verified on Stellar testnet" },
     heroTitle1: { es: "Tu dinero,", en: "Your money," },
     heroTitle2: { es: "tu secreto", en: "your secret" },
     heroSub: {

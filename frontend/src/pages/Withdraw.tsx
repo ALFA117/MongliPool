@@ -131,7 +131,7 @@ export default function Withdraw() {
 
       {/* Paste receipt */}
       {step === "paste" && (
-        <div className="bg-white/[0.03] backdrop-blur-sm border border-white/[0.06] rounded-2xl p-7 animate-slide-up space-y-5">
+        <div className="bg-ink/[0.03] backdrop-blur-sm border border-ink/[0.06] rounded-2xl p-7 animate-slide-up space-y-5">
           <div>
             <label className="block text-sm font-medium text-pool-text-dim mb-2">
               {t("withdraw", "receiptLabel")}
@@ -193,7 +193,7 @@ export default function Withdraw() {
             </p>
           </div>
 
-          <div className="bg-white/[0.03] border border-white/[0.06] rounded-lg px-3 py-2 mb-4 flex items-center gap-2">
+          <div className="bg-ink/[0.03] border border-ink/[0.06] rounded-lg px-3 py-2 mb-4 flex items-center gap-2">
             <svg className="w-4 h-4 text-pool-accent flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" strokeWidth="1.5"/><path d="M12 6v6l4 2" strokeWidth="1.5" strokeLinecap="round"/></svg>
             <span className="text-xs text-pool-text-dim">
               {lang === "es" ? "Tiempo estimado: ~30-60 segundos (prueba ZK + firma + confirmación)" : "Estimated time: ~30-60 seconds (ZK proof + signing + confirmation)"}
@@ -213,7 +213,7 @@ export default function Withdraw() {
 
       {/* Proving */}
       {(step === "prove" || step === "submit") && (
-        <div className="bg-white/[0.03] backdrop-blur-sm border border-white/[0.06] rounded-2xl p-8 animate-slide-up text-center">
+        <div className="bg-ink/[0.03] backdrop-blur-sm border border-ink/[0.06] rounded-2xl p-8 animate-slide-up text-center">
           <div className="relative w-20 h-20 mx-auto mb-6">
             <svg className="w-20 h-20 -rotate-90" viewBox="0 0 80 80">
               <circle cx="40" cy="40" r="36" fill="none" stroke="rgba(5,213,161,0.15)" strokeWidth="4" />

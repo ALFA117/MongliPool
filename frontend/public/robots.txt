@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+Disallow: /history
+
+Sitemap: https://mongli-pool.vercel.app/sitemap.xml

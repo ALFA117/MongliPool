@@ -145,3 +145,26 @@ Inspired by [Privacy Pools](https://papers.ssrn.com/sol3/papers.cfm?abstract_id=
 ---
 
 **[@ALFA_EDG_](https://instagram.com/ALFA_EDG_)** · [GitHub](https://github.com/ALFA117/MongliPool) · [Live Demo](https://mongli-pool.vercel.app)
+
+## FIX_NOTES — frontend (rediseño /diseno, 2026-10-11)
+
+- **Sin fondo en celular y con `blur` animado**: `AnimatedBg` devolvía `null` en pantallas de menos de 768 px, y en escritorio animaba cuatro manchas con `blur(100–140px)`, que es caro. Además, el `bg-pool-bg` opaco del contenedor raíz lo tapaba. Se reescribió (ver DESIGN_NOTES) y el raíz ya no pinta fondo.
+- **Solo había modo oscuro**: la paleta `pool-*` de Tailwind eran hex. Ahora son tokens RGB en `src/index.css`, con modo claro, y los 60+ `bg-white/[…]` y `border-white/[…]` de los componentes pasaron a `ink`, que es blanco en noche y azul tinta en día, para que los velos y bordes no desaparezcan en claro. Botón luna/sol en el navbar, con un script que lo aplica antes del primer pintado.
+- **Textos de 9–11 px**: el selector ES/EN, las etiquetas "Paso 01…", el banner MVP y "100 XLM" subieron a 12 px.
+- **Áreas táctiles**: el selector de idioma pasó a 88×44, y el menú móvil y los botones de cerrar de Onboarding y la demo guiada de 16–40 px a 44 px, con `aria-label`. Los dos modales tienen `role="dialog"`.
+- **Red sin decir**: el badge del hero decía "Verificado en Stellar" y ahora dice "Verificado en Stellar testnet".
+- **SEO**: el título era solo "MongliPool" y no había Open Graph ni tarjeta de X. Se agregaron título descriptivo, canonical, OG y X con `og.png` (captura real), `theme-color`, `robots.txt`, `sitemap.xml`, manifest y `apple-touch-icon.png`.
+
+## DESIGN_NOTES — frontend
+
+- **Fondo 3D: el dado sacó la receta 4 (túnel warp de anillos).** Se adaptó como un **túnel mezclador**: hexágonos verdes y azules vienen hacia la cámara girando, y por el centro viajan "depósitos" (puntos verdes) que, al cruzar la mitad del túnel, giran, se dispersan, se vuelven azules y se desvanecen. Entran por una puerta y nadie puede seguirlos hasta la otra, que es justo lo que hace el pool. El centro del túnel sigue al puntero y el scroll lo sube. Capas: aurora (CSS), anillos y depósitos (canvas), viñeta para el texto.
+- Es completo en `/` y tranquilo en las pantallas de trabajo (más lento, la mitad de depósitos, menos opacidad). En celular hay 14 anillos en lugar de 24 y la mitad de puntos, DPR ≤ 2, pausa con la pestaña oculta, un solo cuadro quieto con `prefers-reduced-motion`, y se atenúa en modo claro. `src/components/AnimatedBg.tsx`.
+- **Modo claro "agua de alberca"** (`#F0F6F8`), con el verde y el azul oscurecidos (`#008062`, `#0052CC`) para que se lean como texto.
+
+### Checklist de 2 minutos en el celular
+
+1. Abre la portada: detrás del hero se ve el túnel de hexágonos y los puntos que se dispersan, sin scroll horizontal.
+2. El badge dice "Verificado en Stellar testnet".
+3. ☰ → toca la luna: todo cambia a claro; las tarjetas siguen teniendo borde.
+4. Entra a Depositar: el túnel se calma.
+5. En la primera visita, la ✕ del modal de bienvenida se toca sin fallar.

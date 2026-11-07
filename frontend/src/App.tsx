@@ -29,7 +29,7 @@ export default function App() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-pool-bg text-pool-text flex flex-col">
+    <div className="min-h-screen min-h-[100dvh] text-pool-text flex flex-col">
       <AnimatedBg />
       <Navbar onStartTour={() => setShowTour(true)} />
       <main className="flex-1">

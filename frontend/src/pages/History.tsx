@@ -123,9 +123,9 @@ export default function History() {
               <div className="min-w-0 flex-1">
                 <div className="flex items-center gap-2 mb-1">
                   <span className="text-sm font-bold text-pool-green tabular-nums">{r.amountXLM} XLM</span>
-                  <span className="text-[10px] text-pool-muted">#{i}</span>
+                  <span className="text-xs text-pool-muted">#{i}</span>
                 </div>
-                <p className="font-mono text-[10px] text-pool-text-dim truncate">{r.commitmentShort}</p>
+                <p className="font-mono text-xs text-pool-text-dim truncate">{r.commitmentShort}</p>
               </div>
               <div className="flex items-center gap-2 flex-shrink-0">
                 <Link

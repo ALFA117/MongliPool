@@ -3,6 +3,7 @@ import { Link, useLocation } from "react-router-dom";
 import { ArrowDownToLine, ArrowUpFromLine, Eye, Activity, BarChart3, Menu, X, Home } from "lucide-react";
 import { useI18n } from "../i18n/context";
 import WalletButton from "./WalletButton";
+import ThemeToggle from "./ThemeToggle";
 
 const navItems = [
   { to: "/", labelKey: "home", Icon: Home },
@@ -19,7 +20,7 @@ export default function Navbar({ onStartTour }: { onStartTour?: () => void }) {
   const [mobileOpen, setMobileOpen] = useState(false);
 
   return (
-    <nav className="border-b border-white/[0.04] bg-pool-bg/70 backdrop-blur-2xl sticky top-0 z-50">
+    <nav className="border-b border-ink/[0.04] bg-pool-bg/70 backdrop-blur-2xl sticky top-0 z-50">
       <div className="max-w-6xl mx-auto px-5 h-16 flex items-center justify-between">
         {/* Logo */}
         <Link to="/" className="flex items-center gap-2.5 group" onClick={() => setMobileOpen(false)}>
@@ -38,7 +39,7 @@ export default function Navbar({ onStartTour }: { onStartTour?: () => void }) {
               className={`flex items-center gap-2 px-4 py-2 rounded-lg text-[13px] font-medium transition-all duration-200 ${
                 pathname === to
                   ? "bg-pool-violet/12 text-pool-violet-light shadow-inner-glow"
-                  : "text-pool-text-dim hover:text-pool-text hover:bg-white/[0.04]"
+                  : "text-pool-text-dim hover:text-pool-text hover:bg-ink/[0.04]"
               }`}
             >
               <Icon size={15} />
@@ -49,21 +50,22 @@ export default function Navbar({ onStartTour }: { onStartTour?: () => void }) {
 
         {/* Right side — desktop: lang + wallet + hamburger; mobile: only hamburger */}
         <div className="flex items-center gap-1.5">
+          <ThemeToggle className="hidden md:inline-flex" />
           {/* Language toggle — desktop only */}
           <button
             onClick={toggleLang}
-            className="hidden md:flex relative items-center w-[72px] h-8 rounded-full bg-white/[0.06] border border-white/[0.08] cursor-pointer overflow-hidden"
-            aria-label="Toggle language"
+            className="hidden md:flex relative items-center w-[88px] h-11 rounded-full bg-ink/[0.06] border border-ink/[0.08] cursor-pointer overflow-hidden active:scale-[0.97] transition-transform"
+            aria-label={lang === "es" ? "Cambiar idioma a inglés" : "Switch language to Spanish"}
           >
             <div
-              className={`absolute top-0.5 w-[34px] h-7 rounded-full bg-gradient-to-r from-pool-green to-pool-violet transition-all duration-300 ease-out ${
-                lang === "en" ? "left-[36px]" : "left-0.5"
+              className={`absolute top-1 w-[40px] h-[34px] rounded-full bg-gradient-to-r from-pool-green to-pool-violet transition-all duration-300 ease-out ${
+                lang === "en" ? "left-[44px]" : "left-1"
               }`}
             />
-            <span className={`relative z-10 flex-1 text-center text-[10px] font-bold tracking-wider transition-colors duration-200 ${lang === "es" ? "text-white" : "text-pool-text-dim"}`}>
+            <span className={`relative z-10 flex-1 text-center text-xs font-bold tracking-wider transition-colors duration-200 ${lang === "es" ? "text-white" : "text-pool-text-dim"}`}>
               ES
             </span>
-            <span className={`relative z-10 flex-1 text-center text-[10px] font-bold tracking-wider transition-colors duration-200 ${lang === "en" ? "text-white" : "text-pool-text-dim"}`}>
+            <span className={`relative z-10 flex-1 text-center text-xs font-bold tracking-wider transition-colors duration-200 ${lang === "en" ? "text-white" : "text-pool-text-dim"}`}>
               EN
             </span>
           </button>
@@ -74,7 +76,7 @@ export default function Navbar({ onStartTour }: { onStartTour?: () => void }) {
           {/* Hamburger — mobile only */}
           <button
             onClick={() => setMobileOpen(!mobileOpen)}
-            className="md:hidden p-2.5 rounded-lg text-pool-text-dim hover:text-pool-text hover:bg-white/[0.04] transition-colors"
+            className="md:hidden inline-flex w-11 h-11 items-center justify-center rounded-lg text-pool-text-dim hover:text-pool-text hover:bg-ink/[0.04] transition-colors"
             aria-label="Menu"
           >
             {mobileOpen ? <X size={20} /> : <Menu size={20} />}
@@ -84,18 +86,20 @@ export default function Navbar({ onStartTour }: { onStartTour?: () => void }) {
 
       {/* Mobile menu */}
       {mobileOpen && (
-        <div className="md:hidden border-t border-white/[0.04] bg-pool-bg/95 backdrop-blur-2xl animate-slide-up">
+        <div className="md:hidden border-t border-ink/[0.04] bg-pool-bg/95 backdrop-blur-2xl animate-slide-up">
           <div className="px-4 py-3 space-y-1">
             {/* Wallet + language in mobile menu */}
-            <div className="flex items-center justify-between px-4 py-3 border-b border-white/[0.06] mb-2">
+            <div className="flex items-center justify-between px-4 py-3 border-b border-ink/[0.06] mb-2">
               <WalletButton />
+              <ThemeToggle />
               <button
                 onClick={toggleLang}
-                className="relative flex items-center w-[64px] h-7 rounded-full bg-white/[0.06] border border-white/[0.08] cursor-pointer overflow-hidden"
+                className="relative flex items-center w-[88px] h-11 rounded-full bg-ink/[0.06] border border-ink/[0.08] cursor-pointer overflow-hidden"
+                aria-label={lang === "es" ? "Cambiar idioma a inglés" : "Switch language to Spanish"}
               >
-                <div className={`absolute top-0.5 w-[30px] h-6 rounded-full bg-gradient-to-r from-pool-green to-pool-violet transition-all duration-300 ease-out ${lang === "en" ? "left-[32px]" : "left-0.5"}`} />
-                <span className={`relative z-10 flex-1 text-center text-[9px] font-bold ${lang === "es" ? "text-white" : "text-pool-text-dim"}`}>ES</span>
-                <span className={`relative z-10 flex-1 text-center text-[9px] font-bold ${lang === "en" ? "text-white" : "text-pool-text-dim"}`}>EN</span>
+                <div className={`absolute top-1 w-[40px] h-[34px] rounded-full bg-gradient-to-r from-pool-green to-pool-violet transition-all duration-300 ease-out ${lang === "en" ? "left-[44px]" : "left-1"}`} />
+                <span className={`relative z-10 flex-1 text-center text-xs font-bold ${lang === "es" ? "text-white" : "text-pool-text-dim"}`}>ES</span>
+                <span className={`relative z-10 flex-1 text-center text-xs font-bold ${lang === "en" ? "text-white" : "text-pool-text-dim"}`}>EN</span>
               </button>
             </div>
             {navItems.map(({ to, labelKey, Icon }) => (
@@ -106,7 +110,7 @@ export default function Navbar({ onStartTour }: { onStartTour?: () => void }) {
                 className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all ${
                   pathname === to
                     ? "bg-pool-violet/12 text-pool-violet-light"
-                    : "text-pool-text-dim hover:text-pool-text hover:bg-white/[0.04]"
+                    : "text-pool-text-dim hover:text-pool-text hover:bg-ink/[0.04]"
                 }`}
               >
                 <Icon size={18} />

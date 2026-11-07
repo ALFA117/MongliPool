@@ -152,7 +152,7 @@ export default function Deposit() {
                   ? "bg-gradient-to-br from-pool-green to-pool-violet text-white shadow-violet animate-glow"
                   : stepIndex > i
                   ? "bg-pool-green text-white shadow-green"
-                  : "bg-white/[0.04] text-pool-muted border border-white/[0.08]"
+                  : "bg-ink/[0.04] text-pool-muted border border-ink/[0.08]"
               }`}
             >
               {stepIndex > i ? <CheckCircle size={14} /> : i + 1}
@@ -161,7 +161,7 @@ export default function Deposit() {
               <div className={`flex-1 h-[2px] rounded-full transition-all duration-500 ${
                 stepIndex > i
                   ? "bg-gradient-to-r from-pool-green to-pool-green-light"
-                  : "bg-white/[0.06]"
+                  : "bg-ink/[0.06]"
               }`} />
             )}
           </div>
@@ -177,7 +177,7 @@ export default function Deposit() {
 
       {/* Choose amount + confirm */}
       {step === "amount" && (
-        <div className="bg-white/[0.03] backdrop-blur-sm border border-white/[0.06] rounded-2xl p-7 animate-slide-up">
+        <div className="bg-ink/[0.03] backdrop-blur-sm border border-ink/[0.06] rounded-2xl p-7 animate-slide-up">
           <h2 className="text-xl font-semibold mb-5">{t("deposit", "confirmTitle")}</h2>
 
           {/* Amount input */}
@@ -228,7 +228,7 @@ export default function Deposit() {
                 className={`flex-1 py-2 rounded-lg text-sm font-medium transition-all cursor-pointer ${
                   amountXLM === String(v)
                     ? "bg-pool-violet/20 border border-pool-violet/40 text-pool-violet-light"
-                    : "bg-white/[0.03] border border-white/[0.06] text-pool-text-dim hover:border-pool-violet/20"
+                    : "bg-ink/[0.03] border border-ink/[0.06] text-pool-text-dim hover:border-pool-violet/20"
                 }`}
               >
                 {v} XLM
@@ -236,7 +236,7 @@ export default function Deposit() {
             ))}
           </div>
 
-          <div className="bg-white/[0.03] rounded-xl p-4 mb-5 border border-white/[0.06]">
+          <div className="bg-ink/[0.03] rounded-xl p-4 mb-5 border border-ink/[0.06]">
             <div className="flex justify-between items-center">
               <span className="text-pool-text-dim text-sm">{t("deposit", "from")}</span>
               <span className="font-mono text-xs text-pool-text-dim">
@@ -250,7 +250,7 @@ export default function Deposit() {
               {t("deposit", "importantDesc")}
             </p>
           </div>
-          <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-4 mb-6 flex items-start gap-3">
+          <div className="bg-ink/[0.03] border border-ink/[0.06] rounded-xl p-4 mb-6 flex items-start gap-3">
             <Info size={16} className="text-pool-violet-light flex-shrink-0 mt-0.5" />
             <p className="text-xs text-pool-text-dim leading-relaxed">
               {lang === "es"
@@ -294,10 +294,10 @@ export default function Deposit() {
             <p className="text-pool-text-dim text-sm">{t("deposit", "successDesc")}</p>
           </div>
 
-          <div className="bg-white/[0.03] backdrop-blur-sm border border-white/[0.06] rounded-2xl p-6">
+          <div className="bg-ink/[0.03] backdrop-blur-sm border border-ink/[0.06] rounded-2xl p-6">
             <h3 className="font-semibold mb-2 text-pool-violet-light">{t("deposit", "receiptTitle")}</h3>
             <p className="text-pool-text-dim text-xs mb-3">{t("deposit", "receiptDesc")}</p>
-            <div className="bg-black/30 rounded-lg p-3 font-mono text-xs text-pool-text-dim break-all mb-4 max-h-32 overflow-auto border border-white/5">
+            <div className="bg-black/30 rounded-lg p-3 font-mono text-xs text-pool-text-dim break-all mb-4 max-h-32 overflow-auto border border-ink/5">
               {receipt}
             </div>
             <div className="flex gap-3">
@@ -330,9 +330,9 @@ export default function Deposit() {
             </a>
           )}
 
-          <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-3 flex items-start gap-2.5">
+          <div className="bg-ink/[0.03] border border-ink/[0.06] rounded-xl p-3 flex items-start gap-2.5">
             <Info size={14} className="text-pool-text-dim flex-shrink-0 mt-0.5" />
-            <p className="text-[11px] text-pool-text-dim">
+            <p className="text-xs text-pool-text-dim">
               {lang === "es"
                 ? "Tu recibo también se guardó temporalmente en este navegador. Pero descárgalo o cópialo — el almacenamiento del navegador no es permanente."
                 : "Your receipt was also saved temporarily in this browser. But download or copy it — browser storage is not permanent."}
@@ -365,8 +365,8 @@ export default function Deposit() {
           </div>
           <div className="space-y-2">
             {savedReceipts.slice(0, 3).map((r, i) => (
-              <div key={i} className="flex items-center justify-between gap-3 bg-white/[0.03] rounded-lg px-3 py-2">
-                <span className="font-mono text-[10px] text-pool-text-dim truncate flex-1">{r.substring(0, 40)}...</span>
+              <div key={i} className="flex items-center justify-between gap-3 bg-ink/[0.03] rounded-lg px-3 py-2">
+                <span className="font-mono text-xs text-pool-text-dim truncate flex-1">{r.substring(0, 40)}...</span>
                 <button
                   onClick={() => { navigator.clipboard.writeText(r); toast.show(lang === "es" ? "Recibo copiado" : "Receipt copied"); }}
                   className="text-pool-green hover:text-pool-green-light text-xs flex items-center gap-1 cursor-pointer flex-shrink-0"
@@ -378,7 +378,7 @@ export default function Deposit() {
             ))}
           </div>
           {savedReceipts.length > 3 && (
-            <p className="text-[10px] text-pool-muted mt-2">
+            <p className="text-xs text-pool-muted mt-2">
               {lang === "es" ? `+${savedReceipts.length - 3} más guardados` : `+${savedReceipts.length - 3} more saved`}
             </p>
           )}

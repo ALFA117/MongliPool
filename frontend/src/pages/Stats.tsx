@@ -126,7 +126,7 @@ export default function Stats() {
             />
           </div>
 
-          <div className="bg-white/[0.03] border border-white/[0.06] rounded-2xl p-6">
+          <div className="bg-ink/[0.03] border border-ink/[0.06] rounded-2xl p-6">
             <h2 className="text-lg font-semibold mb-3">
               {lang === "es" ? "Contrato" : "Contract"}
             </h2>

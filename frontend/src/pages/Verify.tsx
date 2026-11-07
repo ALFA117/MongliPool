@@ -137,7 +137,7 @@ export default function Verify() {
           {/* Commitment hash */}
           <div className="glass-panel p-4">
             <p className="text-xs text-pool-text-dim mb-1">Commitment hash</p>
-            <p className="font-mono text-[11px] text-pool-text break-all">{result.commitment}</p>
+            <p className="font-mono text-xs text-pool-text break-all">{result.commitment}</p>
           </div>
         </div>
       )}

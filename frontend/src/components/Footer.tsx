@@ -10,7 +10,7 @@ export default function Footer() {
   const { lang } = useI18n();
 
   return (
-    <footer className="border-t border-white/[0.04] bg-pool-bg/80 mt-auto">
+    <footer className="border-t border-ink/[0.04] bg-pool-bg/80 mt-auto">
       <div className="max-w-6xl mx-auto px-5 py-12">
         <div className="grid md:grid-cols-4 gap-8 mb-10">
           {/* Brand + Team */}
@@ -109,13 +109,13 @@ export default function Footer() {
         </div>
 
         {/* Bottom */}
-        <div className="border-t border-white/[0.04] pt-6 flex flex-col sm:flex-row items-center justify-between gap-3">
-          <p className="text-[11px] text-pool-muted">
+        <div className="border-t border-ink/[0.04] pt-6 flex flex-col sm:flex-row items-center justify-between gap-3">
+          <p className="text-xs text-pool-muted">
             {lang === "es"
               ? "Prototipo educativo MVP — Stellar testnet — no usar con fondos reales"
               : "Educational MVP prototype — Stellar testnet — do not use with real funds"}
           </p>
-          <p className="text-[11px] text-pool-muted">
+          <p className="text-xs text-pool-muted">
             Stellar Hacks: ZK 2025 — Mongli DAO
           </p>
         </div>

@@ -21,14 +21,14 @@ export default function Home({ onStartTour }: { onStartTour?: () => void }) {
         <div className="absolute inset-0 bg-gradient-to-r from-pool-bg/40 via-transparent to-pool-bg/40 pointer-events-none" />
 
         <div className="relative z-10 max-w-3xl mx-auto text-center px-4 md:px-6">
-          <div className="inline-flex items-center gap-1.5 bg-pool-green/8 text-pool-green border border-pool-green/15 px-3 py-1 md:px-4 md:py-1.5 rounded-full text-[11px] md:text-xs font-medium mb-6 md:mb-10">
+          <div className="inline-flex items-center gap-1.5 bg-pool-green/8 text-pool-green border border-pool-green/15 px-3 py-1 md:px-4 md:py-1.5 rounded-full text-xs md:text-xs font-medium mb-6 md:mb-10">
             <CheckCircle size={11} />
             {t("home", "badge")}
           </div>
 
           <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-7xl font-bold tracking-tight mb-4 md:mb-7 leading-tight">
             <span className="text-pool-text">{t("home", "heroTitle1")}</span>{" "}
-            <span className="bg-gradient-to-r from-[#05D5A1] via-[#00F5D4] to-[#0066FF] bg-clip-text text-transparent">
+            <span className="bg-gradient-to-r from-pool-green via-pool-green-light to-pool-violet bg-clip-text text-transparent">
               {t("home", "heroTitle2")}
             </span>
           </h1>
@@ -120,7 +120,7 @@ export default function Home({ onStartTour }: { onStartTour?: () => void }) {
 
       {/* Divider */}
       <div className="max-w-5xl mx-auto px-6">
-        <div className="h-px bg-gradient-to-r from-transparent via-white/[0.06] to-transparent" />
+        <div className="h-px bg-gradient-to-r from-transparent via-ink/[0.06] to-transparent" />
       </div>
 
       {/* How it works */}
@@ -161,7 +161,7 @@ export default function Home({ onStartTour }: { onStartTour?: () => void }) {
                 <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${color} flex items-center justify-center mb-6 shadow-violet-sm group-hover:shadow-violet transition-shadow duration-300`}>
                   <Icon size={22} className="text-white" strokeWidth={2} />
                 </div>
-                <div className="text-[11px] text-pool-muted font-medium mb-3 uppercase tracking-[0.15em] font-mono">
+                <div className="text-xs text-pool-muted font-medium mb-3 uppercase tracking-[0.15em] font-mono">
                   {lang === "es" ? "Paso" : "Step"} {step}
                 </div>
                 <h3 className="text-lg font-semibold mb-3 tracking-tight">{title}</h3>
@@ -175,7 +175,7 @@ export default function Home({ onStartTour }: { onStartTour?: () => void }) {
 
       {/* Divider */}
       <div className="max-w-5xl mx-auto px-6">
-        <div className="h-px bg-gradient-to-r from-transparent via-white/[0.06] to-transparent" />
+        <div className="h-px bg-gradient-to-r from-transparent via-ink/[0.06] to-transparent" />
       </div>
 
       {/* Compliance */}
@@ -227,7 +227,7 @@ export default function Home({ onStartTour }: { onStartTour?: () => void }) {
 
       {/* Divider */}
       <div className="max-w-5xl mx-auto px-6">
-        <div className="h-px bg-gradient-to-r from-transparent via-white/[0.06] to-transparent" />
+        <div className="h-px bg-gradient-to-r from-transparent via-ink/[0.06] to-transparent" />
       </div>
 
       {/* FAQ */}
@@ -276,7 +276,7 @@ export default function Home({ onStartTour }: { onStartTour?: () => void }) {
 
       {/* Divider */}
       <div className="max-w-5xl mx-auto px-6">
-        <div className="h-px bg-gradient-to-r from-transparent via-white/[0.06] to-transparent" />
+        <div className="h-px bg-gradient-to-r from-transparent via-ink/[0.06] to-transparent" />
       </div>
 
       {/* CTA */}

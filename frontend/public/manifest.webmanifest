@@ -1,0 +1,13 @@
+{
+  "name": "MongliPool",
+  "short_name": "MongliPool",
+  "description": "Pool de privacidad con cumplimiento en Stellar testnet.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0A1128",
+  "theme_color": "#0A1128",
+  "icons": [
+    { "src": "/logo.svg", "sizes": "any", "type": "image/svg+xml" },
+    { "src": "/apple-touch-icon.png", "sizes": "180x180", "type": "image/png" }
+  ]
+}

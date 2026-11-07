@@ -63,7 +63,7 @@ export default function Business() {
         <div className="glass-panel overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
-              <tr className="border-b border-white/[0.06]">
+              <tr className="border-b border-ink/[0.06]">
                 <th className="text-left py-3 px-4 font-medium text-pool-text-dim">
                   {es ? "Característica" : "Feature"}
                 </th>
@@ -83,7 +83,7 @@ export default function Business() {
                 { feature: es ? "Producción probada" : "Battle-tested in production", trad: true, mp: false },
                 { feature: es ? "Auditoría de seguridad externa" : "External security audit", trad: true, mp: false },
               ].map(({ feature, trad, mp }) => (
-                <tr key={feature} className="border-b border-white/[0.03]">
+                <tr key={feature} className="border-b border-ink/[0.03]">
                   <td className="py-3 px-4 text-pool-text-dim">{feature}</td>
                   <td className="py-3 px-4 text-center">
                     {trad ? <CheckCircle size={16} className="text-pool-green mx-auto" /> : <X size={16} className="text-pool-muted mx-auto" />}
@@ -134,11 +134,11 @@ export default function Business() {
             <div key={phase} className="flex items-start gap-4">
               <div className="flex flex-col items-center flex-shrink-0">
                 <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold ${
-                  active ? "bg-pool-violet text-white shadow-violet-sm" : "bg-white/[0.04] text-pool-muted border border-white/[0.08]"
+                  active ? "bg-pool-violet text-white shadow-violet-sm" : "bg-ink/[0.04] text-pool-muted border border-ink/[0.08]"
                 }`}>
                   {i + 1}
                 </div>
-                {i < 4 && <div className="w-0.5 h-8 bg-white/[0.06] mt-1" />}
+                {i < 4 && <div className="w-0.5 h-8 bg-ink/[0.06] mt-1" />}
               </div>
               <div className="pt-1">
                 <h3 className={`font-semibold text-sm ${active ? "text-pool-violet-light" : "text-pool-text"}`}>

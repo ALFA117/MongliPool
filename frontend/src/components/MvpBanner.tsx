@@ -60,11 +60,11 @@ export default function MvpBanner() {
         {expanded && (
           <div className="mt-3 mb-2">
             <div className="grid grid-cols-[1fr_auto_1fr] gap-x-3 gap-y-1.5 text-xs">
-              <div className="font-medium text-pool-text-dim pb-1 border-b border-white/[0.06]">
+              <div className="font-medium text-pool-text-dim pb-1 border-b border-ink/[0.06]">
                 {lang === "es" ? "En esta versión" : "Current version"}
               </div>
-              <div className="pb-1 border-b border-white/[0.06]" />
-              <div className="font-medium text-pool-green pb-1 border-b border-white/[0.06]">
+              <div className="pb-1 border-b border-ink/[0.06]" />
+              <div className="font-medium text-pool-green pb-1 border-b border-ink/[0.06]">
                 {lang === "es" ? "En producción" : "Production"}
               </div>
               {items[lang].map((item, i) => (

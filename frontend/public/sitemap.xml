@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url><loc>https://mongli-pool.vercel.app/</loc></url>
+  <url><loc>https://mongli-pool.vercel.app/deposit</loc></url>
+  <url><loc>https://mongli-pool.vercel.app/withdraw</loc></url>
+  <url><loc>https://mongli-pool.vercel.app/auditor</loc></url>
+  <url><loc>https://mongli-pool.vercel.app/explorer</loc></url>
+  <url><loc>https://mongli-pool.vercel.app/verify</loc></url>
+  <url><loc>https://mongli-pool.vercel.app/stats</loc></url>
+  <url><loc>https://mongli-pool.vercel.app/status</loc></url>
+  <url><loc>https://mongli-pool.vercel.app/business</loc></url>
+</urlset>

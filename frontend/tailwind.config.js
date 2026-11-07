@@ -1,23 +1,27 @@
+const c = (v) => `rgb(var(${v}) / <alpha-value>)`;
+
 /** @type {import('tailwindcss').Config} */
 export default {
   content: ["./index.html", "./src/**/*.{js,ts,jsx,tsx}"],
   theme: {
     extend: {
       colors: {
+        // Tokens RGB en src/index.css (noche y día); Tailwind aplica la opacidad.
+        ink: c("--ink"), // blanco en noche, azul tinta en día: velos y bordes sutiles
         pool: {
-          bg: "#0A1128",
-          surface: "#0d1a3a",
-          card: "#111f44",
-          border: "#1a2d5a",
-          violet: "#0066FF",
-          "violet-light": "#3399FF",
-          "violet-dim": "#003d99",
-          green: "#05D5A1",
-          "green-light": "#00F5D4",
-          accent: "#00F5D4",
-          muted: "#4a5e80",
-          text: "#FFFFFF",
-          "text-dim": "#94a3b8",
+          bg: c("--pool-bg"),
+          surface: c("--pool-surface"),
+          card: c("--pool-card"),
+          border: c("--pool-border"),
+          violet: c("--pool-violet"),
+          "violet-light": c("--pool-violet-light"),
+          "violet-dim": c("--pool-violet-dim"),
+          green: c("--pool-green"),
+          "green-light": c("--pool-green-light"),
+          accent: c("--pool-green-light"),
+          muted: c("--pool-muted"),
+          text: c("--pool-text"),
+          "text-dim": c("--pool-text-dim"),
         },
       },
       fontFamily: {
@@ -27,11 +31,11 @@ export default {
       backgroundImage: {
         "gradient-radial": "radial-gradient(var(--tw-gradient-stops))",
         "pool-gradient":
-          "linear-gradient(135deg, #0A1128 0%, #0d1a3a 50%, #0A1128 100%)",
+          "linear-gradient(135deg, rgb(var(--pool-bg)) 0%, rgb(var(--pool-surface)) 50%, rgb(var(--pool-bg)) 100%)",
         "violet-glow":
           "radial-gradient(ellipse at center, rgba(5,213,161,0.08) 0%, rgba(0,102,255,0.04) 40%, transparent 70%)",
         "glass-shine":
-          "linear-gradient(135deg, rgba(255,255,255,0.04) 0%, transparent 50%, rgba(255,255,255,0.02) 100%)",
+          "linear-gradient(135deg, rgb(var(--ink) / 0.04) 0%, transparent 50%, rgb(var(--ink) / 0.02) 100%)",
       },
       animation: {
         "spin-slow": "spin 3s linear infinite",

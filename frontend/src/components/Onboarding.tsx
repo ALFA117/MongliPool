@@ -23,7 +23,7 @@ export default function Onboarding({ onClose, onStartTour }: Props) {
           <div className="w-16 h-16 rounded-xl bg-pool-violet/20 border border-pool-violet/30 flex items-center justify-center text-pool-violet-light font-mono text-xs">A</div>
           <div className="flex flex-col items-center">
             <div className="h-0.5 w-20 bg-gradient-to-r from-pool-violet to-pool-green" />
-            <span className="text-[10px] text-pool-muted mt-1">100 XLM</span>
+            <span className="text-xs text-pool-muted mt-1">100 XLM</span>
           </div>
           <div className="w-16 h-16 rounded-xl bg-pool-green/20 border border-pool-green/30 flex items-center justify-center text-pool-green font-mono text-xs">B</div>
           <div className="absolute mt-20">
@@ -84,10 +84,10 @@ export default function Onboarding({ onClose, onStartTour }: Props) {
 
   return (
     <div className="fixed inset-0 z-[300] flex items-center justify-center bg-black/90 backdrop-blur-xl">
-      <div className="bg-pool-bg border border-pool-green/20 rounded-2xl p-8 max-w-md w-full mx-4 shadow-[0_0_100px_rgba(5,213,161,0.1)] animate-fade-in">
+      <div role="dialog" aria-modal="true" className="bg-pool-bg border border-pool-green/20 rounded-2xl p-8 max-w-md w-full mx-4 shadow-[0_0_100px_rgb(var(--pool-green)/0.1)] animate-fade-in">
         <div className="flex justify-end mb-2">
-          <button onClick={finish} className="text-pool-muted hover:text-pool-text cursor-pointer">
-            <X size={16} />
+          <button onClick={finish} aria-label="Cerrar" className="-m-3 inline-flex w-11 h-11 items-center justify-center rounded-full text-pool-muted hover:text-pool-text hover:bg-ink/[0.06] active:scale-95 transition cursor-pointer">
+            <X size={18} aria-hidden="true" />
           </button>
         </div>
 
@@ -99,7 +99,7 @@ export default function Onboarding({ onClose, onStartTour }: Props) {
         {/* Dots */}
         <div className="flex justify-center gap-2 mb-6">
           {slides.map((_, i) => (
-            <div key={i} className={`w-2 h-2 rounded-full transition-all ${i === slide ? "bg-pool-green w-6" : "bg-white/10"}`} />
+            <div key={i} className={`w-2 h-2 rounded-full transition-all ${i === slide ? "bg-pool-green w-6" : "bg-ink/10"}`} />
           ))}
         </div>
 

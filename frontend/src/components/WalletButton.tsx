@@ -36,14 +36,14 @@ export default function WalletButton() {
       <div className="relative" ref={menuRef}>
         <button
           onClick={() => setMenuOpen(!menuOpen)}
-          className="flex items-center gap-2 bg-white/[0.04] border border-white/[0.08] rounded-xl px-3 py-2 hover:bg-white/[0.06] transition-all cursor-pointer"
+          className="flex items-center gap-2 bg-ink/[0.04] border border-ink/[0.08] rounded-xl px-3 py-2 hover:bg-ink/[0.06] transition-all cursor-pointer"
         >
           <div className={`w-2 h-2 rounded-full ${isGuest ? "bg-amber-400" : "bg-pool-green"} animate-pulse`} />
           <span className="font-mono text-xs text-pool-text-dim">
             {isGuest ? (lang === "es" ? "Temp" : "Guest") : `${address.slice(0, 4)}...${address.slice(-4)}`}
           </span>
           {balance !== null && (
-            <span className="text-[10px] text-pool-green font-medium">
+            <span className="text-xs text-pool-green font-medium">
               {balance.toFixed(1)} XLM
             </span>
           )}
@@ -51,8 +51,8 @@ export default function WalletButton() {
 
         {menuOpen && (
           <div className="absolute right-0 top-full mt-2 w-60 glass-panel overflow-hidden z-50 animate-slide-up">
-            <div className="px-3 py-3 border-b border-white/[0.06]">
-              <p className="font-mono text-[10px] text-pool-text-dim break-all leading-relaxed mb-2">{address}</p>
+            <div className="px-3 py-3 border-b border-ink/[0.06]">
+              <p className="font-mono text-xs text-pool-text-dim break-all leading-relaxed mb-2">{address}</p>
               {balance !== null && (
                 <div className="flex items-center justify-between">
                   <span className="text-xs text-pool-text-dim">Balance</span>
@@ -66,7 +66,7 @@ export default function WalletButton() {
                 toast.show(lang === "es" ? "Dirección copiada" : "Address copied");
                 setMenuOpen(false);
               }}
-              className="w-full flex items-center gap-2.5 px-3 py-2.5 text-sm text-pool-text-dim hover:bg-white/[0.04] transition-colors cursor-pointer"
+              className="w-full flex items-center gap-2.5 px-3 py-2.5 text-sm text-pool-text-dim hover:bg-ink/[0.04] transition-colors cursor-pointer"
             >
               <Copy size={14} />
               {lang === "es" ? "Copiar dirección" : "Copy address"}
@@ -75,14 +75,14 @@ export default function WalletButton() {
               href={`https://stellar.expert/explorer/testnet/account/${address}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="w-full flex items-center gap-2.5 px-3 py-2.5 text-sm text-pool-text-dim hover:bg-white/[0.04] transition-colors cursor-pointer"
+              className="w-full flex items-center gap-2.5 px-3 py-2.5 text-sm text-pool-text-dim hover:bg-ink/[0.04] transition-colors cursor-pointer"
             >
               <ExternalLink size={14} />
               Stellar Expert
             </a>
             <button
               onClick={() => { disconnect(); setMenuOpen(false); }}
-              className="w-full flex items-center gap-2.5 px-3 py-2.5 text-sm text-red-400 hover:bg-red-500/10 transition-colors cursor-pointer border-t border-white/[0.06]"
+              className="w-full flex items-center gap-2.5 px-3 py-2.5 text-sm text-red-400 hover:bg-red-500/10 transition-colors cursor-pointer border-t border-ink/[0.06]"
             >
               <LogOut size={14} />
               {t("nav", "disconnect")}
