@@ -3,7 +3,7 @@ import { useWallet } from "../lib/walletContext";
 import { useI18n } from "../i18n/context";
 
 export default function WalletGate({ children }: { children: React.ReactNode }) {
-  const { address, loading, isGuest, connect, connectAsGuest } = useWallet();
+  const { address, loading, isGuest, guestLoading, guestError, connect, connectAsGuest } = useWallet();
   const { lang } = useI18n();
 
   if (address) {
@@ -61,16 +61,26 @@ export default function WalletGate({ children }: { children: React.ReactNode }) 
       </div>
 
       <button
-        onClick={connectAsGuest}
+        onClick={() => connectAsGuest()}
+        disabled={guestLoading || loading}
         className="btn-secondary w-full max-w-xs mx-auto py-3 text-sm inline-flex items-center justify-center gap-2"
       >
-        <UserCircle size={16} />
-        {lang === "es" ? "Probar sin wallet (cuenta temporal)" : "Try without wallet (temporary account)"}
+        {guestLoading ? <Loader2 size={16} className="animate-spin" /> : <UserCircle size={16} />}
+        {guestLoading
+          ? (lang === "es" ? "Creando cuenta y pidiendo XLM de prueba…" : "Creating account and requesting test XLM…")
+          : (lang === "es" ? "Probar sin wallet (cuenta temporal)" : "Try without wallet (temporary account)")}
       </button>
+      {guestError && (
+        <p role="alert" className="text-xs text-red-400 mt-2 max-w-xs mx-auto">
+          {lang === "es"
+            ? "Friendbot (el grifo de XLM de prueba de Stellar) no respondió. Intenta de nuevo en un momento."
+            : "Friendbot (Stellar's test XLM faucet) didn't respond. Try again in a moment."}
+        </p>
+      )}
       <p className="text-xs text-pool-muted mt-2 max-w-xs mx-auto">
         {lang === "es"
-          ? "La cuenta temporal se pierde al cerrar la pestaña. Solo para explorar."
-          : "Temporary account is lost when you close the tab. For exploration only."}
+          ? "Te creamos una cuenta de testnet con 10,000 XLM de prueba (Friendbot). Se pierde al cerrar la pestaña."
+          : "We create a testnet account with 10,000 test XLM (Friendbot). It's lost when you close the tab."}
       </p>
     </div>
   );
