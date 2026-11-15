@@ -41,13 +41,13 @@ function ToastBubble({ message, onDismiss }: { message: string; onDismiss: () =>
 
   return (
     <div
-      className={`pointer-events-auto flex items-center gap-3 bg-pool-card/95 backdrop-blur-xl border border-pool-green/20 rounded-xl px-4 py-3 shadow-green transition-all duration-300 ${
+      className={`pointer-events-auto flex items-center gap-3 bg-pool-card border border-pool-border border-l-4 border-l-pool-green rounded-md pl-4 pr-1 py-1 shadow-hard-sm transition-all duration-300 ${
         visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
       }`}
     >
       <CheckCircle size={16} className="text-pool-green flex-shrink-0" />
-      <span className="text-sm text-pool-text">{message}</span>
-      <button onClick={onDismiss} className="text-pool-muted hover:text-pool-text ml-2 cursor-pointer">
+      <span className="text-[15px] text-pool-text py-2">{message}</span>
+      <button onClick={onDismiss} aria-label="Cerrar" className="w-11 h-11 flex items-center justify-center text-pool-muted hover:text-pool-text cursor-pointer">
         <X size={14} />
       </button>
     </div>

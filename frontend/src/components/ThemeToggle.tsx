@@ -34,7 +34,7 @@ export default function ThemeToggle({ className = "" }: { className?: string }) 
       onClick={flip}
       aria-label={label}
       title={label}
-      className={`items-center justify-center w-11 h-11 rounded-full bg-ink/[0.06] border border-ink/[0.08] text-pool-text-dim hover:text-pool-text hover:border-pool-green/40 transition-[color,border-color,transform] duration-200 active:scale-95 inline-flex ${className}`}
+      className={`items-center justify-center w-11 h-11 rounded-md border border-pool-border text-pool-text-dim hover:text-pool-text hover:border-pool-text/40 transition-colors duration-150 inline-flex ${className}`}
     >
       {theme === "dark" ? <Moon size={17} aria-hidden="true" /> : <Sun size={17} aria-hidden="true" />}
     </button>

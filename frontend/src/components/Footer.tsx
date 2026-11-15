@@ -10,30 +10,30 @@ export default function Footer() {
   const { lang } = useI18n();
 
   return (
-    <footer className="border-t border-ink/[0.04] bg-pool-bg/80 mt-auto">
-      <div className="max-w-6xl mx-auto px-5 py-12">
+    <footer className="border-t border-pool-border bg-pool-surface mt-auto">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 xl:px-0 py-14">
         <div className="grid md:grid-cols-4 gap-8 mb-10">
           {/* Brand + Team */}
           <div className="md:col-span-2">
             <Link to="/" className="flex items-center gap-2 mb-3 hover:opacity-80 transition-opacity">
-              <img src="/logo.svg" alt="MongliPool" className="w-8 h-8" />
+              <img src="/logo.svg" alt="" className="w-8 h-8" />
               <span className="font-semibold text-pool-text">
-                Mongli<span className="text-pool-violet-light">Pool</span>
+                Mongli<span className="font-normal text-pool-text-dim">Pool</span>
               </span>
             </Link>
-            <p className="text-pool-text-dim text-sm leading-relaxed mb-3 max-w-sm">
+            <p className="text-pool-text-dim text-[15px] leading-relaxed mb-4 max-w-sm">
               {lang === "es"
                 ? "Pool de privacidad ZK en Stellar con cumplimiento regulatorio. Construido por Mongli DAO para Stellar Hacks: ZK."
                 : "ZK privacy pool on Stellar with regulatory compliance. Built by Mongli DAO for Stellar Hacks: ZK."}
             </p>
             <div className="space-y-1 text-sm">
-              <p className="text-pool-text font-medium">- A L F A -</p>
+              <p className="font-mono text-pool-text">- A L F A -</p>
               <p className="text-pool-text-dim text-xs">Mongli DAO</p>
               <a
                 href="https://instagram.com/ALFA_EDG_"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-1.5 text-xs text-pool-violet-light hover:text-pool-violet transition-colors"
+                className="inline-flex items-center gap-1.5 min-h-[44px] text-sm text-pool-text-dim hover:text-pool-text underline underline-offset-4 decoration-pool-border transition-colors"
               >
                 <ExternalLink size={10} />
                 @ALFA_EDG_
@@ -43,10 +43,10 @@ export default function Footer() {
 
           {/* Navigation */}
           <div>
-            <h3 className="text-xs font-semibold text-pool-text uppercase tracking-wider mb-3">
+            <h3 className="font-mono text-[13px] text-pool-muted mb-3">
               {lang === "es" ? "Navegación" : "Navigation"}
             </h3>
-            <div className="space-y-2">
+            <div className="space-y-0.5">
               {[
                 { to: "/deposit", label: lang === "es" ? "Depositar" : "Deposit" },
                 { to: "/withdraw", label: lang === "es" ? "Retirar" : "Withdraw" },
@@ -58,7 +58,7 @@ export default function Footer() {
                 { to: "/business", label: lang === "es" ? "Modelo" : "Business" },
                 { to: "/status", label: "Status" },
               ].map(({ to, label }) => (
-                <Link key={to} to={to} className="block text-sm text-pool-text-dim hover:text-pool-text transition-colors">
+                <Link key={to} to={to} className="block py-1.5 text-[15px] text-pool-text-dim hover:text-pool-text transition-colors">
                   {label}
                 </Link>
               ))}
@@ -67,10 +67,10 @@ export default function Footer() {
 
           {/* Contracts */}
           <div>
-            <h3 className="text-xs font-semibold text-pool-text uppercase tracking-wider mb-3">
+            <h3 className="font-mono text-[13px] text-pool-muted mb-3">
               {lang === "es" ? "Contratos" : "Contracts"}
             </h3>
-            <div className="space-y-2">
+            <div className="space-y-0.5">
               {[
                 { label: "Privacy Pool", id: POOL_ID },
                 { label: "ASP Registry", id: ASP_ID },
@@ -81,11 +81,11 @@ export default function Footer() {
                   href={`https://stellar.expert/explorer/testnet/contract/${id}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center gap-1.5 text-xs text-pool-text-dim hover:text-pool-green transition-colors"
+                  className="flex flex-wrap items-center gap-x-2 gap-y-0.5 py-1.5 text-[15px] text-pool-text-dim hover:text-pool-text transition-colors"
                 >
                   <ExternalLink size={10} />
                   <span>{label}</span>
-                  <span className="font-mono opacity-50">{id.slice(0, 6)}...{id.slice(-4)}</span>
+                  <span className="font-mono text-[13px] text-pool-muted">{id.slice(0, 6)}...{id.slice(-4)}</span>
                 </a>
               ))}
             </div>
@@ -93,14 +93,14 @@ export default function Footer() {
               href="https://github.com/ALFA117/MongliPool"
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-1.5 text-xs text-pool-text-dim hover:text-pool-text transition-colors mt-3"
+              className="inline-flex items-center gap-1.5 py-1.5 text-[15px] text-pool-text-dim hover:text-pool-text transition-colors mt-2"
             >
               <ExternalLink size={10} />
               GitHub
             </a>
             <button
-              onClick={() => { localStorage.removeItem("monglipool-onboarded"); window.location.reload(); }}
-              className="flex items-center gap-1.5 text-xs text-pool-muted hover:text-pool-text-dim transition-colors mt-2 cursor-pointer"
+              onClick={() => { try { localStorage.setItem("monglipool-intro-requested", "1"); } catch { /* */ } window.location.reload(); }}
+              className="flex items-center gap-1.5 min-h-[44px] text-[15px] text-pool-text-dim hover:text-pool-text transition-colors cursor-pointer"
             >
               <RotateCcw size={10} />
               {lang === "es" ? "Ver introducción" : "Replay intro"}
@@ -109,13 +109,13 @@ export default function Footer() {
         </div>
 
         {/* Bottom */}
-        <div className="border-t border-ink/[0.04] pt-6 flex flex-col sm:flex-row items-center justify-between gap-3">
-          <p className="text-xs text-pool-muted">
+        <div className="border-t border-pool-border pt-6 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <p className="font-mono text-[13px] text-pool-muted">
             {lang === "es"
               ? "Prototipo educativo MVP — Stellar testnet — no usar con fondos reales"
               : "Educational MVP prototype — Stellar testnet — do not use with real funds"}
           </p>
-          <p className="text-xs text-pool-muted">
+          <p className="font-mono text-[13px] text-pool-muted">
             Stellar Hacks: ZK 2025 — Mongli DAO
           </p>
         </div>

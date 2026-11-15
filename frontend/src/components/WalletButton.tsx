@@ -36,27 +36,27 @@ export default function WalletButton() {
       <div className="relative" ref={menuRef}>
         <button
           onClick={() => setMenuOpen(!menuOpen)}
-          className="flex items-center gap-2 bg-ink/[0.04] border border-ink/[0.08] rounded-xl px-3 py-2 hover:bg-ink/[0.06] transition-all cursor-pointer"
+          className="flex items-center gap-2.5 bg-pool-surface border border-pool-border rounded-md px-3 min-h-[44px] hover:border-pool-text/40 transition-colors cursor-pointer"
         >
-          <div className={`w-2 h-2 rounded-full ${isGuest ? "bg-amber-400" : "bg-pool-green"} animate-pulse`} />
-          <span className="font-mono text-xs text-pool-text-dim">
+          <div className={`w-2 h-2 rounded-full ${isGuest ? "bg-amber-400" : "bg-pool-green"}`} />
+          <span className="font-mono text-[13px] text-pool-text">
             {isGuest ? (lang === "es" ? "Temp" : "Guest") : `${address.slice(0, 4)}...${address.slice(-4)}`}
           </span>
           {balance !== null && (
-            <span className="text-xs text-pool-green font-medium">
+            <span className="font-mono text-[13px] text-pool-text-dim border-l border-pool-border pl-2.5">
               {balance.toFixed(1)} XLM
             </span>
           )}
         </button>
 
         {menuOpen && (
-          <div className="absolute right-0 top-full mt-2 w-60 glass-panel overflow-hidden z-50 animate-slide-up">
-            <div className="px-3 py-3 border-b border-ink/[0.06]">
+          <div className="absolute right-0 top-full mt-2 w-64 panel overflow-hidden z-50 animate-slide-up">
+            <div className="px-3 py-3 border-b border-pool-border">
               <p className="font-mono text-xs text-pool-text-dim break-all leading-relaxed mb-2">{address}</p>
               {balance !== null && (
                 <div className="flex items-center justify-between">
                   <span className="text-xs text-pool-text-dim">Balance</span>
-                  <span className="text-sm font-bold text-pool-green">{balance.toFixed(2)} XLM</span>
+                  <span className="font-mono text-sm text-pool-text">{balance.toFixed(2)} XLM</span>
                 </div>
               )}
             </div>
@@ -82,7 +82,7 @@ export default function WalletButton() {
             </a>
             <button
               onClick={() => { disconnect(); setMenuOpen(false); }}
-              className="w-full flex items-center gap-2.5 px-3 py-2.5 text-sm text-red-400 hover:bg-red-500/10 transition-colors cursor-pointer border-t border-ink/[0.06]"
+              className="w-full flex items-center gap-2.5 px-3 py-2.5 text-sm problem-label hover:bg-red-500/10 transition-colors cursor-pointer border-t border-pool-border"
             >
               <LogOut size={14} />
               {t("nav", "disconnect")}
@@ -97,7 +97,7 @@ export default function WalletButton() {
     <button
       onClick={() => connect().catch(() => {})}
       disabled={loading}
-      className="btn-primary py-2 px-4 text-sm inline-flex items-center gap-2"
+      className="btn-primary py-2 px-4 text-sm gap-2"
     >
       {loading ? (
         <>
