@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import { Routes, Route } from "react-router-dom";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
-import AnimatedBg from "./components/AnimatedBg";
 import WalletGate from "./components/WalletGate";
 import DemoTour from "./components/DemoTour";
 import Onboarding from "./components/Onboarding";
@@ -23,14 +22,16 @@ export default function App() {
   const [showOnboarding, setShowOnboarding] = useState(false);
 
   useEffect(() => {
-    if (!localStorage.getItem("monglipool-onboarded")) {
-      setShowOnboarding(true);
-    }
+    try {
+      if (localStorage.getItem("monglipool-intro-requested") === "1") {
+        localStorage.removeItem("monglipool-intro-requested");
+        setShowOnboarding(true);
+      }
+    } catch { /* almacenamiento bloqueado */ }
   }, []);
 
   return (
-    <div className="min-h-screen min-h-[100dvh] text-pool-text flex flex-col">
-      <AnimatedBg />
+    <div className="min-h-screen min-h-[100dvh] bg-pool-bg text-pool-text flex flex-col">
       <Navbar onStartTour={() => setShowTour(true)} />
       <main className="flex-1">
         <Routes>
