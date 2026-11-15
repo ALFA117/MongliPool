@@ -116,14 +116,15 @@ export default function Withdraw() {
   }
 
   return (
-    <div className="max-w-lg mx-auto px-4 py-16 animate-fade-in">
+    <div className="max-w-2xl mx-auto px-4 sm:px-6 py-12 md:py-20 animate-fade-in">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold mb-2">{t("withdraw", "title")}</h1>
-        <p className="text-pool-text-dim">{t("withdraw", "subtitle")}</p>
+        <span className="eyebrow">{lang === "es" ? "Paso 2 de 2 · salida del pool" : "Step 2 of 2 · pool exit"}</span>
+        <h1 className="text-4xl md:text-5xl leading-tight mt-3 mb-3">{t("withdraw", "title")}</h1>
+        <p className="text-pool-text-dim text-[17px] leading-relaxed max-w-xl">{t("withdraw", "subtitle")}</p>
       </div>
 
       {error && (
-        <div className="mb-6 p-4 bg-red-500/10 border border-red-500/20 rounded-xl text-red-400 text-sm flex items-start gap-3">
+        <div className="mb-6 p-4 bg-red-500/10 border border-red-500/30 border-l-4 border-l-red-500 rounded-md problem-label text-sm flex items-start gap-3">
           <AlertTriangle size={18} className="flex-shrink-0 mt-0.5" />
           <span>{error}</span>
         </div>
@@ -131,24 +132,26 @@ export default function Withdraw() {
 
       {/* Paste receipt */}
       {step === "paste" && (
-        <div className="bg-ink/[0.03] backdrop-blur-sm border border-ink/[0.06] rounded-2xl p-7 animate-slide-up space-y-5">
+        <div className="panel p-5 sm:p-7 animate-slide-up space-y-6">
           <div>
-            <label className="block text-sm font-medium text-pool-text-dim mb-2">
+            <label htmlFor="wd-receipt" className="flex items-baseline gap-2 text-[15px] font-medium text-pool-text mb-2">
+              <span className="font-mono text-[13px] text-pool-muted">1</span>
               {t("withdraw", "receiptLabel")}
             </label>
             <textarea
+              id="wd-receipt"
               value={receiptText}
               onChange={(e) => setReceiptText(e.target.value)}
               placeholder={t("withdraw", "receiptPlaceholder")}
               className="input-field h-32 resize-none"
             />
-            <div className="flex gap-3 mt-1.5">
+            <div className="flex flex-wrap gap-x-4 mt-1">
               <button
                 onClick={async () => {
                   const text = await navigator.clipboard.readText();
                   setReceiptText(text);
                 }}
-                className="text-xs text-pool-violet-light hover:text-pool-violet inline-flex items-center gap-1 cursor-pointer"
+                className="min-h-[44px] text-[14px] text-pool-text-dim hover:text-pool-text inline-flex items-center gap-1.5 cursor-pointer"
               >
                 <ClipboardPaste size={12} />
                 {t("withdraw", "paste")}
@@ -159,7 +162,7 @@ export default function Withdraw() {
                   if (saved.length > 0) return (
                     <button
                       onClick={() => setReceiptText(saved[0])}
-                      className="text-xs text-pool-green hover:text-pool-green-light inline-flex items-center gap-1 cursor-pointer"
+                      className="min-h-[44px] text-[14px] text-pool-green hover:underline underline-offset-4 inline-flex items-center gap-1.5 cursor-pointer"
                     >
                       <History size={12} />
                       {lang === "es" ? "Usar último recibo guardado" : "Use last saved receipt"}
@@ -172,30 +175,34 @@ export default function Withdraw() {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-pool-text-dim mb-2">
+            <label htmlFor="wd-recipient" className="flex items-baseline gap-2 text-[15px] font-medium text-pool-text mb-2">
+              <span className="font-mono text-[13px] text-pool-muted">2</span>
               {t("withdraw", "recipientLabel")}
             </label>
             <input
+              id="wd-recipient"
+              autoComplete="off"
+              spellCheck={false}
               type="text"
               value={recipientAddress}
               onChange={(e) => setRecipientAddress(e.target.value)}
               placeholder={t("withdraw", "recipientPlaceholder")}
               className="input-field"
             />
-            <p className="text-xs text-pool-text-dim mt-1.5">{t("withdraw", "recipientHelp")}</p>
+            <p className="text-[14px] text-pool-text-dim mt-2">{t("withdraw", "recipientHelp")}</p>
           </div>
 
-          <div className="bg-pool-violet/5 border border-pool-violet/20 rounded-xl p-4 flex items-start gap-3">
-            <Info size={16} className="text-pool-violet-light flex-shrink-0 mt-0.5" />
-            <p className="text-sm text-pool-text-dim">
+          <div className="border-l-2 border-pool-violet bg-pool-violet/[0.06] rounded-r-md p-4 flex items-start gap-3">
+            <Info size={16} className="text-pool-violet-light flex-shrink-0 mt-1" />
+            <p className="text-[15px] text-pool-text-dim leading-relaxed">
               <strong className="text-pool-violet-light">{t("withdraw", "howTitle")}</strong>{" "}
               {t("withdraw", "howDesc")}
             </p>
           </div>
 
-          <div className="bg-ink/[0.03] border border-ink/[0.06] rounded-lg px-3 py-2 mb-4 flex items-center gap-2">
+          <div className="flex items-center gap-2 px-1">
             <svg className="w-4 h-4 text-pool-accent flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" strokeWidth="1.5"/><path d="M12 6v6l4 2" strokeWidth="1.5" strokeLinecap="round"/></svg>
-            <span className="text-xs text-pool-text-dim">
+            <span className="font-mono text-[13px] text-pool-text-dim">
               {lang === "es" ? "Tiempo estimado: ~30-60 segundos (prueba ZK + firma + confirmación)" : "Estimated time: ~30-60 seconds (ZK proof + signing + confirmation)"}
             </span>
           </div>
@@ -203,7 +210,7 @@ export default function Withdraw() {
           <button
             onClick={handleWithdraw}
             disabled={!receiptText.trim() || !recipientAddress.trim()}
-            className="btn-primary w-full inline-flex items-center justify-center gap-2"
+            className="btn-primary w-full gap-2 text-base"
           >
             <Sparkles size={18} />
             {t("withdraw", "proveBtn")}
@@ -213,28 +220,27 @@ export default function Withdraw() {
 
       {/* Proving */}
       {(step === "prove" || step === "submit") && (
-        <div className="bg-ink/[0.03] backdrop-blur-sm border border-ink/[0.06] rounded-2xl p-8 animate-slide-up text-center">
+        <div className="panel p-7 sm:p-8 animate-slide-up text-center" aria-live="polite">
           <div className="relative w-20 h-20 mx-auto mb-6">
             <svg className="w-20 h-20 -rotate-90" viewBox="0 0 80 80">
-              <circle cx="40" cy="40" r="36" fill="none" stroke="rgba(5,213,161,0.15)" strokeWidth="4" />
+              <circle cx="40" cy="40" r="36" fill="none" className="stroke-pool-border" strokeWidth="3" />
               <circle
                 cx="40" cy="40" r="36" fill="none"
-                stroke="#05D5A1" strokeWidth="4" strokeLinecap="round"
+                className="stroke-pool-green transition-all duration-500" strokeWidth="3" strokeLinecap="butt"
                 strokeDasharray={`${2 * Math.PI * 36}`}
                 strokeDashoffset={`${2 * Math.PI * 36 * (1 - progressPct / 100)}`}
-                className="transition-all duration-500"
               />
             </svg>
             <div className="absolute inset-0 flex items-center justify-center">
-              <span className="text-pool-violet font-mono font-bold text-sm">{progressPct}%</span>
+              <span className="text-pool-text font-mono text-[15px] tabular-nums">{progressPct}%</span>
             </div>
           </div>
-          <h2 className="text-xl font-semibold mb-2">
+          <h2 className="font-sans text-xl font-semibold tracking-normal mb-2">
             {step === "submit" ? t("withdraw", "submittingTitle") : t("withdraw", "provingTitle")}
           </h2>
-          <p className="text-pool-text-dim text-sm max-w-xs mx-auto">{progressMsg}</p>
+          <p className="text-pool-text-dim text-[15px] max-w-xs mx-auto font-mono">{progressMsg}</p>
           {progressPct < 90 && (
-            <p className="text-pool-text-dim text-xs mt-4 max-w-xs mx-auto">{t("withdraw", "provingDesc")}</p>
+            <p className="text-pool-text-dim text-[14px] mt-4 max-w-sm mx-auto">{t("withdraw", "provingDesc")}</p>
           )}
         </div>
       )}
@@ -242,13 +248,11 @@ export default function Withdraw() {
       {/* Done */}
       {step === "done" && (
         <div className="animate-slide-up space-y-4">
-          <div className="bg-pool-green/5 border border-pool-green/20 rounded-2xl text-center py-8 px-6">
-            <div className="w-14 h-14 rounded-full bg-pool-green/20 flex items-center justify-center mx-auto mb-4">
-              <CheckCircle size={28} className="text-pool-green" />
-            </div>
-            <h2 className="text-xl font-semibold text-pool-green mb-3">{t("withdraw", "successTitle")}</h2>
-            <p className="text-pool-text-dim text-sm mb-4">{t("withdraw", "successDesc")}</p>
-            <p className="text-xs text-pool-text-dim">
+          <div className="panel border-t-4 border-t-pool-green py-6 px-5 sm:px-6">
+            <CheckCircle size={28} className="text-pool-green mb-3" />
+            <h2 className="font-sans text-xl font-semibold tracking-normal mb-2">{t("withdraw", "successTitle")}</h2>
+            <p className="text-pool-text-dim text-[15px] mb-4">{t("withdraw", "successDesc")}</p>
+            <p className="text-[14px] text-pool-text-dim border-t border-pool-border pt-3">
               {t("withdraw", "fundsTo")}{" "}
               <span className="font-mono text-pool-text">
                 {recipientAddress.slice(0, 6)}...{recipientAddress.slice(-4)}
@@ -261,7 +265,7 @@ export default function Withdraw() {
               href={`https://stellar.expert/explorer/testnet/tx/${txHash}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="btn-secondary w-full text-sm py-2.5 inline-flex items-center justify-center gap-2"
+              className="btn-secondary w-full text-[15px] gap-2"
             >
               <ExternalLink size={14} />
               {lang === "es" ? "Ver transacción en Stellar Expert" : "View transaction on Stellar Expert"}
@@ -295,25 +299,25 @@ function ShareSection({ lang }: { lang: string }) {
   );
 
   return (
-    <div className="glass-panel p-5 relative">
-      <button onClick={() => setDismissed(true)} className="absolute top-3 right-3 text-pool-muted hover:text-pool-text cursor-pointer">
+    <div className="border border-pool-border rounded-lg p-5 relative">
+      <button onClick={() => setDismissed(true)} aria-label={es ? "Cerrar" : "Close"} className="absolute top-1 right-1 w-11 h-11 flex items-center justify-center text-pool-muted hover:text-pool-text cursor-pointer">
         <X size={14} />
       </button>
-      <p className="text-sm font-medium mb-3">{es ? "¿Quieres compartirlo?" : "Want to share?"}</p>
+      <p className="text-[15px] font-medium mb-3">{es ? "¿Quieres compartirlo?" : "Want to share?"}</p>
       <div className="flex flex-wrap gap-2">
         <a
           href={`https://twitter.com/intent/tweet?text=${tweetText}`}
           target="_blank"
           rel="noopener noreferrer"
-          className="btn-secondary py-2 px-4 text-xs inline-flex items-center gap-1.5"
+          className="btn-secondary px-4 text-[14px] gap-1.5"
         >
-          𝕏 Twitter
+          X (Twitter)
         </a>
         <a
           href={`https://wa.me/?text=${waText}`}
           target="_blank"
           rel="noopener noreferrer"
-          className="btn-secondary py-2 px-4 text-xs inline-flex items-center gap-1.5"
+          className="btn-secondary px-4 text-[14px] gap-1.5"
         >
           WhatsApp
         </a>
@@ -325,7 +329,7 @@ function ShareSection({ lang }: { lang: string }) {
                 : "Just made a private transaction with ZK proofs on Stellar using MongliPool. Real privacy + regulatory compliance. mongli-pool.vercel.app"
             );
           }}
-          className="btn-secondary py-2 px-4 text-xs inline-flex items-center gap-1.5 cursor-pointer"
+          className="btn-secondary px-4 text-[14px] gap-1.5"
         >
           {es ? "Copiar mensaje" : "Copy message"}
         </button>

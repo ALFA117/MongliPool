@@ -102,46 +102,46 @@ export default function DemoTour({ onClose }: { onClose: () => void }) {
   };
 
   return (
-    <div className="fixed inset-0 z-[200] flex items-center justify-center bg-black/85 backdrop-blur-lg">
-      <div role="dialog" aria-modal="true" className="bg-pool-bg border border-pool-green/20 rounded-2xl p-8 max-w-lg w-full mx-4 shadow-[0_0_80px_rgb(var(--pool-green)/0.1)] animate-fade-in">
+    <div className="fixed inset-0 z-[200] flex items-center justify-center bg-black/75 px-4">
+      <div role="dialog" aria-modal="true" className="panel bg-pool-bg p-6 sm:p-8 max-w-lg w-full animate-fade-in">
         {/* Progress */}
         <div className="flex items-center justify-between mb-6">
           <div className="flex gap-1">
             {steps.map((_, i) => (
               <div
                 key={i}
-                className={`h-1 rounded-full transition-all duration-300 ${
-                  i <= step ? "w-6 bg-pool-green" : "w-3 bg-ink/10"
+                className={`h-1 transition-all duration-300 ${
+                  i <= step ? "w-6 bg-pool-green" : "w-3 bg-pool-border"
                 }`}
               />
             ))}
           </div>
-          <button onClick={onClose} aria-label="Cerrar" className="-m-3 inline-flex w-11 h-11 items-center justify-center rounded-full text-pool-muted hover:text-pool-text hover:bg-ink/[0.06] active:scale-95 transition cursor-pointer">
+          <button onClick={onClose} aria-label="Cerrar" className="-m-3 inline-flex w-11 h-11 items-center justify-center rounded-md text-pool-muted hover:text-pool-text cursor-pointer">
             <X size={18} aria-hidden="true" />
           </button>
         </div>
 
         {/* Icon */}
-        <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-pool-green to-pool-violet flex items-center justify-center mb-5 text-white">
+        <div className="w-12 h-12 rounded-md border border-pool-border flex items-center justify-center mb-5 text-pool-green">
           {current.icon}
         </div>
 
         {/* Content */}
-        <h2 className="text-xl font-bold mb-3 tracking-tight">{current.title}</h2>
-        <p className="text-pool-text-dim text-sm leading-relaxed mb-8">{current.desc}</p>
+        <h2 className="text-2xl leading-snug mb-3">{current.title}</h2>
+        <p className="text-pool-text-dim text-[15px] leading-relaxed mb-8">{current.desc}</p>
 
         {/* Navigation */}
         <div className="flex items-center justify-between">
           <button
             onClick={goPrev}
             disabled={step === 0}
-            className={`inline-flex items-center gap-1.5 text-sm ${step === 0 ? "text-pool-muted" : "text-pool-text-dim hover:text-pool-text cursor-pointer"}`}
+            className={`inline-flex items-center gap-1.5 min-h-[44px] text-[15px] ${step === 0 ? "text-pool-muted" : "text-pool-text-dim hover:text-pool-text cursor-pointer"}`}
           >
             <ChevronLeft size={16} />
             {es ? "Anterior" : "Previous"}
           </button>
-          <span className="text-xs text-pool-muted">{step + 1} / {steps.length}</span>
-          <button onClick={goNext} className="btn-primary py-2 px-5 text-sm inline-flex items-center gap-1.5">
+          <span className="font-mono text-[13px] text-pool-muted">{step + 1} / {steps.length}</span>
+          <button onClick={goNext} className="btn-primary px-5 text-[15px] gap-1.5">
             {step === steps.length - 1 ? (es ? "Empezar" : "Start") : (es ? "Siguiente" : "Next")}
             <ChevronRight size={16} />
           </button>
