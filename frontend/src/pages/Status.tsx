@@ -10,9 +10,9 @@ export default function Status() {
   const es = lang === "es";
 
   return (
-    <div className="max-w-3xl mx-auto px-5 py-20 animate-fade-in">
+    <div className="max-w-3xl mx-auto px-4 sm:px-6 py-12 md:py-20 animate-fade-in">
       <div className="mb-10 text-center">
-        <h1 className="text-4xl font-bold mb-3 tracking-tight">MongliPool</h1>
+        <h1 className="text-4xl md:text-5xl leading-tight mb-3">MongliPool</h1>
         <p className="text-pool-text-dim">
           {es
             ? "Pool de privacidad ZK en Stellar con cumplimiento regulatorio"
@@ -21,8 +21,8 @@ export default function Status() {
       </div>
 
       {/* Contracts */}
-      <div className="glass-panel p-6 mb-6">
-        <h2 className="text-lg font-semibold mb-4">
+      <div className="panel p-5 sm:p-6 mb-6">
+        <h2 className="font-sans tracking-normal text-lg font-semibold mb-4">
           {es ? "Contratos en Testnet" : "Testnet Contracts"}
         </h2>
         <div className="space-y-3">
@@ -48,15 +48,15 @@ export default function Status() {
       </div>
 
       {/* Video Demo */}
-      <div className="glass-panel p-6 mb-6">
-        <h2 className="text-lg font-semibold mb-4">
+      <div className="panel p-5 sm:p-6 mb-6">
+        <h2 className="font-sans tracking-normal text-lg font-semibold mb-4">
           {es ? "Video Demo" : "Demo Video"}
         </h2>
         <a
           href="https://youtu.be/Me4MJGTcKgA"
           target="_blank"
           rel="noopener noreferrer"
-          className="block rounded-xl overflow-hidden border border-ink/[0.06] hover:border-pool-green/30 transition-all"
+          className="block rounded-xl overflow-hidden border border-pool-border hover:border-pool-green/30 transition-all"
         >
           <img
             src="https://img.youtube.com/vi/Me4MJGTcKgA/maxresdefault.jpg"
@@ -75,8 +75,8 @@ export default function Status() {
       </div>
 
       {/* Links */}
-      <div className="glass-panel p-6 mb-6">
-        <h2 className="text-lg font-semibold mb-4">Links</h2>
+      <div className="panel p-5 sm:p-6 mb-6">
+        <h2 className="font-sans tracking-normal text-lg font-semibold mb-4">Links</h2>
         <div className="grid sm:grid-cols-2 gap-3">
           {[
             { label: "GitHub", url: "https://github.com/ALFA117/MongliPool" },
@@ -100,8 +100,8 @@ export default function Status() {
       </div>
 
       {/* Team */}
-      <div className="glass-panel p-6">
-        <h2 className="text-lg font-semibold mb-4">
+      <div className="bg-pool-card border border-pool-border rounded-lg p-6">
+        <h2 className="font-sans tracking-normal text-lg font-semibold mb-4">
           {es ? "Equipo" : "Team"}
         </h2>
         <div className="flex items-center gap-4">

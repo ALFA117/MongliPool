@@ -71,10 +71,10 @@ export default function History() {
   }
 
   return (
-    <div className="max-w-3xl mx-auto px-5 py-20 animate-fade-in">
+    <div className="max-w-3xl mx-auto px-4 sm:px-6 py-12 md:py-20 animate-fade-in">
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight mb-2">
+          <h1 className="text-4xl md:text-5xl leading-tight mb-3">
             {es ? "Mi historial" : "My history"}
           </h1>
           <p className="text-pool-text-dim text-sm">
@@ -92,9 +92,9 @@ export default function History() {
       </div>
 
       {/* Privacy warning */}
-      <div className="bg-amber-500/10 border border-amber-500/20 rounded-xl p-4 mb-8 flex items-start gap-3">
-        <Clock size={16} className="text-amber-400 flex-shrink-0 mt-0.5" />
-        <p className="text-amber-300 text-xs leading-relaxed">
+      <div className="bg-amber-500/10 border border-amber-500/30 border-l-4 border-l-amber-500 rounded-md p-4 mb-8 flex items-start gap-3">
+        <Clock size={16} className="warn-text flex-shrink-0 mt-0.5" />
+        <p className="warn-text text-xs leading-relaxed">
           {es
             ? "Este historial existe SOLO en este navegador. Si limpias el caché o cambias de dispositivo, se perderá. Descarga un backup con el botón Exportar."
             : "This history exists ONLY in this browser. If you clear cache or switch devices, it will be lost. Download a backup with the Export button."}
@@ -102,7 +102,7 @@ export default function History() {
       </div>
 
       {receipts.length === 0 ? (
-        <div className="glass-panel p-12 text-center">
+        <div className="bg-pool-card border border-pool-border rounded-lg p-12 text-center">
           <FileKey size={40} className="text-pool-muted mx-auto mb-4" />
           <p className="text-pool-text-dim mb-2">
             {es ? "Aún no tienes depósitos registrados" : "No deposits registered yet"}
@@ -119,7 +119,7 @@ export default function History() {
       ) : (
         <div className="space-y-3">
           {receipts.map((r, i) => (
-            <div key={i} className="glass-panel p-4 flex items-center justify-between gap-4 card-hover">
+            <div key={i} className="bg-pool-card border border-pool-border rounded-lg p-4 flex items-center justify-between gap-4">
               <div className="min-w-0 flex-1">
                 <div className="flex items-center gap-2 mb-1">
                   <span className="text-sm font-bold text-pool-green tabular-nums">{r.amountXLM} XLM</span>

@@ -118,17 +118,17 @@ export default function Auditor() {
   }
 
   return (
-    <div className="max-w-4xl mx-auto px-4 py-16 animate-fade-in">
+    <div className="max-w-5xl mx-auto px-4 sm:px-6 py-12 md:py-20 animate-fade-in">
       <div className="mb-8">
-        <div className="inline-flex items-center gap-1.5 bg-pool-violet/10 text-pool-violet-light border border-pool-violet/20 px-3 py-1 rounded-full text-xs font-medium mb-4">
+        <div className="inline-flex items-center gap-1.5 bg-pool-violet/10 text-pool-violet-light border border-pool-violet/20 px-3 py-1 rounded text-xs font-medium mb-4">
           <Shield size={12} />
           {t("auditor", "badge")}
         </div>
-        <h1 className="text-3xl font-bold mb-2">{t("auditor", "title")}</h1>
+        <h1 className="text-4xl md:text-5xl leading-tight mb-3">{t("auditor", "title")}</h1>
         <p className="text-pool-text-dim">{t("auditor", "subtitle")}</p>
       </div>
 
-      <div className="bg-pool-violet/5 border border-pool-violet/15 rounded-2xl p-5 mb-6">
+      <div className="border-l-2 border-pool-violet bg-pool-violet/[0.06] rounded-r-md p-5 mb-6">
         <h3 className="font-semibold text-pool-violet-light text-sm mb-2">
           {lang === "es" ? "¿Por qué existe esta página?" : "Why does this page exist?"}
         </h3>
@@ -139,14 +139,14 @@ export default function Auditor() {
         </p>
       </div>
 
-      <div className="bg-ink/[0.03] backdrop-blur-sm border border-ink/[0.06] rounded-2xl p-7 mb-8">
-        <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
+      <div className="panel p-7 mb-8">
+        <h2 className="font-sans tracking-normal text-lg font-semibold mb-4 flex items-center gap-2">
           <Eye size={20} className="text-pool-violet-light" />
           {t("auditor", "viewKeyTitle")}
         </h2>
-        <div className="bg-amber-500/10 border border-amber-500/20 rounded-xl p-3 mb-4 flex items-start gap-3">
-          <AlertTriangle size={14} className="text-amber-400 flex-shrink-0 mt-0.5" />
-          <p className="text-amber-300 text-xs">{t("auditor", "viewKeyWarning")}</p>
+        <div className="bg-amber-500/10 border border-amber-500/30 border-l-4 border-l-amber-500 rounded-md p-3 mb-4 flex items-start gap-3">
+          <AlertTriangle size={14} className="warn-text flex-shrink-0 mt-0.5" />
+          <p className="warn-text text-[14px]">{t("auditor", "viewKeyWarning")}</p>
         </div>
         <div className="relative mb-4">
           <input
@@ -187,7 +187,7 @@ export default function Auditor() {
         </button>
       </div>
 
-      <div className="bg-ink/[0.03] border border-ink/[0.06] rounded-xl p-4 mb-8 flex items-start gap-3">
+      <div className="border-l-2 border-pool-border pl-4 py-1 rounded-none p-4 mb-8 flex items-start gap-3">
         <Clock size={16} className="text-pool-muted flex-shrink-0 mt-0.5" />
         <p className="text-xs text-pool-text-dim leading-relaxed">
           {lang === "es"
@@ -197,7 +197,7 @@ export default function Auditor() {
       </div>
 
       {error && (
-        <div className="mb-6 p-4 bg-red-500/10 border border-red-500/20 rounded-xl text-red-400 text-sm flex items-start gap-3">
+        <div className="mb-6 p-4 bg-red-500/10 border border-red-500/30 border-l-4 border-l-red-500 rounded-md problem-label text-sm flex items-start gap-3">
           <AlertTriangle size={18} className="flex-shrink-0 mt-0.5" />
           <span>{error}</span>
         </div>
@@ -206,7 +206,7 @@ export default function Auditor() {
       {done && (
         <div className="animate-slide-up">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-semibold">
+            <h2 className="font-sans tracking-normal text-lg font-semibold">
               {records.length} {t("auditor", "found")}
             </h2>
             {records.length > 0 && (
@@ -218,7 +218,7 @@ export default function Auditor() {
           </div>
 
           {records.length === 0 ? (
-            <div className="bg-ink/[0.03] border border-ink/[0.06] rounded-2xl py-8 px-6">
+            <div className="bg-pool-card border border-pool-border rounded-lg py-8 px-6">
               <div className="flex flex-col items-center text-center gap-3">
                 <Clock size={24} className="text-pool-muted" />
                 <p className="text-pool-text-dim text-sm">{t("auditor", "noTx")}</p>
@@ -230,10 +230,10 @@ export default function Auditor() {
               </div>
             </div>
           ) : (
-            <div className="bg-ink/[0.03] border border-ink/[0.06] rounded-2xl overflow-x-auto">
+            <div className="bg-pool-card border border-pool-border rounded-lg overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
-                  <tr className="text-pool-text-dim border-b border-ink/[0.06]">
+                  <tr className="text-pool-text-dim border-b border-pool-border">
                     <th className="text-left py-3 px-4 font-medium">{t("auditor", "colCommitment")}</th>
                     <th className="text-left py-3 px-4 font-medium">{t("auditor", "colAmount")}</th>
                     <th className="text-left py-3 px-4 font-medium">{t("auditor", "colDate")}</th>
@@ -242,7 +242,7 @@ export default function Auditor() {
                 </thead>
                 <tbody>
                   {records.map((r, i) => (
-                    <tr key={i} className="border-b border-ink/[0.03] hover:bg-ink/[0.02] transition-colors">
+                    <tr key={i} className="border-b border-pool-border hover:bg-ink/[0.02] transition-colors">
                       <td className="py-3 px-4 font-mono text-xs text-pool-text-dim">
                         {r.commitment.slice(0, 8)}...{r.commitment.slice(-6)}
                       </td>
@@ -257,7 +257,7 @@ export default function Auditor() {
                             {t("auditor", "valid")}
                           </span>
                         ) : (
-                          <span className="inline-flex items-center gap-1 text-red-400 text-xs">
+                          <span className="inline-flex items-center gap-1 problem-label text-xs">
                             <XCircle size={12} />
                             {t("auditor", "errorDecrypt")}
                           </span>

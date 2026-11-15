@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Search, RefreshCw, ExternalLink, Hash, Layers } from "lucide-react";
+import { Search, RefreshCw, ExternalLink, Hash, Layers, Coins } from "lucide-react";
 import { useI18n } from "../i18n/context";
 import { getCommitments, getPoolBalance, getPoolDepositCount } from "../lib/stellar";
 import Reveal from "../components/Reveal";
@@ -34,10 +34,10 @@ export default function Explorer() {
     : commitments;
 
   return (
-    <div className="max-w-4xl mx-auto px-5 py-20 animate-fade-in">
+    <div className="max-w-5xl mx-auto px-4 sm:px-6 py-12 md:py-20 animate-fade-in">
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight mb-2">
+          <h1 className="text-4xl md:text-5xl leading-tight mb-3">
             {lang === "es" ? "Explorador del Pool" : "Pool Explorer"}
           </h1>
           <p className="text-pool-text-dim text-sm">
@@ -59,19 +59,19 @@ export default function Explorer() {
       {/* Pool summary */}
       <Reveal>
         <div className="grid sm:grid-cols-3 gap-4 mb-8">
-          <div className="glass-panel p-4 text-center">
+          <div className="bg-pool-card border border-pool-border rounded-lg p-4 text-center">
             <Layers size={20} className="text-pool-green mx-auto mb-2" />
-            <div className="text-2xl font-bold text-pool-text tabular-nums">{depositCount}</div>
+            <div className="font-mono text-2xl text-pool-text tabular-nums">{depositCount}</div>
             <div className="text-xs text-pool-text-dim">{lang === "es" ? "Depósitos totales" : "Total deposits"}</div>
           </div>
-          <div className="glass-panel p-4 text-center">
+          <div className="bg-pool-card border border-pool-border rounded-lg p-4 text-center">
             <Hash size={20} className="text-pool-violet-light mx-auto mb-2" />
-            <div className="text-2xl font-bold text-pool-text tabular-nums">{commitments.length}</div>
+            <div className="font-mono text-2xl text-pool-text tabular-nums">{commitments.length}</div>
             <div className="text-xs text-pool-text-dim">Commitments</div>
           </div>
-          <div className="glass-panel p-4 text-center">
-            <div className="text-pool-accent mx-auto mb-2 text-xl font-bold">₮</div>
-            <div className="text-2xl font-bold text-pool-text tabular-nums">{poolBalance.toFixed(1)}</div>
+          <div className="bg-pool-card border border-pool-border rounded-lg p-4 text-center">
+            <Coins size={20} className="text-pool-green mx-auto mb-2" />
+            <div className="font-mono text-2xl text-pool-text tabular-nums">{poolBalance.toFixed(1)}</div>
             <div className="text-xs text-pool-text-dim">XLM TVL</div>
           </div>
         </div>
@@ -95,7 +95,7 @@ export default function Explorer() {
           <div className="w-8 h-8 border-2 border-pool-green border-t-transparent rounded-full animate-spin mx-auto" />
         </div>
       ) : filtered.length === 0 ? (
-        <div className="glass-panel p-8 text-center text-pool-text-dim">
+        <div className="bg-pool-card border border-pool-border rounded-lg p-8 text-center text-pool-text-dim">
           {search
             ? (lang === "es" ? "No se encontraron resultados" : "No results found")
             : (lang === "es" ? "No hay commitments en el pool" : "No commitments in the pool")}
@@ -104,7 +104,7 @@ export default function Explorer() {
         <div className="space-y-2">
           {filtered.map((c, i) => (
             <Reveal key={c} delay={Math.min(i * 30, 300)}>
-              <div className="glass-panel px-4 py-3 flex items-center justify-between gap-4 card-hover">
+              <div className="bg-pool-card border border-pool-border rounded-lg px-4 py-3 flex items-center justify-between gap-4">
                 <div className="flex items-center gap-3 min-w-0">
                   <div className="w-8 h-8 rounded-lg bg-pool-green/10 border border-pool-green/20 flex items-center justify-center flex-shrink-0">
                     <span className="text-xs font-mono text-pool-green">#{commitments.indexOf(c)}</span>

@@ -63,10 +63,10 @@ export default function Stats() {
   useEffect(() => { fetchMetrics(); }, []);
 
   return (
-    <div className="max-w-4xl mx-auto px-5 py-20 animate-fade-in">
+    <div className="max-w-5xl mx-auto px-4 sm:px-6 py-12 md:py-20 animate-fade-in">
       <div className="flex items-center justify-between mb-10">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight mb-2">
+          <h1 className="text-4xl md:text-5xl leading-tight mb-3">
             {lang === "es" ? "Métricas del Pool" : "Pool Metrics"}
           </h1>
           <p className="text-pool-text-dim text-sm">
@@ -84,7 +84,7 @@ export default function Stats() {
       </div>
 
       {error && (
-        <div className="mb-6 p-4 bg-red-500/10 border border-red-500/20 rounded-xl text-red-400 text-sm">
+        <div className="mb-6 p-4 bg-red-500/10 border border-red-500/30 border-l-4 border-l-red-500 rounded-md problem-label text-sm">
           {error}
         </div>
       )}
@@ -126,8 +126,8 @@ export default function Stats() {
             />
           </div>
 
-          <div className="bg-ink/[0.03] border border-ink/[0.06] rounded-2xl p-6">
-            <h2 className="text-lg font-semibold mb-3">
+          <div className="bg-pool-card border border-pool-border rounded-lg p-6">
+            <h2 className="font-sans tracking-normal text-lg font-semibold mb-3">
               {lang === "es" ? "Contrato" : "Contract"}
             </h2>
             <div className="space-y-2 text-sm">
@@ -188,18 +188,18 @@ function MetricCard({ icon, label, value, numericValue, color }: {
 }) {
   const animated = useCountUp(numericValue ?? 0);
   const colors = {
-    violet: "from-pool-violet/20 to-pool-violet/5 border-pool-violet/20 text-pool-violet-light",
-    green: "from-pool-green/20 to-pool-green/5 border-pool-green/20 text-pool-green",
-    blue: "from-blue-500/20 to-blue-500/5 border-blue-500/20 text-blue-400",
+    violet: "text-pool-violet-light",
+    green: "text-pool-green",
+    blue: "text-pool-text-dim",
   };
 
   return (
-    <div className={`bg-gradient-to-br ${colors[color]} border rounded-2xl p-5 card-hover`}>
-      <div className="flex items-center gap-2 mb-3 opacity-70">
+    <div className={`bg-pool-card border border-pool-border rounded-lg p-5 ${colors[color]}`}>
+      <div className="flex items-center gap-2 mb-3">
         {icon}
-        <span className="text-xs font-medium">{label}</span>
+        <span className="text-[14px] text-pool-text-dim">{label}</span>
       </div>
-      <p className="text-2xl font-bold text-pool-text tabular-nums">
+      <p className="font-mono text-2xl text-pool-text tabular-nums">
         {numericValue != null ? animated : value}
         {numericValue != null && value.includes("XLM") ? " XLM" : ""}
       </p>

@@ -6,12 +6,12 @@ export default function Business() {
   const es = lang === "es";
 
   return (
-    <div className="max-w-4xl mx-auto px-5 py-20 animate-fade-in">
+    <div className="max-w-5xl mx-auto px-4 sm:px-6 py-12 md:py-20 animate-fade-in">
       <div className="mb-12">
         <div className="badge-pending mb-4 w-fit">
           {es ? "Visión y propuesta de modelo" : "Vision & Model Proposal"}
         </div>
-        <h1 className="text-4xl font-bold tracking-tight mb-3">
+        <h1 className="text-4xl md:text-5xl leading-tight mb-3">
           {es ? "Modelo de negocio" : "Business Model"}
         </h1>
         <p className="text-pool-text-dim leading-relaxed max-w-2xl">
@@ -23,7 +23,7 @@ export default function Business() {
 
       {/* Revenue streams */}
       <section className="mb-14">
-        <h2 className="text-2xl font-bold mb-6 tracking-tight">
+        <h2 className="text-3xl leading-tight mb-6">
           {es ? "Fuentes de ingreso conceptuales" : "Conceptual Revenue Streams"}
         </h2>
         <div className="grid md:grid-cols-3 gap-4">
@@ -47,7 +47,7 @@ export default function Business() {
                 : "Consulting and integration services to help other Stellar projects add privacy with compliance to their own payment flows.",
             },
           ].map(({ title, desc }) => (
-            <div key={title} className="glass-panel p-5">
+            <div key={title} className="bg-pool-card border border-pool-border rounded-lg p-5">
               <h3 className="font-semibold mb-2">{title}</h3>
               <p className="text-pool-text-dim text-sm leading-relaxed">{desc}</p>
             </div>
@@ -57,20 +57,20 @@ export default function Business() {
 
       {/* Comparison table */}
       <section className="mb-14">
-        <h2 className="text-2xl font-bold mb-6 tracking-tight">
+        <h2 className="text-3xl leading-tight mb-6">
           {es ? "Comparativa honesta" : "Honest Comparison"}
         </h2>
-        <div className="glass-panel overflow-x-auto">
+        <div className="bg-pool-card border border-pool-border rounded-lg overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
-              <tr className="border-b border-ink/[0.06]">
-                <th className="text-left py-3 px-4 font-medium text-pool-text-dim">
+              <tr className="border-b border-pool-border">
+                <th className="text-left py-3 px-2 sm:px-4 font-medium text-pool-text-dim">
                   {es ? "Característica" : "Feature"}
                 </th>
-                <th className="text-center py-3 px-4 font-medium text-pool-text-dim">
+                <th className="text-center py-3 px-2 sm:px-4 font-medium text-pool-text-dim">
                   {es ? "Mixers tradicionales" : "Traditional Mixers"}
                 </th>
-                <th className="text-center py-3 px-4 font-medium text-pool-violet-light">MongliPool</th>
+                <th className="text-center py-3 px-2 sm:px-4 font-medium text-pool-green">Mongli<wbr />Pool</th>
               </tr>
             </thead>
             <tbody>
@@ -83,12 +83,12 @@ export default function Business() {
                 { feature: es ? "Producción probada" : "Battle-tested in production", trad: true, mp: false },
                 { feature: es ? "Auditoría de seguridad externa" : "External security audit", trad: true, mp: false },
               ].map(({ feature, trad, mp }) => (
-                <tr key={feature} className="border-b border-ink/[0.03]">
-                  <td className="py-3 px-4 text-pool-text-dim">{feature}</td>
-                  <td className="py-3 px-4 text-center">
+                <tr key={feature} className="border-b border-pool-border">
+                  <td className="py-3 px-2 sm:px-4 text-pool-text-dim">{feature}</td>
+                  <td className="py-3 px-2 sm:px-4 text-center">
                     {trad ? <CheckCircle size={16} className="text-pool-green mx-auto" /> : <X size={16} className="text-pool-muted mx-auto" />}
                   </td>
-                  <td className="py-3 px-4 text-center">
+                  <td className="py-3 px-2 sm:px-4 text-center">
                     {mp ? <CheckCircle size={16} className="text-pool-green mx-auto" /> : <X size={16} className="text-pool-muted mx-auto" />}
                   </td>
                 </tr>
@@ -100,7 +100,7 @@ export default function Business() {
 
       {/* Roadmap */}
       <section>
-        <h2 className="text-2xl font-bold mb-6 tracking-tight">
+        <h2 className="text-3xl leading-tight mb-6">
           {es ? "Hoja de ruta" : "Roadmap"}
         </h2>
         <div className="space-y-4">
@@ -133,15 +133,15 @@ export default function Business() {
           ].map(({ phase, desc, active }, i) => (
             <div key={phase} className="flex items-start gap-4">
               <div className="flex flex-col items-center flex-shrink-0">
-                <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold ${
-                  active ? "bg-pool-violet text-white shadow-violet-sm" : "bg-ink/[0.04] text-pool-muted border border-ink/[0.08]"
+                <div className={`w-8 h-8 rounded-sm flex items-center justify-center font-mono text-[13px] ${
+                  active ? "bg-pool-green text-pool-on-accent" : "text-pool-muted border border-pool-border"
                 }`}>
                   {i + 1}
                 </div>
-                {i < 4 && <div className="w-0.5 h-8 bg-ink/[0.06] mt-1" />}
+                {i < 4 && <div className="w-px h-8 bg-pool-border mt-1" />}
               </div>
               <div className="pt-1">
-                <h3 className={`font-semibold text-sm ${active ? "text-pool-violet-light" : "text-pool-text"}`}>
+                <h3 className={`font-semibold text-sm ${active ? "text-pool-green" : "text-pool-text"}`}>
                   {phase} {active && <ArrowRight size={12} className="inline ml-1" />}
                 </h3>
                 <p className="text-pool-text-dim text-sm">{desc}</p>

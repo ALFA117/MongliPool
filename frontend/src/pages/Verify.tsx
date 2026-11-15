@@ -55,9 +55,9 @@ export default function Verify() {
   }
 
   return (
-    <div className="max-w-lg mx-auto px-5 py-20 animate-fade-in">
+    <div className="max-w-2xl mx-auto px-4 sm:px-6 py-12 md:py-20 animate-fade-in">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold tracking-tight mb-2">
+        <h1 className="text-4xl md:text-5xl leading-tight mb-3">
           {lang === "es" ? "Verificar recibo" : "Verify receipt"}
         </h1>
         <p className="text-pool-text-dim text-sm">
@@ -67,7 +67,7 @@ export default function Verify() {
         </p>
       </div>
 
-      <div className="glass-panel p-6 mb-6">
+      <div className="panel p-5 sm:p-6 mb-6">
         <label className="block text-sm font-medium text-pool-text-dim mb-2">
           {lang === "es" ? "Pega el recibo" : "Paste receipt"}
         </label>
@@ -92,7 +92,7 @@ export default function Verify() {
       </div>
 
       {error && (
-        <div className="mb-6 p-4 bg-red-500/10 border border-red-500/20 rounded-xl text-red-400 text-sm flex items-start gap-3">
+        <div className="mb-6 p-4 bg-red-500/10 border border-red-500/30 border-l-4 border-l-red-500 rounded-md problem-label text-sm flex items-start gap-3">
           <AlertTriangle size={18} className="flex-shrink-0 mt-0.5" />
           <span>{error}</span>
         </div>
@@ -104,9 +104,9 @@ export default function Verify() {
           <div className={`p-4 rounded-xl flex items-start gap-3 ${
             result.valid ? "bg-pool-green/5 border border-pool-green/20" : "bg-red-500/10 border border-red-500/20"
           }`}>
-            {result.valid ? <CheckCircle size={18} className="text-pool-green mt-0.5" /> : <XCircle size={18} className="text-red-400 mt-0.5" />}
+            {result.valid ? <CheckCircle size={18} className="text-pool-green mt-0.5" /> : <XCircle size={18} className="problem-label mt-0.5" />}
             <div>
-              <p className={`font-semibold text-sm ${result.valid ? "text-pool-green" : "text-red-400"}`}>
+              <p className={`font-semibold text-sm ${result.valid ? "text-pool-green" : "problem-label"}`}>
                 {lang === "es" ? "Formato del recibo: válido" : "Receipt format: valid"}
               </p>
               <p className="text-pool-text-dim text-xs mt-1">
@@ -119,9 +119,9 @@ export default function Verify() {
           <div className={`p-4 rounded-xl flex items-start gap-3 ${
             result.foundInPool ? "bg-pool-green/5 border border-pool-green/20" : "bg-amber-500/10 border border-amber-500/20"
           }`}>
-            {result.foundInPool ? <ShieldCheck size={18} className="text-pool-green mt-0.5" /> : <AlertTriangle size={18} className="text-amber-400 mt-0.5" />}
+            {result.foundInPool ? <ShieldCheck size={18} className="text-pool-green mt-0.5" /> : <AlertTriangle size={18} className="warn-text mt-0.5" />}
             <div>
-              <p className={`font-semibold text-sm ${result.foundInPool ? "text-pool-green" : "text-amber-400"}`}>
+              <p className={`font-semibold text-sm ${result.foundInPool ? "text-pool-green" : "warn-text"}`}>
                 {result.foundInPool
                   ? (lang === "es" ? `Depósito encontrado en el pool (posición #${result.leafIndex})` : `Deposit found in pool (position #${result.leafIndex})`)
                   : (lang === "es" ? "Depósito NO encontrado en el pool" : "Deposit NOT found in pool")}
@@ -135,7 +135,7 @@ export default function Verify() {
           </div>
 
           {/* Commitment hash */}
-          <div className="glass-panel p-4">
+          <div className="bg-pool-card border border-pool-border rounded-lg p-4">
             <p className="text-xs text-pool-text-dim mb-1">Commitment hash</p>
             <p className="font-mono text-xs text-pool-text break-all">{result.commitment}</p>
           </div>
