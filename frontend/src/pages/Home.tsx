@@ -1,308 +1,279 @@
-import { Suspense, lazy } from "react";
 import { Link } from "react-router-dom";
-import { ArrowDownToLine, Sparkles, ArrowUpFromLine, Shield, Eye, Lock, CheckCircle, AlertTriangle, Lightbulb, Play } from "lucide-react";
+import { ArrowDownToLine, ArrowUpFromLine, ArrowRight, Shield, Eye, Lock, CheckCircle, Play, Plus, Check, Minus } from "lucide-react";
 import { useI18n } from "../i18n/context";
 import Reveal from "../components/Reveal";
-
-const PrivacyVisualizer3D = lazy(() => import("../components/PrivacyVisualizer3D"));
+import UnlinkDiagram from "../components/UnlinkDiagram";
 
 export default function Home({ onStartTour }: { onStartTour?: () => void }) {
   const { t, lang } = useI18n();
+  const es = lang === "es";
+
+  const stats = [
+    { value: "1–1000", label: es ? "XLM por depósito" : "XLM per deposit" },
+    { value: "~30 s", label: es ? "prueba ZK en el navegador" : "ZK proof in the browser" },
+    { value: "3", label: es ? "contratos en testnet" : "contracts on testnet" },
+    { value: "18/18", label: es ? "tests pasando" : "tests passing" },
+  ];
+
+  const steps = [
+    { Icon: ArrowDownToLine, title: t("home", "step1Title"), desc: t("home", "step1Desc") },
+    { Icon: Lock, title: t("home", "step2Title"), desc: t("home", "step2Desc") },
+    { Icon: ArrowUpFromLine, title: t("home", "step3Title"), desc: t("home", "step3Desc") },
+  ];
+
+  const faqs = [
+    {
+      q: es ? "¿Es seguro?" : "Is it safe?",
+      a: es
+        ? "MongliPool es un prototipo de hackathon en Stellar testnet. La criptografía ZK es real (Groth16/BN254 verificado on-chain), pero el circuito no ha sido auditado externamente. No usar con fondos reales hasta completar auditoría."
+        : "MongliPool is a hackathon prototype on Stellar testnet. The ZK cryptography is real (Groth16/BN254 verified on-chain), but the circuit hasn't been externally audited. Do not use with real funds until audited.",
+    },
+    {
+      q: es ? "¿Qué pasa si pierdo mi recibo?" : "What if I lose my receipt?",
+      a: es
+        ? "Los fondos quedan en el pool para siempre. No existe recuperación — es una propiedad fundamental del diseño de privacidad. Guarda tu recibo en múltiples lugares seguros."
+        : "The funds stay in the pool forever. There is no recovery — this is a fundamental property of the privacy design. Save your receipt in multiple safe places.",
+    },
+    {
+      q: es ? "¿Por qué necesito una wallet?" : "Why do I need a wallet?",
+      a: es
+        ? "Freighter (extensión de Stellar) autoriza las transacciones en la blockchain. Tu recibo privado se genera localmente — la wallet solo firma, no ve tus secretos. También puedes probar con una cuenta temporal de testnet."
+        : "Freighter (Stellar extension) authorizes blockchain transactions. Your private receipt is generated locally — the wallet only signs, it doesn't see your secrets. You can also try it with a temporary testnet account.",
+    },
+    {
+      q: es ? "¿Esto es dinero real?" : "Is this real money?",
+      a: es
+        ? "No. Corre en Stellar testnet y usa XLM de prueba sin valor monetario. Puedes experimentar sin riesgo; el XLM de prueba es gratis en friendbot.stellar.org."
+        : "No. It runs on Stellar testnet and uses test XLM with no monetary value. You can experiment risk-free; test XLM is free at friendbot.stellar.org.",
+    },
+  ];
+
+  const visibility = [
+    { d: es ? "Que hubo depósitos y retiros" : "That deposits and withdrawals happened", pub: true, aud: true },
+    { d: es ? "Qué depósito corresponde a qué retiro" : "Which deposit maps to which withdrawal", pub: false, aud: true },
+    { d: es ? "Historial completo del pool" : "Full pool history", pub: false, aud: true },
+  ];
 
   return (
     <div className="flex flex-col">
-      {/* Hero with 3D background */}
-      <section className="relative overflow-hidden min-h-[auto] md:min-h-[90vh] flex items-center justify-center py-16 md:py-0">
-        <Suspense fallback={<div className="absolute inset-0 bg-pool-bg" />}>
-          <PrivacyVisualizer3D fullscreen className="opacity-30" />
-        </Suspense>
-
-        <div className="absolute inset-0 bg-gradient-to-b from-pool-bg/60 via-transparent to-pool-bg pointer-events-none" />
-        <div className="absolute inset-0 bg-gradient-to-r from-pool-bg/40 via-transparent to-pool-bg/40 pointer-events-none" />
-
-        <div className="relative z-10 max-w-3xl mx-auto text-center px-4 md:px-6">
-          <div className="inline-flex items-center gap-1.5 bg-pool-green/8 text-pool-green border border-pool-green/15 px-3 py-1 md:px-4 md:py-1.5 rounded-full text-xs md:text-xs font-medium mb-6 md:mb-10">
-            <CheckCircle size={11} />
-            {t("home", "badge")}
-          </div>
-
-          <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-7xl font-bold tracking-tight mb-4 md:mb-7 leading-tight">
-            <span className="text-pool-text">{t("home", "heroTitle1")}</span>{" "}
-            <span className="bg-gradient-to-r from-pool-green via-pool-green-light to-pool-violet bg-clip-text text-transparent">
-              {t("home", "heroTitle2")}
-            </span>
-          </h1>
-
-          <p className="text-pool-text-dim text-sm md:text-lg max-w-xl mx-auto mb-6 md:mb-12 leading-relaxed">
-            {t("home", "heroSub")}
-          </p>
-
-          <div className="flex flex-col sm:flex-row gap-3 justify-center">
-            <Link to="/deposit" className="btn-primary text-sm md:text-base inline-flex items-center justify-center gap-2 px-6 py-3 md:px-8 md:py-3.5">
-              <ArrowDownToLine size={16} strokeWidth={2.5} />
-              {t("home", "ctaDeposit")}
-            </Link>
-            <Link to="/withdraw" className="btn-secondary text-sm md:text-base inline-flex items-center justify-center gap-2 px-6 py-3 md:px-8 md:py-3.5">
-              <ArrowUpFromLine size={16} />
-              {t("home", "ctaWithdraw")}
-            </Link>
-          </div>
-          {onStartTour && (
-            <button
-              onClick={onStartTour}
-              className="mt-6 text-sm text-pool-accent hover:text-pool-green-light transition-colors inline-flex items-center gap-1.5 cursor-pointer mx-auto"
-            >
-              <Play size={14} />
-              {lang === "es" ? "Ver demo guiada →" : "See guided demo →"}
-            </button>
-          )}
-        </div>
-
-        {/* Subtle bottom fade */}
-        <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-pool-bg to-transparent pointer-events-none" />
-      </section>
-
-      {/* Live pool stats bar */}
-      <section className="py-8 px-6">
-        <Reveal>
-          <div className="max-w-4xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-8">
-            {[
-              { value: "1–1000", label: lang === "es" ? "XLM por depósito" : "XLM per deposit" },
-              { value: "~30s", label: lang === "es" ? "prueba ZK en browser" : "ZK proof in browser" },
-              { value: "3", label: lang === "es" ? "contratos en testnet" : "contracts on testnet" },
-              { value: "18/18", label: lang === "es" ? "tests pasando" : "tests passing" },
-            ].map(({ value, label }) => (
-              <div key={label} className="text-center">
-                <div className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-pool-green to-pool-violet bg-clip-text text-transparent">
-                  {value}
-                </div>
-                <div className="text-xs text-pool-text-dim mt-1">{label}</div>
-              </div>
-            ))}
-          </div>
-        </Reveal>
-      </section>
-
-      {/* Real-world case study */}
-      <section className="py-10 md:py-20 px-4 md:px-6">
-        <div className="max-w-4xl mx-auto">
-          <Reveal>
-            <h2 className="text-3xl md:text-4xl font-bold text-center mb-12 tracking-tight">
-              {t("home", "caseTitle")}
-            </h2>
-          </Reveal>
-          <div className="grid md:grid-cols-2 gap-6">
-            <Reveal delay={100}>
-              <div className="glass-panel animated-border p-7 h-full border-red-500/10">
-                <div className="flex items-center gap-3 mb-4">
-                  <div className="w-10 h-10 rounded-xl bg-red-500/10 border border-red-500/20 flex items-center justify-center">
-                    <AlertTriangle size={20} className="text-red-400" />
-                  </div>
-                  <h3 className="font-semibold text-red-400">{t("home", "caseProblemLabel")}</h3>
-                </div>
-                <p className="text-pool-text-dim text-[15px] leading-relaxed">{t("home", "caseProblem")}</p>
-              </div>
-            </Reveal>
-            <Reveal delay={200}>
-              <div className="glass-panel animated-border p-7 h-full border-pool-green/10">
-                <div className="flex items-center gap-3 mb-4">
-                  <div className="w-10 h-10 rounded-xl bg-pool-green/10 border border-pool-green/20 flex items-center justify-center">
-                    <Lightbulb size={20} className="text-pool-green" />
-                  </div>
-                  <h3 className="font-semibold text-pool-green">{t("home", "caseSolutionLabel")}</h3>
-                </div>
-                <p className="text-pool-text-dim text-[15px] leading-relaxed">{t("home", "caseSolution")}</p>
-              </div>
-            </Reveal>
-          </div>
-        </div>
-      </section>
-
-      {/* Divider */}
-      <div className="max-w-5xl mx-auto px-6">
-        <div className="h-px bg-gradient-to-r from-transparent via-ink/[0.06] to-transparent" />
-      </div>
-
-      {/* How it works */}
-      <section className="py-12 md:py-28 px-4 md:px-6 relative">
-        <div className="absolute inset-0 bg-gradient-radial opacity-30 pointer-events-none" />
-        <div className="max-w-5xl mx-auto relative">
-          <h2 className="text-3xl md:text-4xl font-bold text-center mb-3 tracking-tight">{t("home", "howTitle")}</h2>
-          <p className="text-pool-text-dim text-center mb-16 text-lg">{t("home", "howSub")}</p>
-
-          <div className="grid md:grid-cols-3 gap-6">
-            {[
-              {
-                Icon: ArrowDownToLine,
-                color: "from-pool-green to-pool-accent",
-                step: "01",
-                title: t("home", "step1Title"),
-                desc: t("home", "step1Desc"),
-              },
-              {
-                Icon: Sparkles,
-                color: "from-pool-accent to-pool-violet",
-                step: "02",
-                title: t("home", "step2Title"),
-                desc: t("home", "step2Desc"),
-              },
-              {
-                Icon: ArrowUpFromLine,
-                color: "from-pool-violet to-pool-green",
-                step: "03",
-                title: t("home", "step3Title"),
-                desc: t("home", "step3Desc"),
-              },
-            ].map(({ Icon, color, step, title, desc }, i) => (
-              <Reveal key={step} delay={i * 100}>
-              <div
-                className="group glass-panel animated-border p-8 transition-all duration-300 card-hover"
+      {/* ── Hero ───────────────────────────────────────── */}
+      <section className="border-b border-pool-border">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 xl:px-0 py-14 md:py-24 grid lg:grid-cols-12 gap-12 lg:gap-10 items-center">
+          <div className="lg:col-span-7">
+            <div className="inline-flex items-center gap-2 border border-pool-border rounded px-2.5 py-1 mb-8 font-mono text-[13px] text-pool-text-dim">
+              <span className="w-1.5 h-1.5 rounded-full bg-pool-green" aria-hidden="true" />
+              {t("home", "badge")} · {es ? "prototipo" : "prototype"}
+            </div>
+            <h1 className="text-[2.6rem] leading-[1.05] sm:text-6xl lg:text-[4.6rem] text-pool-text mb-6">
+              {t("home", "heroTitle1")}{" "}
+              <em className="italic text-pool-green">{t("home", "heroTitle2")}</em>.
+            </h1>
+            <p className="text-pool-text-dim text-[17px] md:text-lg leading-relaxed max-w-xl mb-9">
+              {es
+                ? "Pool de privacidad en Stellar. Depositas desde una dirección y retiras a otra: una prueba de conocimiento cero demuestra que el retiro es legítimo sin revelar de qué depósito viene. Un auditor autorizado conserva la vista completa."
+                : "A privacy pool on Stellar. Deposit from one address and withdraw to another: a zero-knowledge proof shows the withdrawal is legitimate without revealing which deposit it came from. An authorized auditor keeps the full view."}
+            </p>
+            <div className="flex flex-col sm:flex-row gap-3">
+              <Link to="/deposit" className="btn-primary gap-2 text-base px-7">
+                <ArrowDownToLine size={18} strokeWidth={2.25} />
+                {t("home", "ctaDeposit")}
+              </Link>
+              <Link to="/withdraw" className="btn-secondary gap-2 text-base px-7">
+                <ArrowUpFromLine size={18} />
+                {t("home", "ctaWithdraw")}
+              </Link>
+            </div>
+            {onStartTour && (
+              <button
+                onClick={onStartTour}
+                className="mt-5 min-h-[44px] text-[15px] text-pool-text-dim hover:text-pool-text inline-flex items-center gap-2 cursor-pointer underline decoration-pool-border underline-offset-4 hover:decoration-pool-green"
               >
-                <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${color} flex items-center justify-center mb-6 shadow-violet-sm group-hover:shadow-violet transition-shadow duration-300`}>
-                  <Icon size={22} className="text-white" strokeWidth={2} />
-                </div>
-                <div className="text-xs text-pool-muted font-medium mb-3 uppercase tracking-[0.15em] font-mono">
-                  {lang === "es" ? "Paso" : "Step"} {step}
-                </div>
-                <h3 className="text-lg font-semibold mb-3 tracking-tight">{title}</h3>
-                <p className="text-pool-text-dim text-[15px] leading-relaxed">{desc}</p>
+                <Play size={14} />
+                {es ? "Ver demo guiada (sin wallet)" : "See guided demo (no wallet)"}
+              </button>
+            )}
+          </div>
+          <div className="lg:col-span-5">
+            <UnlinkDiagram lang={lang} />
+          </div>
+        </div>
+
+        {/* Cifras */}
+        <div className="border-t border-pool-border">
+          <dl className="max-w-6xl mx-auto px-4 sm:px-6 xl:px-0 grid grid-cols-2 md:grid-cols-4">
+            {stats.map(({ value, label }, i) => (
+              <div
+                key={label}
+                className={`flex flex-col-reverse py-6 md:py-8 border-pool-border ${i === 0 ? "pr-4" : i === 2 ? "pr-4 md:pl-6" : "pl-4 sm:pl-6 pr-4"} ${i % 2 === 1 ? "border-l" : ""} ${i >= 2 ? "border-t md:border-t-0" : ""} ${i === 2 ? "md:border-l" : ""}`}
+              >
+                <dt className="text-[14px] text-pool-text-dim mt-1">{label}</dt>
+                <dd className="font-mono text-2xl md:text-[28px] text-pool-text tabular-nums">{value}</dd>
               </div>
-              </Reveal>
             ))}
+          </dl>
+        </div>
+      </section>
+
+      {/* ── Caso real ──────────────────────────────────── */}
+      <section className="py-16 md:py-24 px-4 sm:px-6">
+        <div className="max-w-6xl mx-auto grid lg:grid-cols-12 gap-10">
+          <div className="lg:col-span-4">
+            <span className="eyebrow">01</span>
+            <h2 className="text-3xl md:text-[2.6rem] leading-tight mt-3">{t("home", "caseTitle")}</h2>
+            <p className="text-pool-text-dim mt-4 leading-relaxed">
+              {es ? "La tesorería de una DAO necesita dos cosas que parecen opuestas." : "A DAO treasury needs two things that look opposed."}
+            </p>
+          </div>
+          <div className="lg:col-span-8 grid md:grid-cols-2 border border-pool-border rounded-lg overflow-hidden">
+            <Reveal className="p-6 md:p-8 bg-pool-card">
+              <p className="font-mono text-[13px] mb-3 flex items-center gap-2 problem-label">
+                <span className="w-2 h-2 bg-current" aria-hidden="true" />
+                {t("home", "caseProblemLabel")}
+              </p>
+              <p className="text-pool-text-dim leading-relaxed">{t("home", "caseProblem")}</p>
+            </Reveal>
+            <Reveal delay={100} className="p-6 md:p-8 bg-pool-card border-t md:border-t-0 md:border-l border-pool-border">
+              <p className="font-mono text-[13px] text-pool-green mb-3 flex items-center gap-2">
+                <span className="w-2 h-2 bg-pool-green" aria-hidden="true" />
+                {t("home", "caseSolutionLabel")}
+              </p>
+              <p className="text-pool-text-dim leading-relaxed">{t("home", "caseSolution")}</p>
+            </Reveal>
           </div>
         </div>
       </section>
 
-      {/* Divider */}
-      <div className="max-w-5xl mx-auto px-6">
-        <div className="h-px bg-gradient-to-r from-transparent via-ink/[0.06] to-transparent" />
-      </div>
+      {/* ── Cómo funciona ──────────────────────────────── */}
+      <section className="py-16 md:py-24 px-4 sm:px-6 bg-pool-surface border-y border-pool-border">
+        <div className="max-w-6xl mx-auto">
+          <div className="max-w-2xl mb-12">
+            <span className="eyebrow">02</span>
+            <h2 className="text-3xl md:text-[2.6rem] leading-tight mt-3">{t("home", "howTitle")}</h2>
+            <p className="text-pool-text-dim mt-3 text-lg">{t("home", "howSub")}</p>
+          </div>
+          <ol className="grid md:grid-cols-3 gap-px bg-pool-border border border-pool-border rounded-lg overflow-hidden">
+            {steps.map(({ Icon, title, desc }, i) => (
+              <li key={title} className="bg-pool-card p-6 md:p-8 flex flex-col">
+                <div className="flex items-center justify-between mb-8">
+                  <span className="font-mono text-[13px] text-pool-muted">{es ? "Paso" : "Step"} {String(i + 1).padStart(2, "0")}</span>
+                  <span className="w-10 h-10 rounded-md border border-pool-border flex items-center justify-center text-pool-green">
+                    <Icon size={18} strokeWidth={1.75} />
+                  </span>
+                </div>
+                <h3 className="text-xl font-semibold mb-3">{title}</h3>
+                <p className="text-pool-text-dim leading-relaxed">{desc}</p>
+              </li>
+            ))}
+          </ol>
+        </div>
+      </section>
 
-      {/* Compliance */}
-      <section className="py-12 md:py-28 px-4 md:px-6">
-        <div className="max-w-5xl mx-auto grid md:grid-cols-2 gap-16 items-center">
-          <div>
-            <h2 className="text-3xl md:text-4xl font-bold mb-6 tracking-tight">
-              {t("home", "compTitle")}{" "}
-              <span className="text-pool-green">{t("home", "compAnd")}</span>{" "}
-              {t("home", "compTitle2")}
+      {/* ── Privado y regulado ─────────────────────────── */}
+      <section className="py-16 md:py-24 px-4 sm:px-6">
+        <div className="max-w-6xl mx-auto grid lg:grid-cols-12 gap-12 items-start">
+          <div className="lg:col-span-5">
+            <span className="eyebrow">03</span>
+            <h2 className="text-3xl md:text-[2.6rem] leading-tight mt-3 mb-5">
+              {t("home", "compTitle")} {t("home", "compAnd")} <em className="italic">{t("home", "compTitle2").toLowerCase()}</em>
             </h2>
-            <p className="text-pool-text-dim leading-relaxed mb-10 text-[15px]">{t("home", "compDesc")}</p>
-
-            <div className="flex flex-col gap-5 stagger-children">
+            <p className="text-pool-text-dim leading-relaxed mb-8">{t("home", "compDesc")}</p>
+            <ul className="divide-y divide-pool-border border-y border-pool-border">
               {[
                 { icon: Shield, text: t("home", "compItem1") },
                 { icon: Eye, text: t("home", "compItem2") },
                 { icon: Lock, text: t("home", "compItem3") },
                 { icon: CheckCircle, text: t("home", "compItem4") },
               ].map(({ icon: Icon, text }) => (
-                <div key={text} className="flex items-center gap-4">
-                  <div className="relative w-9 h-9 rounded-lg bg-pool-green/8 border border-pool-green/15 flex items-center justify-center flex-shrink-0 shadow-inner-glow pulse-ring text-pool-green">
-                    <Icon size={16} className="text-pool-green" />
-                  </div>
-                  <span className="text-pool-text-dim text-[15px]">{text}</span>
-                </div>
+                <li key={text} className="flex items-center gap-4 py-3.5">
+                  <Icon size={18} className="text-pool-green flex-shrink-0" strokeWidth={1.75} />
+                  <span className="text-pool-text">{text}</span>
+                </li>
               ))}
-            </div>
+            </ul>
           </div>
 
-          <div className="relative">
-            <div className="absolute -inset-4 bg-gradient-to-br from-pool-violet/10 via-transparent to-pool-green/10 rounded-3xl blur-2xl pointer-events-none" />
-            <Suspense
-              fallback={<div className="w-full h-80 rounded-2xl bg-pool-card/40 animate-pulse" />}
-            >
-              <div className="relative h-80 glass-panel overflow-hidden gradient-border">
-                <PrivacyVisualizer3D />
+          <div className="lg:col-span-7">
+            <div className="panel overflow-hidden">
+              <div className="px-5 sm:px-6 py-4 border-b border-pool-border flex items-center justify-between gap-3">
+                <span className="font-semibold">{es ? "Quién ve qué" : "Who sees what"}</span>
+                <span className="font-mono text-[12px] text-pool-muted">view key</span>
               </div>
-            </Suspense>
-            <div className="mt-4 flex items-center justify-center">
-              <span className="badge-verified">
-                <CheckCircle size={10} />
-                {lang === "es" ? "Hecho por Mongli DAO" : "Built by Mongli DAO"}
-              </span>
+              <table className="w-full text-[15px]">
+                <thead>
+                  <tr className="text-left text-pool-muted font-mono text-[13px]">
+                    <th className="font-normal px-5 sm:px-6 py-3">{es ? "Dato" : "Data"}</th>
+                    <th className="font-normal px-2 sm:px-3 py-3 text-center">{es ? "Público" : "Public"}</th>
+                    <th className="font-normal px-3 sm:px-6 py-3 text-center">Auditor</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-pool-border border-t border-pool-border">
+                  {visibility.map(({ d, pub, aud }) => (
+                    <tr key={d}>
+                      <td className="px-5 sm:px-6 py-4 text-pool-text">{d}</td>
+                      {[pub, aud].map((v, j) => (
+                        <td key={j} className="px-2 sm:px-6 py-4 text-center">
+                          {v ? (
+                            <Check size={18} className="inline text-pool-green" aria-label={es ? "Sí" : "Yes"} />
+                          ) : (
+                            <Minus size={18} className="inline text-pool-muted" aria-label="No" />
+                          )}
+                        </td>
+                      ))}
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+              <div className="px-5 sm:px-6 py-3 border-t border-pool-border bg-pool-surface flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                <p className="text-[14px] text-pool-text-dim">
+                  {es ? "El auditor usa la llave de vista de Mongli DAO." : "The auditor uses the Mongli DAO view key."}
+                </p>
+                <Link to="/auditor" className="inline-flex items-center gap-1.5 min-h-[44px] text-[15px] font-medium text-pool-green hover:underline underline-offset-4">
+                  {t("home", "ctaAuditor")} <ArrowRight size={15} />
+                </Link>
+              </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Divider */}
-      <div className="max-w-5xl mx-auto px-6">
-        <div className="h-px bg-gradient-to-r from-transparent via-ink/[0.06] to-transparent" />
-      </div>
-
-      {/* FAQ */}
-      <section className="py-10 md:py-24 px-4 md:px-6">
-        <div className="max-w-3xl mx-auto">
-          <h2 className="text-3xl font-bold text-center mb-12 tracking-tight">
-            {lang === "es" ? "Preguntas frecuentes" : "FAQ"}
-          </h2>
-          <div className="space-y-4">
-            {[
-              {
-                q: lang === "es" ? "¿Es seguro?" : "Is it safe?",
-                a: lang === "es"
-                  ? "MongliPool es un prototipo de hackathon en Stellar testnet. La criptografía ZK es real (Groth16/BN254 verificado on-chain), pero el circuito no ha sido auditado externamente. No usar con fondos reales hasta completar auditoría."
-                  : "MongliPool is a hackathon prototype on Stellar testnet. The ZK cryptography is real (Groth16/BN254 verified on-chain), but the circuit hasn't been externally audited. Do not use with real funds until audited."
-              },
-              {
-                q: lang === "es" ? "¿Qué pasa si pierdo mi recibo?" : "What if I lose my receipt?",
-                a: lang === "es"
-                  ? "Los fondos quedan en el pool para siempre. No existe recuperación — es una propiedad fundamental del diseño de privacidad. Guarda tu recibo en múltiples lugares seguros."
-                  : "The funds stay in the pool forever. There is no recovery — this is a fundamental property of the privacy design. Save your receipt in multiple safe places."
-              },
-              {
-                q: lang === "es" ? "¿Por qué necesito una wallet?" : "Why do I need a wallet?",
-                a: lang === "es"
-                  ? "Freighter (extensión de Stellar) autoriza las transacciones en la blockchain. Tu recibo privado se genera localmente — la wallet solo firma, no ve tus secretos."
-                  : "Freighter (Stellar extension) authorizes blockchain transactions. Your private receipt is generated locally — the wallet only signs, it doesn't see your secrets."
-              },
-              {
-                q: lang === "es" ? "¿Esto es dinero real?" : "Is this real money?",
-                a: lang === "es"
-                  ? "Corre en Stellar testnet — usa XLM de prueba sin valor monetario real. Puedes experimentar sin riesgo. Pide XLM de prueba gratis en friendbot.stellar.org."
-                  : "It runs on Stellar testnet — uses test XLM with no real monetary value. You can experiment risk-free. Get free test XLM at friendbot.stellar.org."
-              },
-            ].map(({ q, a }, i) => (
-              <Reveal key={q} delay={i * 80}>
-                <div className="glass-panel animated-border p-5 card-hover">
-                  <h3 className="font-semibold text-pool-text mb-2">{q}</h3>
-                  <p className="text-pool-text-dim text-sm leading-relaxed">{a}</p>
-                </div>
-              </Reveal>
+      {/* ── FAQ ─────────────────────────────────────────── */}
+      <section className="py-16 md:py-24 px-4 sm:px-6 border-t border-pool-border">
+        <div className="max-w-6xl mx-auto grid lg:grid-cols-12 gap-10">
+          <div className="lg:col-span-4">
+            <span className="eyebrow">04</span>
+            <h2 className="text-3xl md:text-[2.6rem] leading-tight mt-3">{es ? "Preguntas frecuentes" : "FAQ"}</h2>
+          </div>
+          <div className="lg:col-span-8 border-t border-pool-border">
+            {faqs.map(({ q, a }, i) => (
+              <details key={q} className="group border-b border-pool-border" open={i === 0}>
+                <summary className="flex items-center justify-between gap-4 cursor-pointer list-none min-h-[60px] py-4 text-[17px] font-medium text-pool-text [&::-webkit-details-marker]:hidden">
+                  {q}
+                  <Plus size={18} className="flex-shrink-0 text-pool-muted transition-transform duration-200 group-open:rotate-45" />
+                </summary>
+                <p className="pb-5 pr-8 text-pool-text-dim leading-relaxed">{a}</p>
+              </details>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Divider */}
-      <div className="max-w-5xl mx-auto px-6">
-        <div className="h-px bg-gradient-to-r from-transparent via-ink/[0.06] to-transparent" />
-      </div>
-
-      {/* CTA */}
-      <section className="py-12 md:py-28 px-4 md:px-6 text-center relative">
-        <div className="absolute inset-0 bg-gradient-radial opacity-20 pointer-events-none" />
-        <div className="relative">
-          <h2 className="text-3xl md:text-4xl font-bold mb-4 tracking-tight">{t("home", "ctaBottom")}</h2>
-          <p className="text-pool-text-dim mb-12 text-lg">{t("home", "ctaBottomSub")}</p>
-          <div className="flex gap-4 justify-center flex-wrap">
-            <Link to="/deposit" className="btn-primary inline-flex items-center gap-2.5 px-8 py-3.5">
-              <ArrowDownToLine size={18} strokeWidth={2.5} />
+      {/* ── CTA final ───────────────────────────────────── */}
+      <section className="px-4 sm:px-6 pb-20">
+        <div className="max-w-6xl mx-auto panel p-6 sm:p-8 md:p-12 grid md:grid-cols-12 gap-8 items-center">
+          <div className="md:col-span-7">
+            <h2 className="text-3xl md:text-4xl leading-tight mb-3">{t("home", "ctaBottom")}</h2>
+            <p className="text-pool-text-dim text-lg">{t("home", "ctaBottomSub")}</p>
+          </div>
+          <div className="md:col-span-5 flex flex-col sm:flex-row md:justify-end gap-3">
+            <Link to="/deposit" className="btn-primary gap-2">
+              <ArrowDownToLine size={18} strokeWidth={2.25} />
               {t("home", "ctaDeposit")}
             </Link>
-            <Link to="/auditor" className="btn-secondary inline-flex items-center gap-2.5 px-8 py-3.5">
-              <Eye size={18} />
-              {t("home", "ctaAuditor")}
-            </Link>
+            <a href="https://youtu.be/Me4MJGTcKgA" target="_blank" rel="noopener noreferrer" className="btn-secondary gap-2">
+              <Play size={16} />
+              {es ? "Ver video demo" : "Watch demo video"}
+            </a>
           </div>
-          <a
-            href="https://youtu.be/Me4MJGTcKgA"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="mt-6 text-sm text-pool-accent hover:text-pool-green-light transition-colors inline-flex items-center gap-1.5 cursor-pointer mx-auto"
-          >
-            ▶ {lang === "es" ? "Ver video demo" : "Watch demo video"}
-          </a>
         </div>
       </section>
     </div>
